@@ -13,17 +13,17 @@ export class Trade {
     private events: EventEmitter;
 
     constructor(
-      ethereum: EthereumConnection,
-      networkId: number,
+      zeroEx: ZeroEx,
       apiEndpoint: string,
       account: Account,
       events: EventEmitter) {
-
+      this.zeroEx = zeroEx;
+      this.endpoint = apiEndpoint;
       this.account = account;
       this.events = events;
-      this.zeroEx = new ZeroEx(ethereum.provider, {
-        networkId
-      });
+
+      // TODO may need to init event listeners
+      // for changes to class instances / params
     }
 
     // TODO this is a test

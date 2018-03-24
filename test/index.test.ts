@@ -11,34 +11,54 @@ const expect = chai.expect;
 describe('RadarRelaySDK', () => {
 
     let rrsdk;
-    let networkUpdatedEventFired = false;
-    let accountUpdatedEventFired = false;
+    let apiEndpointUpdated = false;
+    let ethereumNetworkUpdated = false;
+    let accountUpdated = false;
+    let ethereumNetworkIdUpdated = false;
+    let zeroExUpdated = false;
+    let marketsUpdated = false;
 
-    it('properly sets ethereum connection and fires event', async () => {
+    beforeEach(() => {
+      apiEndpointUpdated = false;
+      ethereumNetworkUpdated = false;
+      accountUpdated = false;
+      ethereumNetworkIdUpdated = false;
+      zeroExUpdated = false;
+      marketsUpdated = false;
+    });
+
+    it('properly initializes and fires all events', async () => {
       rrsdk = new RadarRelaySDK();
 
-      rrsdk.events.on('networkUpdated', () => {
-        networkUpdatedEventFired = true;
+      rrsdk.events.on('apiEndpointUpdated', endpoint => {
+        apiEndpointUpdated = true;
+      });
+      rrsdk.events.on('ethereumNetworkUpdated', network => {
+        ethereumNetworkUpdated = true;
+      });
+      rrsdk.events.on('accountUpdated', account => {
+        accountUpdated = true;
+      });
+      rrsdk.events.on('ethereumNetworkIdUpdated', networkId => {
+        ethereumNetworkIdUpdated = true;
+      });
+      rrsdk.events.on('zeroExUpdated', zeroEx => {
+        zeroExUpdated = true;
+      });
+      rrsdk.events.on('marketsUpdated', markets => {
+        marketsUpdated = true;
       });
       await rrsdk.initialize('http://35.196.15.153:8545');
 
-      expect(rrsdk.networkId).is.not.undefined;
-      expect(networkUpdatedEventFired).to.be.true;
+      expect(apiEndpointUpdated).to.be.true;
+      expect(ethereumNetworkUpdated).to.be.true;
+      expect(ethereumNetworkIdUpdated).to.be.true;
+      expect(zeroExUpdated).to.be.true;
+      expect(marketsUpdated).to.be.true;
     });
 
     it.skip('properly handles setting invalid connection');
 
-    it('properly sets account and fires event', () => {
-      rrsdk.events.on('accountUpdated', () => {
-        accountUpdatedEventFired = true;
-      });
-      rrsdk.setAccount(0);
-      expect(rrsdk.account.address).is.not.undefined;
-      expect(accountUpdatedEventFired).to.be.true;
-    });
-
     it.skip('properly handles setting invalid account');
-
-    it.skip('fetches markets data and fires event');
 
 });

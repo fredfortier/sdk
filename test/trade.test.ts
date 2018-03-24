@@ -15,7 +15,6 @@ describe('RadarRelaySDK.Trade', () => {
   it('executes a market order', async () => {
     rrsdk = new RadarRelaySDK();
     await rrsdk.initialize('http://35.196.15.153:8545');
-
     await rrsdk.trade.marketOrder();
   });
 

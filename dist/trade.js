@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bignumber_js_1 = require("bignumber.js");
-const _0x_js_1 = require("0x.js");
 class Trade {
-    constructor(ethereum, networkId, apiEndpoint, account, events) {
+    constructor(zeroEx, apiEndpoint, account, events) {
+        this.zeroEx = zeroEx;
+        this.endpoint = apiEndpoint;
         this.account = account;
         this.events = events;
-        this.zeroEx = new _0x_js_1.ZeroEx(ethereum.provider, {
-            networkId
-        });
+        // TODO may need to init event listeners
+        // for changes to class instances / params
     }
     // TODO this is a test
     marketOrder(market = null, type = 'buy', amount = null) {

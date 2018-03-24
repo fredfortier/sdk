@@ -1,6 +1,7 @@
 
 import {EventEmitter} from 'events';
 import {request} from 'request';
+import {ZeroEx, ZeroExConfig} from '0x.js';
 import BigNumber from 'bignumber.js';
 
 // SDK Classes
@@ -16,55 +17,58 @@ import {Trade} from './trade';
 export class RadarRelaySDK {
 
     public ethereum: EthereumConnection;
-    public networkId: number;
+    public zeroEx: ZeroEx;
     public account: Account;
     public events: EventEmitter;
     public markets: {};
     public trade: Trade;
     private apiEndpoint: string;
+    private networkId: number;
 
     constructor() {
       this.events = new EventEmitter();
     }
 
-    /**
-     * Initialize the SDK
-     */
     public async initialize(ethereumRpcUrl: string, radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
-      this.setApiEndpoint(radarRelayEndpoint);
+      this.setApiEndpoint(radarRelayEndpoint); // set API endpoint
       await this.setEthereumConnectionAsync(ethereumRpcUrl);
-      await this.fetchMarketsAsync(radarRelayEndpoint);
+      this.setAccount(0); // default to account 0
+      await this.updateEthereumNetworkIdAsync(); // retrieve the current networkID
+      this.updateZeroEx(); // instantiate the ZeroEx class
+      await this.updateMarketsAsync();
 
       // setup trade functionality
       this.trade = new Trade(
-        this.ethereum,
-        this.networkId,
+        this.zeroEx,
         this.apiEndpoint,
         this.account,
         this.events
       );
     }
 
-    /**
-     * Fetch our markets from the API
-     */
-    public async fetchMarketsAsync(radarRelayEndpoint: string) {
-      // const markets = await request.get(`${radarRelayEndpoint}/markets`);
+    public async updateMarketsAsync() {
+      // const markets = await request.get(`${this.apiEndpoint}/markets`);
       // this.markets = new Map(markets.map(market => new Market(market)));
       this.events.emit('marketsUpdated', this.markets);
     }
 
-    /**
-     * Set the Ethereum RPC connection
-     */
+    public async updateEthereumNetworkIdAsync() {
+      this.networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
+      this.events.emit('ethereumNetworkIdUpdated', this.networkId);
+    }
+
+    public updateZeroEx() {
+      this.zeroEx = new ZeroEx(this.ethereum.provider, {
+        networkId: this.networkId
+      });
+      this.events.emit('zeroExUpdated', this.zeroEx);
+    }
+
     public async setEthereumConnectionAsync(ethereumRpcUrl: string) {
       // same rpcUrl
       if (this.ethereum && ethereumRpcUrl === (this.ethereum.provider as any).host) return;
       this.ethereum = new EthereumConnection(ethereumRpcUrl);
-      this.networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-      this.events.emit('networkUpdated', this.ethereum);
-      // default to account 0
-      this.setAccount(0);
+      this.events.emit('ethereumNetworkUpdated', this.ethereum);
     }
 
     public setAccount(account: string | number) {
@@ -75,6 +79,7 @@ export class RadarRelaySDK {
 
     public setApiEndpoint(endpoint: string) {
       this.apiEndpoint = endpoint;
+      this.events.emit('apiEndpointUpdated', this.apiEndpoint);
     }
 
 }

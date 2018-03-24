@@ -59,5 +59,5 @@ parity --jsonrpc-hosts=all \
 import RadarRelaySDK from 'radar-relay-sdk';
 
 const rrsdk = new RadarRelaySDK();
-rrsdk.setEthereumConnectionAsync('http://localhost:8545');
+rrsdk.initialize('http://localhost:8545');
 ```
