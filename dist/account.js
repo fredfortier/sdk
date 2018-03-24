@@ -11,13 +11,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Account {
     constructor(connection) {
         this.connection = connection;
-    }
-    get address() {
-        return this.connection.defaultAccount;
+        this.address = this.connection.defaultAccount;
     }
     getEthBalanceAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.connection.getEthBalanceAsync();
+            return yield this.connection.getEthBalanceAsync(this.address);
         });
     }
 }

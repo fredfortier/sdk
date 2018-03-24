@@ -20,11 +20,17 @@ import {promisify} from 'es6-promisify';
        return this.web3.eth.defaultAccount;
      }
 
-     public async getEthBalanceAsync(): Promise<BigNumber> {
-       const bal = await promisify(cb => this.web3.eth.getBalance(this.defaultAccount, cb))();
+     /**
+      * get the ether balance for an account
+      */
+     public async getEthBalanceAsync(address: string): Promise<BigNumber> {
+       const bal = await promisify(cb => this.web3.eth.getBalance(address, cb))();
        return new BigNumber(bal);
      }
 
+     /**
+      * get the RPC Connections networkId
+      */
      public async getNetworkIdAsync(): Promise<number> {
        const networkId: string = await promisify(this.web3.version.getNetwork)();
        return parseInt(networkId, 10);
@@ -36,7 +42,7 @@ import {promisify} from 'es6-promisify';
       */
      public setDefaultAccount(account: number | string) {
        if (typeof(account) === 'number') {
-         if (typeof(this.web3.eth.accounts[account]) === 'undefined') throw new Error('invalid account');
+         if (typeof(this.web3.eth.accounts[account]) === 'undefined') throw new Error('unable to retrieve account');
          this.web3.eth.defaultAccount = this.web3.eth.accounts[account];
        } else {
          let found = false;
@@ -46,7 +52,7 @@ import {promisify} from 'es6-promisify';
              this.web3.eth.defaultAccount = address;
            }
          });
-         if (!found) throw new Error('invalid account');
+         if (!found) throw new Error('unable to retrieve account');
        }
      }
 

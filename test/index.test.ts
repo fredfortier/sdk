@@ -1,4 +1,3 @@
-
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
@@ -21,7 +20,7 @@ describe('RadarRelaySDK', () => {
       rrsdk.events.on('networkUpdated', () => {
         networkUpdatedEventFired = true;
       });
-      await rrsdk.setEthereumConnectionAsync('http://35.196.15.153:8545');
+      await rrsdk.initialize('http://35.196.15.153:8545');
 
       expect(rrsdk.networkId).is.not.undefined;
       expect(networkUpdatedEventFired).to.be.true;
@@ -40,9 +39,6 @@ describe('RadarRelaySDK', () => {
 
     it.skip('properly handles setting invalid account');
 
-    it('initializes ZeroEx', () => {
-      const exchangeAddress = rrsdk.zeroEx.exchange.getContractAddress();
-      expect(exchangeAddress).is.not.undefined;
-    });
+    it.skip('fetches markets data and fires event');
 
 });
