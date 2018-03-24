@@ -1,0 +1,48 @@
+{
+  "name": "relayjs",
+  "version": "0.1.0",
+  "description": "A JavaScript library for interacting with 0x Relayers",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "tsc -p tsconfig.test.json && mocha dist-test/**/*.test.js ",
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RadarRelay/radar-relay-sdk.git"
+  },
+  "keywords": [
+    "0x",
+    "relayer",
+    "sdk",
+    "radar",
+    "relay"
+  ],
+  "author": "Mike Roth <mike@radarrelay.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RadarRelay/radar-relay-sdk.git/issues"
+  },
+  "homepage": "https://github.com/RadarRelay/radar-relay-sdk.git#readme",
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.46",
+    "chai": "^3.5.0",
+    "dotenv": "^4.0.0",
+    "mocha": "^3.1.2",
+    "tslint": "^5.9.1",
+    "tslint-config-0xproject": "0.0.2",
+    "typescript": "^2.7.2"
+  },
+  "dependencies": {
+    "0x-relay-types": "^0.3.0",
+    "0x.js": "^0.33.6",
+    "bignumber.js": "^4.1.0",
+    "es6-promisify": "^6.0.0",
+    "request": "^2.83.0",
+    "web3": "^0.20.0"
+  }
+}
