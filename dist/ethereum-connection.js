@@ -21,12 +21,18 @@ class EthereumConnection {
     get defaultAccount() {
         return this.web3.eth.defaultAccount;
     }
-    getEthBalanceAsync() {
+    /**
+     * get the ether balance for an account
+     */
+    getEthBalanceAsync(address) {
         return __awaiter(this, void 0, void 0, function* () {
-            const bal = yield es6_promisify_1.promisify(cb => this.web3.eth.getBalance(this.defaultAccount, cb))();
+            const bal = yield es6_promisify_1.promisify(cb => this.web3.eth.getBalance(address, cb))();
             return new bignumber_js_1.default(bal);
         });
     }
+    /**
+     * get the RPC Connections networkId
+     */
     getNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             const networkId = yield es6_promisify_1.promisify(this.web3.version.getNetwork)();
@@ -40,7 +46,7 @@ class EthereumConnection {
     setDefaultAccount(account) {
         if (typeof (account) === 'number') {
             if (typeof (this.web3.eth.accounts[account]) === 'undefined')
-                throw new Error('invalid account');
+                throw new Error('unable to retrieve account');
             this.web3.eth.defaultAccount = this.web3.eth.accounts[account];
         }
         else {
@@ -52,7 +58,7 @@ class EthereumConnection {
                 }
             });
             if (!found)
-                throw new Error('invalid account');
+                throw new Error('unable to retrieve account');
         }
     }
     /**
