@@ -51,9 +51,39 @@ parity --jsonrpc-hosts=all \
        --base-path /path/for/ethereum_node_data
 ```
 
-## Using the SDK
+## SDK Init / State Change Lifecycle
 
-`npm install radar-relay-sdk`
+### Overview
+
+The Ethereum and 0x.js application loading lifecycle is difficult to manage, especially when designing for optimized state changes. Specifically, changing RPC Networks, switching accounts, and updating API endpoints. To manage the lifecycle more efficiently, the Radar Relay SDK utilizes a combination of the following:
+
+* [`EventEmitter`](https://nodejs.org/api/events.html)
+* [`SDKInitLifeCycle `](https://github.com/RadarRelay/radar-relay-sdk/blob/beta/src/sdk-init-lifecycle.ts)
+
+--- 
+
+The `SDKInitLifeCycle` class works as follows:
+
+Define an array that consists of: 
+
+   1. `event`, which when triggered will then call the defined
+   2. `func` the function that is called when this event is triggered (ideally the next in priority)
+   3. `priority` an integer that defines the priority of this method.
+
+Once the `currentPriority` has hit 0, the promise will resolve. If an error occurs along the lifecycle, the timeout will occur after 10s and reject the promise.
+
+Each init method must trigger an event on the `EventEmitter`, which indicates the method is done as well as return the `SDKInitLifeCycle.promise()`
+
+
+### Life Cycle
+
+![](https://docs.google.com/drawings/d/e/2PACX-1vS-ZE8iqFN6qm9iY_pqtJfElw2iwR-THeM1MuUYCH4H_9uAMAOv1ogEt72f0SuEZFB6tnfd4hm7NGuo/pub?w=929&h=580)
+
+
+
+## SDK Usage
+
+`~ npm install radar-relay-sdk`
 
 ```javascript
 import RadarRelaySDK from 'radar-relay-sdk';
@@ -119,7 +149,7 @@ rrsdk.markets['ZRX-WETH'].getOrderBookAsync
 
 // Websockets (WIP)
 // -----------------
-rrsdk.ws.subscribe('ZRX_WETH', 'book') // book state changes (like prunes, cancels, fills, etc.)
-rrsdk.ws.subscribe('ZRX_WETH', 'candles')
-rrsdk.ws.subscribe('ZRX_WETH', 'ticker') // specifically fills
+rrsdk.ws.subscribe('ZRX-WETH', 'book') // book state changes (like prunes, cancels, fills, etc.)
+rrsdk.ws.subscribe('ZRX-WETH', 'candles')
+rrsdk.ws.subscribe('ZRX-WETH', 'ticker') // specifically fills
 ```
