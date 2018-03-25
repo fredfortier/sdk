@@ -17,6 +17,7 @@ const ethereum_connection_1 = require("./ethereum-connection");
 const account_1 = require("./account");
 const market_1 = require("./market");
 const trade_executer_1 = require("./trade-executer");
+const ws_1 = require("./ws");
 /**
  * RadarRelaySDK
  */
@@ -74,6 +75,8 @@ class RadarRelaySDK {
             this.lifecycle.setup(this);
             // set connection
             yield this.setEthereumConnectionAsync(ethereumRpcUrl);
+            // init Websockets
+            this.ws = new ws_1.Ws();
         });
     }
     // --- user configurable --- //
