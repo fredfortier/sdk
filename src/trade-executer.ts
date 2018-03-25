@@ -5,10 +5,10 @@ import {Account} from './account';
 import {EventEmitter} from 'events';
 import {ZeroEx, ZeroExConfig, SignedOrder} from '0x.js';
 
-export class Trade {
+export class TradeExecuter {
 
+    public endpoint: string;
     private zeroEx: ZeroEx;
-    private endpoint: string;
     private account: Account;
     private events: EventEmitter;
 
@@ -17,13 +17,16 @@ export class Trade {
       apiEndpoint: string,
       account: Account,
       events: EventEmitter) {
-      this.zeroEx = zeroEx;
-      this.endpoint = apiEndpoint;
-      this.account = account;
-      this.events = events;
+        this.zeroEx = zeroEx;
+        this.endpoint = apiEndpoint;
+        this.account = account;
+        this.events = events;
 
-      // TODO may need to init event listeners
-      // for changes to class instances / params
+        /* tslint:disable:no-this-assignment */
+        const self = this;
+        this.events.on('apiEndpointUpdated', endpoint => {
+          console.log('new', endpoint, 'old', self.endpoint);
+        });
     }
 
     // TODO this is a test
@@ -83,7 +86,12 @@ export class Trade {
     public async limitOrder(
       market: Market = null,
       type: string = 'buy',
-      amount: BigNumber = null) {
+      order: SignedOrder) {
+      // TODO
+    }
+
+    // cancel a signed order
+    public async cancelOrder(order: SignedOrder) {
       // TODO
     }
 
