@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class SDKInitLifeCycle {
     constructor(events, priorityList, timeout = 10000) {
         this.priority = {};
+        this.firstLoad = false;
         this.priorityList = priorityList;
         this.events = events;
         this.timeout = timeout;
@@ -51,13 +52,16 @@ class SDKInitLifeCycle {
         if (this.currentEvent === 0) {
             clearInterval(this.runInterval);
             this.runInterval = undefined;
+            this.firstLoad = true;
             return resolve(true);
         }
     }
     handleEvent(event) {
         const count = this.priority[event];
         this.currentEvent = (count <= this.currentEvent) ? count : this.currentEvent;
-        process.stdout.write('....');
+        if (!this.firstLoad) {
+            process.stdout.write('.....');
+        }
     }
 }
 exports.SDKInitLifeCycle = SDKInitLifeCycle;

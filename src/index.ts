@@ -85,7 +85,7 @@ export class RadarRelaySDK {
 
       // set connection
       await this.setEthereumConnectionAsync(ethereumRpcUrl);
-      
+
       // init Websockets
       this.ws = new Ws();
     }

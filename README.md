@@ -89,7 +89,9 @@ Each init method must trigger an event on the `EventEmitter`, which indicates th
 import RadarRelaySDK from 'radar-relay-sdk';
 
 const rrsdk = new RadarRelaySDK();
-rrsdk.initialize('http://localhost:8545'); // unlocked node RPC endpoint
+
+// unlocked node RPC endpoint,  API endpoint
+rrsdk.initialize('http://localhost:8545', 'http://localhost:8080'); 
 
 
 // initialize
@@ -97,18 +99,21 @@ rrsdk.initialize('http://localhost:8545'); // unlocked node RPC endpoint
 // called automatically on initialize
 // but can be called at any point
 // each will trigger an event (see events below)
-rrsdk.setEthereumNetworkIdAsync
 rrsdk.setEthereumConnectionAsync
+rrsdk.setEthereumNetworkIdAsync
 rrsdk.setAccount
 rrsdk.setApiEndpoint
 rrsdk.fetchMarketData
+rrsdk.updateZeroEx
+rrsdk.updateTradeExecutor
+rrsdk.updateMarkets
 
 // events
 // ------
 // anything that triggers state change (like changing the network, or a fill)
 // fires an event that you can listen to
 rrsdk.events.on(
-  'marketDataUpdated | ethereumNetworkIdUpdated | zeroExUpdated | ethereumNetworkUpdated | accountUpdated | apiEndpointUpdated | pendingTransaction | minedTransaction'
+  'marketDataUpdated | ethereumNetworkIdUpdated | zeroExUpdated | ethereumNetworkUpdated | accountUpdated | apiEndpointUpdated | transactionPending | transactionMined'
 )
 rrsdk.events.emit('see_above' | 'or you can emit anything', with, some, data)
 
@@ -128,7 +133,8 @@ rrsdk.account.getOrdersAsync
 // -------
 // markets are marketId mapped Market classes with all 
 // the same methods and the following instance vars:
-rrsdk.markets['ZRX-WETH'] = {
+rrsdk.markets.get('ZRX-WETH') 
+{
     baseTokenAddress
     quoteTokenAddress
     baseTokenDecimals
@@ -140,16 +146,14 @@ rrsdk.markets['ZRX-WETH'] = {
 }
 
 // market class methods
-rrsdk.markets['ZRX-WETH'].limitOrderAsync
-rrsdk.markets['REP-WETH'].marketOrderAsync
-rrsdk.markets['ZRX-WETH'].getFillsAsync
-rrsdk.markets['ZRX-WETH'].getCandlesAsync
-rrsdk.markets['ZRX-WETH'].getTickerAsync
-rrsdk.markets['ZRX-WETH'].getOrderBookAsync
+rrsdk.markets.get('ZRX-WETH').limitOrderAsync
+rrsdk.markets.get('REP-WETH').marketOrderAsync
+rrsdk.markets.get('ZRX-WETH').getFillsAsync
+rrsdk.markets.get('ZRX-WETH').getCandlesAsync
+rrsdk.markets.get('ZRX-WETH').getTickerAsync
+rrsdk.markets.get('ZRX-WETH').getOrderBookAsync
 
-// Websockets (WIP)
+// [WIP] Websockets 
 // -----------------
-rrsdk.ws.subscribe('ZRX-WETH', 'book') // book state changes (like prunes, cancels, fills, etc.)
-rrsdk.ws.subscribe('ZRX-WETH', 'candles')
-rrsdk.ws.subscribe('ZRX-WETH', 'ticker') // specifically fills
+rrsdk.ws.subscribe('ZRX-WETH', 'baseTokenAddress:quoteTokenAddress') // book state changes (new, remove, fills)
 ```
