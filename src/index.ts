@@ -45,13 +45,14 @@ export class RadarRelaySDK {
         func: this.updateMarketsAsync,
         priority: 1
       }, {
-        event: 'apiEndpointUpdated',
-        func: this.updateTradeExecutor,
-        priority: 2
-      }, {
         event: 'accountUpdated',
         func: this.updateTradeExecutor,
         priority: 2
+      }, {
+        event: 'apiEndpointUpdated',
+        func: this.setAccount,
+        priority: 3,
+        args: [0], // pass default account of 0 to setAccount
       }, {
         event: 'zeroExUpdated',
         func: this.setAccount,
@@ -95,7 +96,7 @@ export class RadarRelaySDK {
 
     public async setAccount(account: string | number) {
       this.ethereum.setDefaultAccount(account);
-      this.account = new Account(this.ethereum, this.zeroEx);
+      this.account = new Account(this.ethereum, this.zeroEx, this.apiEndpoint);
       this.events.emit('accountUpdated', this.account);
       return this.lifecycle.promise('accountUpdated');
     }
@@ -131,7 +132,7 @@ export class RadarRelaySDK {
       try {
         const markets = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
         this.markets = new Map(
-          markets.map(market => [market.id, new Market(market, this.tradeExecuter)]));
+          markets.map(market => [market.id, new Market(market, this.apiEndpoint, this.tradeExecuter)]));
         this.events.emit('marketsUpdated', this.markets);
       } catch (err) {
         console.warn(err);

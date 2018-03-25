@@ -47,6 +47,7 @@ export class SDKInitLifeCycle {
   // The scope is the class that the
   // functions belong to.
   public setup(scope) {
+    console.log('Radar Relay SDK Powering Up 📡');
     for (const item of this.priorityList) {
       if (item.func) {
         if (item.args) {
@@ -73,7 +74,7 @@ export class SDKInitLifeCycle {
     if (now - this.startTime >= this.timeout) {
       clearInterval(this.runInterval);
       this.runInterval = undefined;
-      return reject(`Init lifecycle timed out after ${this.timeout}ms`);
+      return reject(`SDK init lifecycle timed out after ${this.timeout}ms`);
     }
 
     if (this.currentEvent === 0) {
@@ -84,9 +85,9 @@ export class SDKInitLifeCycle {
   }
 
   private handleEvent(event: string) {
-    console.log(event, '...');
     const count = this.priority[event];
     this.currentEvent = (count <= this.currentEvent) ? count : this.currentEvent;
+    process.stdout.write('....');
   }
 
 }
