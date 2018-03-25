@@ -1,9 +1,14 @@
-import BigNumber from 'bignumber.js';
 import {EthereumConnection} from './ethereum-connection';
 import {Market} from './market';
 import {Account} from './account';
 import {EventEmitter} from 'events';
-import {ZeroEx, ZeroExConfig, SignedOrder} from '0x.js';
+import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature} from '0x.js';
+import {RelaySignedOrder} from '0x-relay-types';
+import BigNumber from 'bignumber.js';
+import request = require('request-promise');
+
+// TODO move into config file
+const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
 
 export class TradeExecuter {
 
@@ -21,78 +26,88 @@ export class TradeExecuter {
         this.endpoint = apiEndpoint;
         this.account = account;
         this.events = events;
-
-        /* tslint:disable:no-this-assignment */
-        const self = this;
-        this.events.on('apiEndpointUpdated', endpoint => {
-          console.log('new', endpoint, 'old', self.endpoint);
-        });
     }
 
-    // TODO this is a test
     public async marketOrder(
-      market: Market = null,
+      market: Market,
       type: string = 'buy',
       amount: BigNumber = null
     ) {
-      const signedOrder: SignedOrder = JSON.parse(`{
-        "exchangeContractAddress": "0x90fe2af704b34e0224bf2299c838e04d4dcf1364",
-        "maker": "0x9d94d5c4dcf7784023afc5826059ba8c0f17657f",
-        "taker": "0x0000000000000000000000000000000000000000",
-        "makerTokenAmount": "5144082533960915",
-        "takerTokenAmount": "5000000000000000000",
-        "makerTokenAddress": "0xd0a1e359811322d97991e03f863a0c30c2cf029c",
-        "takerTokenAddress": "0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570",
-        "makerFee": "0",
-        "takerFee": "0",
-        "feeRecipient": "0xa258b39954cef5cb142fd567a46cddb31a670124",
-        "expirationUnixTimestampSec": "1521891891",
-        "salt": "86821865937684789548136301908081798977199604636974649680523686200827244608231",
-        "ecSignature": {
-          "v": 27,
-          "r": "0xd04bbab1529a1bfd389fd97d7b3b754a92311d179632248848dc6af8c14ab910",
-          "s": "0x6d2d88e333a874a5cdbb56248f59a3a576c1465cda3fcdb3cb6f69167c990c6b"
-          }
-        }`);
 
-       signedOrder.makerTokenAmount = new BigNumber(signedOrder.makerTokenAmount);
-       signedOrder.takerTokenAmount = new BigNumber(signedOrder.takerTokenAmount);
-       signedOrder.makerFee = new BigNumber(signedOrder.makerFee);
-       signedOrder.takerFee = new BigNumber(signedOrder.takerFee);
-       signedOrder.salt = new BigNumber(signedOrder.salt);
-       signedOrder.expirationUnixTimestampSec = new BigNumber(signedOrder.expirationUnixTimestampSec);
+      const side = (type === 'buy') ? 'bids' : 'asks';
+      const orders = await market.getBookAsync()[side];
+      const signedOrders = [];
+      let current = new BigNumber(0);
 
-       const txHash = await this.zeroEx.exchange.fillOrderAsync(
-         signedOrder,
-         new BigNumber('100000000000000000'),
-         true,
-         this.account.address,
-         {
-           shouldValidate: true
-         }
-       );
+      const decimals = (type === 'buy') ? market.baseTokenDecimals : market.quoteTokenDecimals;
 
-       console.log(txHash);
+      for (const order of orders) {
+        if (current.gte(amount)) break;
+        if (order.signedOrder.maker === this.account.address) continue;
 
-       const results = await this.zeroEx.awaitTransactionMinedAsync(
-         txHash,
-         1000
-       );
+        const orderAmount = (type === 'buy') ? order.remainingQuoteTokenAmount : order.remainingBaseTokenAmount;
+        current = current.plus(order.remainingQuoteTokenAmount);
+        signedOrders.push(order.signedOrder);
+      }
 
-       console.log(results);
+      const txHash = await this.zeroEx.exchange.fillOrdersUpToAsync(
+        signedOrders,
+        amount,
+        true,
+        this.account.address);
+
+      const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
+      this.events.emit('transactionMined', receipt);
+      return receipt;
     }
 
     // sign and post order to book
     public async limitOrder(
       market: Market = null,
       type: string = 'buy',
-      order: SignedOrder) {
-      // TODO
+      baseTokenAmount: BigNumber,
+      quoteTokenAmount: BigNumber,
+      expiration: BigNumber) {
+
+      // TODO fees
+      const makerFee = new BigNumber(0);
+      const takerFee = new BigNumber(0);
+
+      const order: Order = {
+        exchangeContractAddress: this.zeroEx.exchange.getContractAddress(),
+        expirationUnixTimestampSec: expiration,
+        feeRecipient: feeRecipientAddress,
+        maker: this.account.address,
+        makerFee,
+        makerTokenAddress: (type === 'buy') ? market.quoteTokenAddress : market.baseTokenAddress,
+        makerTokenAmount: (type === 'buy') ? quoteTokenAmount : baseTokenAmount,
+        salt: ZeroEx.generatePseudoRandomSalt(),
+        taker: ZeroEx.NULL_ADDRESS,
+        takerFee,
+        takerTokenAddress: (type === 'buy') ? market.baseTokenAddress : market.quoteTokenAddress,
+        takerTokenAmount: (type === 'buy') ? baseTokenAmount : quoteTokenAmount,
+      };
+
+      const orderHash = ZeroEx.getOrderHashHex(order);
+      const ecSignature: ECSignature = await this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
+      (order as SignedOrder).ecSignature = ecSignature;
+
+      // TODO missing this endpoint
+      // return await request.post(`${this.endpoint}/markets/${market.id}/order/limit`, order);
+      await request.post(`http://localhost:8080/0x/v0/order`, { json: order });
+
+      return order;
     }
 
+    // TODO fill individual order
+
     // cancel a signed order
-    public async cancelOrder(order: SignedOrder) {
-      // TODO
+    // TODO cancel partial?
+    public async cancelOrderAsync(order: SignedOrder) {
+      const txHash = await this.zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
+      this.events.emit('transactionPending', txHash);
+      // const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
+      return txHash;
     }
 
 }
