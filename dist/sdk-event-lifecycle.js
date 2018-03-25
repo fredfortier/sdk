@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class SDKEventLifeCycle {
+class SDKInitLifeCycle {
     constructor(events, timeout = 10000) {
-        this.eventCounts = {
+        this.priority = {
             marketsUpdated: 0,
             tradeExecutorUpdated: 1,
             apiEndpointUpdated: 2,
@@ -49,4 +49,4 @@ class SDKEventLifeCycle {
         this.currentEvent = (count <= this.currentEvent) ? count : this.currentEvent;
     }
 }
-exports.SDKEventLifeCycle = SDKEventLifeCycle;
+exports.SDKInitLifeCycle = SDKInitLifeCycle;

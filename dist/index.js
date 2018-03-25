@@ -12,7 +12,7 @@ const events_1 = require("events");
 const _0x_js_1 = require("0x.js");
 const request = require("request-promise");
 // SDK Classes
-const sdk_event_lifecycle_1 = require("./sdk-event-lifecycle");
+const sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");
 const ethereum_connection_1 = require("./ethereum-connection");
 const account_1 = require("./account");
 const market_1 = require("./market");
@@ -22,21 +22,55 @@ const trade_executer_1 = require("./trade-executer");
  */
 class RadarRelaySDK {
     constructor() {
+        /**
+         * The load priority list maintains the function call
+         * priority for each init method in the RadarRelaySDK class.
+         * It is utilized by the SDKInitLifeCycle
+         *
+         * This list is configurable if additional init methods are necessary
+         */
+        this.loadPriorityList = [
+            {
+                event: 'marketsUpdated',
+                func: undefined,
+                priority: 0
+            }, {
+                event: 'tradeExecutorUpdated',
+                func: this.updateMarketsAsync,
+                priority: 1
+            }, {
+                event: 'apiEndpointUpdated',
+                func: this.updateTradeExecutor,
+                priority: 2
+            }, {
+                event: 'accountUpdated',
+                func: this.updateTradeExecutor,
+                priority: 2
+            }, {
+                event: 'zeroExUpdated',
+                func: this.setAccount,
+                args: [0],
+                priority: 4
+            }, {
+                event: 'ethereumNetworkIdUpdated',
+                func: this.updateZeroEx,
+                priority: 5
+            }, {
+                event: 'ethereumNetworkUpdated',
+                func: this.updateEthereumNetworkIdAsync,
+                priority: 6
+            }
+        ];
         this.events = new events_1.EventEmitter();
-        this.lifecycle = new sdk_event_lifecycle_1.SDKEventLifeCycle(this.events);
+        this.lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
     initialize(ethereumRpcUrl, radarRelayEndpoint = 'https://api.radarrelay.com/v0') {
         return __awaiter(this, void 0, void 0, function* () {
-            // don't user setter on initialize, because the event
-            // lifecycle will trigger updates of the tradeExecutor
+            // setting the API endpoint outside of the lifecycle
+            // prevents the TradeExecuter class from loading twice
             this.apiEndpoint = radarRelayEndpoint;
-            // initialize lifecycle eventloop
-            this.events.on('tradeExecutorUpdated', this.updateMarketsAsync.bind(this));
-            this.events.on('accountUpdated', this.updateTradeExecutor.bind(this));
-            this.events.on('apiEndpointUpdated', this.updateTradeExecutor.bind(this));
-            this.events.on('zeroExUpdated', this.setAccount.bind(this, 0)); // default to account 0
-            this.events.on('ethereumNetworkIdUpdated', this.updateZeroEx.bind(this));
-            this.events.on('ethereumNetworkUpdated', this.updateEthereumNetworkIdAsync.bind(this));
+            // setup the lifecycle function bindings
+            this.lifecycle.setup(this);
             // set connection
             yield this.setEthereumConnectionAsync(ethereumRpcUrl);
         });

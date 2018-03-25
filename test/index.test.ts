@@ -54,14 +54,10 @@ describe('RadarRelaySDK', () => {
       expect(rrsdk.account.address).to.equal('0x5409ed021d9299bf6814279a6a1411a7e866a631');
     });
 
-    it('reloads proper aspects of the SDK when the account is updated', async () => {
+    it('SDK reloads properly when the account is updated', async () => {
       await rrsdk.setAccount(1);
       expect(rrsdk.account.address).to.equal('0x6ecbe1db9ef729cbe972c83fb886247691fb6beb');
     });
-
-    // it('handles reloading the lifecycle when the RPC url is updated', async () => {
-    //   await rrsdk.setEthereumConnectionAsync('http://35.196.15.153:8545');
-    // });
 
     it.skip('properly handles setting invalid connection');
 
