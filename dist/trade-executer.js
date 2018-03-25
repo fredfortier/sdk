@@ -15,6 +15,11 @@ class TradeExecuter {
         this.endpoint = apiEndpoint;
         this.account = account;
         this.events = events;
+        /* tslint:disable:no-this-assignment */
+        const self = this;
+        this.events.on('apiEndpointUpdated', endpoint => {
+            console.log('new', endpoint, 'old', self.endpoint);
+        });
     }
     // TODO this is a test
     marketOrder(market = null, type = 'buy', amount = null) {

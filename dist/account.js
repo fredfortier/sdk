@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 class Account {
-    constructor(connection) {
+    constructor(connection, zeroEx) {
         this.connection = connection;
         this.address = this.connection.defaultAccount;
+        this.zeroEx = zeroEx;
     }
     getEthBalanceAsync() {
         return __awaiter(this, void 0, void 0, function* () {

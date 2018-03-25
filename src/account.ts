@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import {ZeroEx} from '0x.js';
 import {EthereumConnection} from './ethereum-connection';
 
 export class Account {
@@ -7,10 +8,12 @@ export class Account {
   // public fills: Fill[];
   // public orders: Order[];
   private connection: EthereumConnection;
+  private zeroEx: ZeroEx;
 
-  constructor(connection: EthereumConnection) {
+  constructor(connection: EthereumConnection, zeroEx: ZeroEx) {
     this.connection = connection;
     this.address = this.connection.defaultAccount;
+    this.zeroEx = zeroEx;
   }
 
   public async getEthBalanceAsync(): Promise<BigNumber> {
@@ -43,4 +46,6 @@ export class Account {
   // public async setTokenAllowanceAsync() {}
 
   // public async getOpenOrders
+
+  // public async getFills
 }

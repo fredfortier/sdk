@@ -43,6 +43,7 @@
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",
     "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "web3": "^0.20.0"
   }
 }
