@@ -22,7 +22,7 @@ class Market {
         this.baseMinSize = new bignumber_js_1.default(params.baseMinSize);
         this.baseMaxSize = new bignumber_js_1.default(params.baseMaxSize);
         this.quoteIncrement = new bignumber_js_1.default(params.quoteIncrement);
-        this.basedisplayNameMinSize = params.basedisplayNameMinSize;
+        this.displayName = params.displayName;
     }
     // getBook
     // TODO managed books?

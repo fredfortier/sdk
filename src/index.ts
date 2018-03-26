@@ -22,10 +22,10 @@ export class RadarRelaySDK {
     public zeroEx: ZeroEx;
     public account: Account;
     public events: EventEmitter;
-    public tradeExecuter: TradeExecuter;
     public markets: Map<string, Market>;
     public ws: Ws;
 
+    private tradeExecuter: TradeExecuter;
     private apiEndpoint: string;
     private networkId: number;
     private lifecycle: SDKInitLifeCycle;

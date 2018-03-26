@@ -27,6 +27,7 @@ describe('RadarRelaySDK.Ws', () => {
       const market = rrsdk.markets.get('ZRX-WETH');
 
       sock.on(`${market.quoteTokenAddress}:${market.baseTokenAddress}`, message => {
+        console.log(message);
         resolve(true);
       });
 

@@ -12,7 +12,7 @@ export class Market {
   public baseMinSize: BigNumber;
   public baseMaxSize: BigNumber;
   public quoteIncrement: BigNumber;
-  public basedisplayNameMinSize: string;
+  public displayName: string;
 
   private tradeExecuter: TradeExecuter;
   private endpoint: string;
@@ -28,7 +28,7 @@ export class Market {
       this.baseMinSize = new BigNumber(params.baseMinSize);
       this.baseMaxSize = new BigNumber(params.baseMaxSize);
       this.quoteIncrement = new BigNumber(params.quoteIncrement);
-      this.basedisplayNameMinSize = params.basedisplayNameMinSize;
+      this.displayName = params.displayName;
   }
 
   // getBook
