@@ -25,6 +25,7 @@ export class RadarRelaySDK {
     public markets: Map<string, Market>;
     public ws: Ws;
 
+    private marketsData: any;
     private tradeExecuter: TradeExecuter;
     private apiEndpoint: string;
     private networkId: number;
@@ -39,16 +40,16 @@ export class RadarRelaySDK {
      */
     private loadPriorityList: InitPriorityItem[] = [
       {
-        event: 'marketsUpdated',
+        event: 'marketsInitialized',
         func: undefined,
         priority: 0
       }, {
-        event: 'tradeExecutorUpdated',
-        func: this.updateMarketsAsync,
+        event: 'tradeExecutorInitialized',
+        func: this.initMarketsAsync,
         priority: 1
       }, {
         event: 'accountUpdated',
-        func: this.updateTradeExecutor,
+        func: this.initTradeExecutor,
         priority: 2
       }, {
         event: 'apiEndpointUpdated',
@@ -56,17 +57,17 @@ export class RadarRelaySDK {
         priority: 3,
         args: [0], // pass default account of 0 to setAccount
       }, {
-        event: 'zeroExUpdated',
+        event: 'zeroExInitialized',
         func: this.setAccount,
         args: [0], // pass default account of 0 to setAccount
         priority: 4
       }, {
-        event: 'ethereumNetworkIdUpdated',
-        func: this.updateZeroEx,
+        event: 'ethereumNetworkIdInitialized',
+        func: this.initZeroEx,
         priority: 5
       }, {
         event: 'ethereumNetworkUpdated',
-        func: this.updateEthereumNetworkIdAsync,
+        func: this.initEthereumNetworkIdAsync,
         priority: 6
       }];
 
@@ -113,36 +114,44 @@ export class RadarRelaySDK {
     }
 
     // --- not user configurable below this line --- //
-    private async updateEthereumNetworkIdAsync() {
+    private async initEthereumNetworkIdAsync() {
       this.networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-      this.events.emit('ethereumNetworkIdUpdated', this.networkId);
-      return this.lifecycle.promise('ethereumNetworkIdUpdated');
+      this.events.emit('ethereumNetworkIdInitialized', this.networkId);
+      return this.lifecycle.promise('ethereumNetworkIdInitialized');
     }
 
-    private async updateZeroEx() {
+    private async initZeroEx() {
       this.zeroEx = new ZeroEx(this.ethereum.provider, {
         networkId: this.networkId
       });
-      this.events.emit('zeroExUpdated', this.zeroEx);
-      return this.lifecycle.promise('zeroExUpdated');
+      this.events.emit('zeroExInitialized', this.zeroEx);
+      return this.lifecycle.promise('zeroExInitialized');
     }
 
-    private async updateTradeExecutor() {
+    private async initTradeExecutor() {
       this.tradeExecuter = new TradeExecuter(this.zeroEx, this.apiEndpoint, this.account, this.events);
-      this.events.emit('tradeExecutorUpdated', this.zeroEx);
-      return this.lifecycle.promise('tradeExecutorUpdated');
+      this.events.emit('tradeExecutorInitialized', this.zeroEx);
+      return this.lifecycle.promise('tradeExecutorInitialized');
     }
 
-    private async updateMarketsAsync() {
+    private async initMarketsAsync() {
       try {
-        const markets = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
+        this.marketsData = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
         this.markets = new Map(
-          markets.map(market => [market.id, new Market(market, this.apiEndpoint, this.tradeExecuter)]));
-        this.events.emit('marketsUpdated', this.markets);
+          this.marketsData.map(market => [market.id, new Market(market, this.apiEndpoint)]));
+        this.events.emit('marketsInitialized', this.markets);
       } catch (err) {
         console.warn(err);
       }
-      return this.lifecycle.promise('marketsUpdated');
+      return this.lifecycle.promise('marketsInitialized');
+    }
+
+    private async initMarketsTradeExecutor() {
+      this.markets.forEach(market => {
+        console.log(this);
+      });
+      this.events.emit('marketsTradeExecutorInitialized', this.markets);
+      return this.lifecycle.promise('marketsTradeExecutorInitialized');
     }
 
 }
