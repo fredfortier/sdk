@@ -32,16 +32,20 @@ class RadarRelaySDK {
          */
         this.loadPriorityList = [
             {
-                event: 'marketsUpdated',
+                event: 'marketsInitialized',
                 func: undefined,
                 priority: 0
             }, {
-                event: 'tradeExecutorUpdated',
-                func: this.updateMarketsAsync,
+                event: 'marketDataInitialized',
+                func: this.initMarketsAsync,
+                priority: 1
+            }, {
+                event: 'tradeExecutorInitialized',
+                func: this.initMarketDataAsync,
                 priority: 1
             }, {
                 event: 'accountUpdated',
-                func: this.updateTradeExecutor,
+                func: this.initTradeExecutor,
                 priority: 2
             }, {
                 event: 'apiEndpointUpdated',
@@ -49,17 +53,17 @@ class RadarRelaySDK {
                 priority: 3,
                 args: [0],
             }, {
-                event: 'zeroExUpdated',
+                event: 'zeroExInitialized',
                 func: this.setAccount,
                 args: [0],
                 priority: 4
             }, {
-                event: 'ethereumNetworkIdUpdated',
-                func: this.updateZeroEx,
+                event: 'ethereumNetworkIdInitialized',
+                func: this.initZeroEx,
                 priority: 5
             }, {
                 event: 'ethereumNetworkUpdated',
-                func: this.updateEthereumNetworkIdAsync,
+                func: this.initEthereumNetworkIdAsync,
                 priority: 6
             }
         ];
@@ -106,40 +110,41 @@ class RadarRelaySDK {
         });
     }
     // --- not user configurable below this line --- //
-    updateEthereumNetworkIdAsync() {
+    initEthereumNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             this.networkId = yield this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-            this.events.emit('ethereumNetworkIdUpdated', this.networkId);
-            return this.lifecycle.promise('ethereumNetworkIdUpdated');
+            this.events.emit('ethereumNetworkIdInitialized', this.networkId);
+            return this.lifecycle.promise('ethereumNetworkIdInitialized');
         });
     }
-    updateZeroEx() {
+    initZeroEx() {
         return __awaiter(this, void 0, void 0, function* () {
             this.zeroEx = new _0x_js_1.ZeroEx(this.ethereum.provider, {
                 networkId: this.networkId
             });
-            this.events.emit('zeroExUpdated', this.zeroEx);
-            return this.lifecycle.promise('zeroExUpdated');
+            this.events.emit('zeroExInitialized', this.zeroEx);
+            return this.lifecycle.promise('zeroExInitialized');
         });
     }
-    updateTradeExecutor() {
+    initTradeExecutor() {
         return __awaiter(this, void 0, void 0, function* () {
             this.tradeExecuter = new trade_executer_1.TradeExecuter(this.zeroEx, this.apiEndpoint, this.account, this.events);
-            this.events.emit('tradeExecutorUpdated', this.zeroEx);
-            return this.lifecycle.promise('tradeExecutorUpdated');
+            this.events.emit('tradeExecutorInitialized', this.zeroEx);
+            return this.lifecycle.promise('tradeExecutorInitialized');
         });
     }
-    updateMarketsAsync() {
+    initMarketDataAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const markets = JSON.parse(yield request.get(`${this.apiEndpoint}/markets`));
-                this.markets = new Map(markets.map(market => [market.id, new market_1.Market(market, this.apiEndpoint, this.tradeExecuter)]));
-                this.events.emit('marketsUpdated', this.markets);
-            }
-            catch (err) {
-                console.warn(err);
-            }
-            return this.lifecycle.promise('marketsUpdated');
+            this.marketData = JSON.parse(yield request.get(`${this.apiEndpoint}/markets`));
+            this.events.emit('marketDataInitialized', this.marketData);
+            return this.lifecycle.promise('marketDataInitialized');
+        });
+    }
+    initMarketsAsync() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.markets = new Map(this.marketData.map(market => [market.id, new market_1.Market(market, this.apiEndpoint, this.tradeExecuter)]));
+            this.events.emit('marketsInitialized', this.markets);
+            return this.lifecycle.promise('marketsInitialized');
         });
     }
 }

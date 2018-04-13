@@ -10,7 +10,7 @@ import {EventBus} from './event-emitter';
 import {EthereumConnection} from './ethereum-connection';
 import {Account} from './account';
 import {Market} from './market';
-import {TradeExecuter} from './trade-executer';
+import {Trade} from './trade';
 import {Ws} from './ws';
 
 /**
@@ -25,8 +25,8 @@ export class RadarRelaySDK {
     public markets: Map<string, Market>;
     public ws: Ws;
 
-    private marketsData: any;
-    private tradeExecuter: TradeExecuter;
+    private marketData: any;
+    private tradeExecuter: Trade;
     private apiEndpoint: string;
     private networkId: number;
     private lifecycle: SDKInitLifeCycle;
@@ -40,36 +40,40 @@ export class RadarRelaySDK {
      */
     private loadPriorityList: InitPriorityItem[] = [
       {
-        event: 'marketsInitialized',
-        func: undefined,
-        priority: 0
+        event: 'ethereumNetworkUpdated',
+        func: this.initEthereumNetworkIdAsync,
+        priority: 6
       }, {
-        event: 'tradeExecutorInitialized',
-        func: this.initMarketsAsync,
-        priority: 1
-      }, {
-        event: 'accountUpdated',
-        func: this.initTradeExecutor,
-        priority: 2
-      }, {
-        event: 'apiEndpointUpdated',
-        func: this.setAccount,
-        priority: 3,
-        args: [0], // pass default account of 0 to setAccount
+        event: 'ethereumNetworkIdInitialized',
+        func: this.initZeroEx,
+        priority: 5
       }, {
         event: 'zeroExInitialized',
         func: this.setAccount,
         args: [0], // pass default account of 0 to setAccount
         priority: 4
       }, {
-        event: 'ethereumNetworkIdInitialized',
-        func: this.initZeroEx,
-        priority: 5
+        event: 'apiEndpointUpdated',
+        func: this.setAccount,
+        priority: 3,
+        args: [0], // pass default account of 0 to setAccount
       }, {
-        event: 'ethereumNetworkUpdated',
-        func: this.initEthereumNetworkIdAsync,
-        priority: 6
-      }];
+        event: 'accountUpdated',
+        func: this.initTradeExecutor,
+        priority: 2
+      }, {
+        event: 'tradeExecutorInitialized',
+        func: this.initMarketDataAsync,
+        priority: 1
+      }, {
+        event: 'marketDataInitialized',
+        func: this.initMarketsAsync,
+        priority: 1
+      }, {
+        event: 'marketsInitialized',
+        func: undefined,
+        priority: 0
+      } ];
 
     constructor() {
       this.events = new EventEmitter();
@@ -88,7 +92,7 @@ export class RadarRelaySDK {
       await this.setEthereumConnectionAsync(ethereumRpcUrl);
 
       // init Websockets
-      this.ws = new Ws();
+      // this.ws = new Ws();
     }
 
     // --- user configurable --- //
@@ -129,29 +133,25 @@ export class RadarRelaySDK {
     }
 
     private async initTradeExecutor() {
-      this.tradeExecuter = new TradeExecuter(this.zeroEx, this.apiEndpoint, this.account, this.events);
+      this.tradeExecuter = new Trade(this.zeroEx, this.apiEndpoint, this.account, this.events);
       this.events.emit('tradeExecutorInitialized', this.zeroEx);
       return this.lifecycle.promise('tradeExecutorInitialized');
     }
 
-    private async initMarketsAsync() {
-      try {
-        this.marketsData = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
-        this.markets = new Map(
-          this.marketsData.map(market => [market.id, new Market(market, this.apiEndpoint)]));
-        this.events.emit('marketsInitialized', this.markets);
-      } catch (err) {
-        console.warn(err);
-      }
-      return this.lifecycle.promise('marketsInitialized');
+    private async initMarketDataAsync() {
+      this.marketData = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
+      this.events.emit('marketDataInitialized', this.marketData);
+      return this.lifecycle.promise('marketDataInitialized');
     }
 
-    private async initMarketsTradeExecutor() {
-      this.markets.forEach(market => {
-        console.log(this);
-      });
-      this.events.emit('marketsTradeExecutorInitialized', this.markets);
-      return this.lifecycle.promise('marketsTradeExecutorInitialized');
+    private async initMarketsAsync() {
+        this.markets = new Map(
+          this.marketData.map(
+            market => [market.id, new Market(market, this.apiEndpoint, this.tradeExecuter)]
+          )
+        );
+        this.events.emit('marketsInitialized', this.markets);
+      return this.lifecycle.promise('marketsInitialized');
     }
 
 }

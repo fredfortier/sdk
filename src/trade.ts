@@ -10,7 +10,7 @@ import request = require('request-promise');
 // TODO move into config file
 const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
 
-export class TradeExecuter {
+export class Trade {
 
     public endpoint: string;
     private zeroEx: ZeroEx;
@@ -93,8 +93,8 @@ export class TradeExecuter {
       (order as SignedOrder).ecSignature = ecSignature;
 
       // TODO missing this endpoint
-      // return await request.post(`${this.endpoint}/markets/${market.id}/order/limit`, order);
-      await request.post(`http://localhost:8080/0x/v0/order`, { json: order });
+      await request.post(`${this.endpoint}/markets/${market.id}/order/limit`, order);
+      // await request.post(`http://localhost:8080/0x/v0/order`, { json: order });
 
       return order;
     }
