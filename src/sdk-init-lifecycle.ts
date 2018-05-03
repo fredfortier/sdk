@@ -26,6 +26,7 @@ export class SDKInitLifeCycle {
   private startTime: number;
   private timeout: number;
   private runInterval: number;
+  private firstLoad: boolean = false;
 
   constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout: number = 10000) {
     this.priorityList = priorityList;
@@ -80,6 +81,7 @@ export class SDKInitLifeCycle {
     if (this.currentEvent === 0) {
       clearInterval(this.runInterval);
       this.runInterval = undefined;
+      this.firstLoad = true;
       return resolve(true);
     }
   }
@@ -87,7 +89,9 @@ export class SDKInitLifeCycle {
   private handleEvent(event: string) {
     const count = this.priority[event];
     this.currentEvent = (count <= this.currentEvent) ? count : this.currentEvent;
-    process.stdout.write('....');
+    if (!this.firstLoad) {
+      process.stdout.write('.....');
+    }
   }
 
 }

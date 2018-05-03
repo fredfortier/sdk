@@ -19,10 +19,10 @@ class Market {
         this.quoteTokenAddress = params.quoteTokenAddress;
         this.baseTokenDecimals = new bignumber_js_1.default(params.baseTokenDecimals);
         this.quoteTokenDecimals = new bignumber_js_1.default(params.quoteTokenDecimals);
-        this.baseMinSize = new bignumber_js_1.default(params.baseMinSize);
-        this.baseMaxSize = new bignumber_js_1.default(params.baseMaxSize);
+        this.minOrderSize = new bignumber_js_1.default(params.minOrderSize);
+        this.maxOrderSize = new bignumber_js_1.default(params.maxOrderSize);
         this.quoteIncrement = new bignumber_js_1.default(params.quoteIncrement);
-        this.basedisplayNameMinSize = params.basedisplayNameMinSize;
+        this.displayName = params.displayName;
     }
     // getBook
     // TODO managed books?
@@ -56,9 +56,9 @@ class Market {
         });
     }
     // limitOrder
-    limitOrderAsync(type = 'buy', baseTokenAmount, quoteTokenAmount, expiration) {
+    limitOrderAsync(type = 'buy', quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.tradeExecuter.limitOrder(this, type, baseTokenAmount, quoteTokenAmount, expiration);
+            return yield this.tradeExecuter.limitOrder(this, type, quantity, price, expiration);
         });
     }
     // cancelOrder

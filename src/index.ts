@@ -11,6 +11,7 @@ import {EthereumConnection} from './ethereum-connection';
 import {Account} from './account';
 import {Market} from './market';
 import {TradeExecuter} from './trade-executer';
+import {Ws} from './ws';
 
 /**
  * RadarRelaySDK
@@ -21,9 +22,10 @@ export class RadarRelaySDK {
     public zeroEx: ZeroEx;
     public account: Account;
     public events: EventEmitter;
-    public tradeExecuter: TradeExecuter;
     public markets: Map<string, Market>;
+    public ws: Ws;
 
+    private tradeExecuter: TradeExecuter;
     private apiEndpoint: string;
     private networkId: number;
     private lifecycle: SDKInitLifeCycle;
@@ -83,6 +85,9 @@ export class RadarRelaySDK {
 
       // set connection
       await this.setEthereumConnectionAsync(ethereumRpcUrl);
+
+      // init Websockets
+      this.ws = new Ws();
     }
 
     // --- user configurable --- //

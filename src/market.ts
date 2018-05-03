@@ -9,10 +9,10 @@ export class Market {
   public quoteTokenAddress: string;
   public baseTokenDecimals: BigNumber;
   public quoteTokenDecimals: BigNumber;
-  public baseMinSize: BigNumber;
-  public baseMaxSize: BigNumber;
+  public minOrderSize: BigNumber;
+  public maxOrderSize: BigNumber;
   public quoteIncrement: BigNumber;
-  public basedisplayNameMinSize: string;
+  public displayName: string;
 
   private tradeExecuter: TradeExecuter;
   private endpoint: string;
@@ -25,10 +25,10 @@ export class Market {
       this.quoteTokenAddress = params.quoteTokenAddress;
       this.baseTokenDecimals = new BigNumber(params.baseTokenDecimals);
       this.quoteTokenDecimals = new BigNumber(params.quoteTokenDecimals);
-      this.baseMinSize = new BigNumber(params.baseMinSize);
-      this.baseMaxSize = new BigNumber(params.baseMaxSize);
+      this.minOrderSize = new BigNumber(params.minOrderSize);
+      this.maxOrderSize = new BigNumber(params.maxOrderSize);
       this.quoteIncrement = new BigNumber(params.quoteIncrement);
-      this.basedisplayNameMinSize = params.basedisplayNameMinSize;
+      this.displayName = params.displayName;
   }
 
   // getBook
@@ -60,11 +60,11 @@ export class Market {
   // limitOrder
   public async limitOrderAsync(
     type: string = 'buy',
-    baseTokenAmount: BigNumber,
-    quoteTokenAmount: BigNumber,
+    quantity: BigNumber,
+    price: BigNumber,
     expiration: BigNumber) {
 
-    return await this.tradeExecuter.limitOrder(this, type, baseTokenAmount, quoteTokenAmount, expiration);
+    return await this.tradeExecuter.limitOrder(this, type, quantity, price, expiration);
   }
 
   // cancelOrder
