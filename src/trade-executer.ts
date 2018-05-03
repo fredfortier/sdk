@@ -7,9 +7,6 @@ import {RelaySignedOrder} from '0x-relay-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
-// TODO move into config file
-const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
-
 export class TradeExecuter {
 
     public endpoint: string;
@@ -34,18 +31,16 @@ export class TradeExecuter {
       amount: BigNumber = null
     ) {
 
-      const side = (type === 'buy') ? 'bids' : 'asks';
+      const side = (type === 'buy') ? 'asks' : 'bids';
       const orders = await market.getBookAsync()[side];
       const signedOrders = [];
       let current = new BigNumber(0);
-
-      const decimals = (type === 'buy') ? market.baseTokenDecimals : market.quoteTokenDecimals;
 
       for (const order of orders) {
         if (current.gte(amount)) break;
         if (order.signedOrder.maker === this.account.address) continue;
 
-        const orderAmount = (type === 'buy') ? order.remainingQuoteTokenAmount : order.remainingBaseTokenAmount;
+        const orderAmount = (type === 'buy') ? order.remainingBaseTokenAmount : order.remainingQuoteTokenAmount;
         current = current.plus(order.remainingQuoteTokenAmount);
         signedOrders.push(order.signedOrder);
       }
@@ -64,37 +59,31 @@ export class TradeExecuter {
     // sign and post order to book
     public async limitOrder(
       market: Market = null,
-      type: string = 'buy',
-      baseTokenAmount: BigNumber,
-      quoteTokenAmount: BigNumber,
-      expiration: BigNumber) {
+      type: string = 'buy', // ask == sell, bid == buy
+      quantity: BigNumber, // base token quantity
+      price: BigNumber, // price (in quote)
+      expiration: BigNumber // expiration in seconds from now
+    ) {
 
-      // TODO fees
-      const makerFee = new BigNumber(0);
-      const takerFee = new BigNumber(0);
+      const order: Order = await request.post({
+          url: `${this.endpoint}/markets/${market.id}/order/limit`,
+          json : {
+            type,
+            quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
+            price: price.toString(),
+            expiration: expiration.toString()
+          }
+      });
 
-      const order: Order = {
-        exchangeContractAddress: this.zeroEx.exchange.getContractAddress(),
-        expirationUnixTimestampSec: expiration,
-        feeRecipient: feeRecipientAddress,
-        maker: this.account.address,
-        makerFee,
-        makerTokenAddress: (type === 'buy') ? market.quoteTokenAddress : market.baseTokenAddress,
-        makerTokenAmount: (type === 'buy') ? quoteTokenAmount : baseTokenAmount,
-        salt: ZeroEx.generatePseudoRandomSalt(),
-        taker: ZeroEx.NULL_ADDRESS,
-        takerFee,
-        takerTokenAddress: (type === 'buy') ? market.baseTokenAddress : market.quoteTokenAddress,
-        takerTokenAmount: (type === 'buy') ? baseTokenAmount : quoteTokenAmount,
-      };
+      order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
+      order.maker = this.account.address;
 
       const orderHash = ZeroEx.getOrderHashHex(order);
       const ecSignature: ECSignature = await this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
       (order as SignedOrder).ecSignature = ecSignature;
 
-      // TODO missing this endpoint
-      // return await request.post(`${this.endpoint}/markets/${market.id}/order/limit`, order);
-      await request.post(`http://localhost:8080/0x/v0/order`, { json: order });
+      // POST order to API
+      await request.post(`${this.endpoint}/orders`, order);
 
       return order;
     }
