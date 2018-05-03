@@ -2,6 +2,9 @@ import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import {EventEmitter} from 'events';
 import {promisify} from 'es6-promisify';
+import {InjectedWeb3Subprovider} from '@0xproject/subproviders';
+import * as Web3ProviderEngine from 'web3-provider-engine';
+import * as RPCSubprovider from 'web3-provider-engine/subproviders/rpc';
 
 /**
  * EthereumConnection
@@ -12,8 +15,8 @@ import {promisify} from 'es6-promisify';
      private web3: Web3;
      private events: EventEmitter;
 
-     constructor(ethereumRPCUrl: string = '') {
-       this.setProvider(ethereumRPCUrl);
+     constructor(walletRPCUrl: string = '', dataRPCUrl: string = '') {
+       this.setProvider(walletRPCUrl, dataRPCUrl);
      }
 
      get defaultAccount(): string {
@@ -57,16 +60,21 @@ import {promisify} from 'es6-promisify';
      }
 
      /**
-      * Set the rpc provider
-      *
-      * TODO eventually this can be more sophisticated
-      * than simply using an unlocked HTTPProvider
+      * Set the rpc providers
       */
-     private setProvider(ethereumRPCUrl: string) {
-       // init ethereum network provider
-       const provider = new Web3.providers.HttpProvider(ethereumRPCUrl);
-       this.web3 = new Web3(provider);
-       this.provider = this.web3.currentProvider;
+     private setProvider(walletRPCUrl: string, dataRPCUrl: string) {
+       const providerEngine = new Web3ProviderEngine();
+
+       // Init wallet provider (for signing, accounts, and transactions)
+       const walletProvider = new Web3.providers.HttpProvider(walletRPCUrl);
+       this.web3 = new Web3(walletProvider);
+       providerEngine.addProvider(new InjectedWeb3Subprovider(walletProvider));
+
+       // Init provider for Ethereum data
+       providerEngine.addProvider(new RPCSubprovider({ rpcUrl: dataRPCUrl }));
+       providerEngine.start();
+
+       this.provider = providerEngine;
      }
 
  }

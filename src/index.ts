@@ -75,7 +75,10 @@ export class RadarRelaySDK {
       this.lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
 
-    public async initialize(ethereumRpcUrl: string, radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
+    public async initialize(
+      walletRpcUrl: string,
+      dataRpcUrl: string,
+      radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
       // setting the API endpoint outside of the lifecycle
       // prevents the TradeExecuter class from loading twice
       this.apiEndpoint = radarRelayEndpoint;
@@ -84,17 +87,17 @@ export class RadarRelaySDK {
       this.lifecycle.setup(this);
 
       // set connection
-      await this.setEthereumConnectionAsync(ethereumRpcUrl);
+      await this.setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl);
 
       // init Websockets
       this.ws = new Ws();
     }
 
     // --- user configurable --- //
-    public async setEthereumConnectionAsync(ethereumRpcUrl: string) {
+    public async setEthereumConnectionAsync(walletRpcUrl: string, dataRpcUrl: string) {
       // same rpcUrl
-      if (this.ethereum && ethereumRpcUrl === (this.ethereum.provider as any).host) return;
-      this.ethereum = new EthereumConnection(ethereumRpcUrl);
+      // if (this.ethereum && ethereumRpcUrl === (this.ethereum.provider as any).host) return;
+      this.ethereum = new EthereumConnection(walletRpcUrl, dataRpcUrl);
       this.events.emit('ethereumNetworkUpdated', this.ethereum);
       return this.lifecycle.promise('ethereumNetworkUpdated');
     }
