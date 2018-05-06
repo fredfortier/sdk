@@ -13,7 +13,8 @@ const request = require("request-promise");
 const WETH_TOKEN_ADDRESS = '';
 const ZEROEX_PROXY_ADDRESS = '0x087eed4bc1ee3de49befbd66c662b434b15d49d4';
 class Account {
-    constructor(connection, zeroEx, apiEndpoint) {
+    constructor(connection, zeroEx, apiEndpoint, tokens) {
+        // TODO tokens + decimal calculations and conversions
         this.endpoint = apiEndpoint;
         this.connection = connection;
         this.address = this.connection.defaultAccount;

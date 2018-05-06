@@ -9,9 +9,6 @@ export interface InitPriorityItem {
   // function to be called in the main SDK class
   func: any;
 
-  // load priority of this function
-  priority: number;
-
   // optional args to pass to
   // the event callback
   args?: any[];
@@ -22,11 +19,11 @@ export class SDKInitLifeCycle {
   private priorityList: InitPriorityItem[];
   private events: EventEmitter;
   private priority: {} = {};
-  private currentEvent: number;
+  private current: number;
+  private last: number;
   private startTime: number;
   private timeout: number;
   private runInterval: number;
-  private firstLoad: boolean = false;
 
   constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout: number = 10000) {
     this.priorityList = priorityList;
@@ -34,11 +31,15 @@ export class SDKInitLifeCycle {
     this.timeout = timeout;
 
     // Setup the priority event map and
-    // event handlers which maintain
+    // event handlers which maintains
     // the current loaded event priority
-    for (const item of priorityList) {
-      this.priority[item.event] = item.priority;
-      this.events.on(item.event, this.handleEvent.bind(this, item.event));
+    this.last = (priorityList.length - 1);
+    for (const index in priorityList) {
+      if (priorityList.hasOwnProperty(index)) {
+        const item = priorityList[index];
+        this.priority[item.event] = index;
+        this.events.on(item.event, this.handleEvent.bind(this, item.event));
+      }
     }
   }
 
@@ -48,7 +49,6 @@ export class SDKInitLifeCycle {
   // The scope is the class that the
   // functions belong to.
   public setup(scope) {
-    console.log('Radar Relay SDK Powering Up 📡');
     for (const item of this.priorityList) {
       if (item.func) {
         if (item.args) {
@@ -63,7 +63,7 @@ export class SDKInitLifeCycle {
   public promise(event: string): Promise<boolean | string>  {
     if (this.runInterval) return Promise.resolve(true);
 
-    this.currentEvent = this.priority[event];
+    this.current = this.priority[event];
     this.startTime = new Date().getTime();
     return new Promise((resolve, reject) => {
       this.runInterval = setInterval(this.checkEventProgress.bind(this, resolve, reject), 100);
@@ -78,20 +78,23 @@ export class SDKInitLifeCycle {
       return reject(`SDK init lifecycle timed out after ${this.timeout}ms`);
     }
 
-    if (this.currentEvent === 0) {
+    if (this.current >= this.last) {
       clearInterval(this.runInterval);
       this.runInterval = undefined;
-      this.firstLoad = true;
       return resolve(true);
     }
   }
 
   private handleEvent(event: string) {
-    const count = this.priority[event];
-    this.currentEvent = (count <= this.currentEvent) ? count : this.currentEvent;
-    if (!this.firstLoad) {
-      process.stdout.write('.....');
-    }
+    const current = this.priority[event];
+    this.current = (current >= this.current) ? current : this.current;
+
+    const progressPerc = Math.floor((this.current / this.last) * 100);
+    this.events.emit('loading', {
+      progress: progressPerc || 0,
+      elapsedTime: (new Date().getTime() - this.startTime),
+      source: this.constructor.name + ':' + event
+    });
   }
 
 }
