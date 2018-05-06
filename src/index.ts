@@ -25,9 +25,11 @@ export class RadarRelaySDK {
     public markets: Map<string, Market>;
     public ws: Ws;
 
-    private marketData: any;
-    private tradeExecuter: Trade;
+    private trade: Trade;
     private apiEndpoint: string;
+    private _prevApiEndpoint: string;
+    private _markets: any;
+    private tokens: any;
     private networkId: number;
     private lifecycle: SDKInitLifeCycle;
 
@@ -41,38 +43,29 @@ export class RadarRelaySDK {
     private loadPriorityList: InitPriorityItem[] = [
       {
         event: 'ethereumNetworkUpdated',
-        func: this.initEthereumNetworkIdAsync,
-        priority: 6
+        func: this.initEthereumNetworkIdAsync
       }, {
         event: 'ethereumNetworkIdInitialized',
-        func: this.initZeroEx,
-        priority: 5
+        func: this.initZeroEx
       }, {
         event: 'zeroExInitialized',
-        func: this.setAccount,
-        args: [0], // pass default account of 0 to setAccount
-        priority: 4
+        func: this.initTokensAsync
       }, {
         event: 'apiEndpointUpdated',
+        func: this.initTokensAsync
+      }, {
+        event: 'tokensInitialized',
         func: this.setAccount,
-        priority: 3,
-        args: [0], // pass default account of 0 to setAccount
+        args: [0] // pass default account of 0 to setAccount
       }, {
         event: 'accountUpdated',
-        func: this.initTradeExecutor,
-        priority: 2
+        func: this.initTrade
       }, {
-        event: 'tradeExecutorInitialized',
-        func: this.initMarketDataAsync,
-        priority: 1
-      }, {
-        event: 'marketDataInitialized',
-        func: this.initMarketsAsync,
-        priority: 1
-      }, {
+        event: 'tradeInitialized',
+        func: this.initMarketsAsync
+      },  {
         event: 'marketsInitialized',
-        func: undefined,
-        priority: 0
+        func: undefined
       } ];
 
     constructor() {
@@ -89,10 +82,7 @@ export class RadarRelaySDK {
       this.lifecycle.setup(this);
 
       // set connection
-      await this.setEthereumConnectionAsync(ethereumRpcUrl);
-
-      // init Websockets
-      // this.ws = new Ws();
+      return await this.setEthereumConnectionAsync(ethereumRpcUrl);
     }
 
     // --- user configurable --- //
@@ -100,58 +90,67 @@ export class RadarRelaySDK {
       // same rpcUrl
       if (this.ethereum && ethereumRpcUrl === (this.ethereum.provider as any).host) return;
       this.ethereum = new EthereumConnection(ethereumRpcUrl);
-      this.events.emit('ethereumNetworkUpdated', this.ethereum);
-      return this.lifecycle.promise('ethereumNetworkUpdated');
+      return this.getCallback('ethereumNetworkUpdated', this.ethereum);
     }
 
     public async setAccount(account: string | number) {
       this.ethereum.setDefaultAccount(account);
-      this.account = new Account(this.ethereum, this.zeroEx, this.apiEndpoint);
-      this.events.emit('accountUpdated', this.account);
-      return this.lifecycle.promise('accountUpdated');
+      this.account = new Account(this.ethereum, this.zeroEx, this.apiEndpoint, this.tokens);
+      return this.getCallback('accountUpdated', this.account);
     }
 
     public async setApiEndpoint(endpoint: string) {
       this.apiEndpoint = endpoint;
-      this.events.emit('apiEndpointUpdated', this.apiEndpoint);
-      return this.lifecycle.promise('apiEndpointUpdated');
+      return this.getCallback('apiEndpointUpdated', this.apiEndpoint);
     }
 
     // --- not user configurable below this line --- //
     private async initEthereumNetworkIdAsync() {
       this.networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-      this.events.emit('ethereumNetworkIdInitialized', this.networkId);
-      return this.lifecycle.promise('ethereumNetworkIdInitialized');
+      return this.getCallback('ethereumNetworkIdInitialized', this.networkId);
     }
 
-    private async initZeroEx() {
+    private initZeroEx() {
       this.zeroEx = new ZeroEx(this.ethereum.provider, {
         networkId: this.networkId
       });
-      this.events.emit('zeroExInitialized', this.zeroEx);
-      return this.lifecycle.promise('zeroExInitialized');
+      return this.getCallback('zeroExInitialized', this.zeroEx);
     }
 
-    private async initTradeExecutor() {
-      this.tradeExecuter = new Trade(this.zeroEx, this.apiEndpoint, this.account, this.events);
-      this.events.emit('tradeExecutorInitialized', this.zeroEx);
-      return this.lifecycle.promise('tradeExecutorInitialized');
+    private initTrade() {
+      this.trade = new Trade(this.zeroEx, this.apiEndpoint, this.account, this.events);
+      return this.getCallback('tradeInitialized', this.trade);
     }
 
-    private async initMarketDataAsync() {
-      this.marketData = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
-      this.events.emit('marketDataInitialized', this.marketData);
-      return this.lifecycle.promise('marketDataInitialized');
+    private async initTokensAsync() {
+      // only fetch if not already fetched
+      if (this._prevApiEndpoint !== this.apiEndpoint) {
+        this.tokens = JSON.parse(await request.get(`${this.apiEndpoint}/tokens`));
+      }
+      // todo index by address
+      return this.getCallback('tokensInitialized', this.tokens);
     }
 
     private async initMarketsAsync() {
+        // only fetch if not already fetched
+        if (this._prevApiEndpoint !== this.apiEndpoint) {
+          this._markets = JSON.parse(await request.get(`${this.apiEndpoint}/markets`));
+        }
+        // TODO probably not the best place for this
+        this._prevApiEndpoint = this.apiEndpoint;
+
         this.markets = new Map(
-          this.marketData.map(
-            market => [market.id, new Market(market, this.apiEndpoint, this.tradeExecuter)]
+          this._markets.map(
+            market => [market.id, new Market(market, this.apiEndpoint, this.trade)]
           )
         );
-        this.events.emit('marketsInitialized', this.markets);
-      return this.lifecycle.promise('marketsInitialized');
+        return this.getCallback('marketsInitialized', this.markets);
+    }
+
+    private getCallback(event, data) {
+      const callback = this.lifecycle.promise(event);
+      this.events.emit(event, data);
+      return callback;
     }
 
 }

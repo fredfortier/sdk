@@ -13,11 +13,11 @@ export class Market {
   public maxOrderSize: BigNumber;
   public quoteIncrement: BigNumber;
   public displayName: string;
+  public endpoint: string;
 
   private trade: Trade;
-  private endpoint: string;
 
-  constructor(params, apiEndpoint: string, trade?: Trade) {
+  constructor(params, apiEndpoint: string, trade: Trade) {
       this.endpoint = apiEndpoint;
       this.trade = trade;
       this.id = params.id;

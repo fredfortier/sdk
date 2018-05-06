@@ -11,9 +11,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 class Market {
-    constructor(params, apiEndpoint, tradeExecuter) {
+    constructor(params, apiEndpoint, trade) {
         this.endpoint = apiEndpoint;
-        this.tradeExecuter = tradeExecuter;
+        this.trade = trade;
         this.id = params.id;
         this.baseTokenAddress = params.baseTokenAddress;
         this.quoteTokenAddress = params.quoteTokenAddress;
@@ -52,19 +52,19 @@ class Market {
     // marketOrder
     marketOrderAsync(type, amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.tradeExecuter.marketOrder(this, type, amount);
+            return yield this.trade.marketOrder(this, type, amount);
         });
     }
     // limitOrder
     limitOrderAsync(type = 'buy', quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.tradeExecuter.limitOrder(this, type, quantity, price, expiration);
+            return yield this.trade.limitOrder(this, type, quantity, price, expiration);
         });
     }
     // cancelOrder
     cancelOrderAsync(order) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.tradeExecuter.cancelOrderAsync(order);
+            return yield this.trade.cancelOrderAsync(order);
         });
     }
 }
