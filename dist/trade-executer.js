@@ -43,32 +43,39 @@ class TradeExecuter {
         });
     }
     // sign and post order to book
-    limitOrder(market = null, type = 'buy', baseTokenAmount, quoteTokenAmount, expiration) {
+    limitOrder(market = null, type = 'buy', // ask == sell, bid == buy
+        quantity, // base token quantity
+        price, // price (in quote)
+        expiration // expiration in seconds from now
+    ) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO fees
             const makerFee = new bignumber_js_1.default(0);
             const takerFee = new bignumber_js_1.default(0);
-            const order = {
-                exchangeContractAddress: this.zeroEx.exchange.getContractAddress(),
-                expirationUnixTimestampSec: expiration,
-                feeRecipient: feeRecipientAddress,
-                maker: this.account.address,
-                makerFee,
-                makerTokenAddress: (type === 'buy') ? market.quoteTokenAddress : market.baseTokenAddress,
-                makerTokenAmount: (type === 'buy') ? quoteTokenAmount : baseTokenAmount,
-                salt: _0x_js_1.ZeroEx.generatePseudoRandomSalt(),
-                taker: _0x_js_1.ZeroEx.NULL_ADDRESS,
-                takerFee,
-                takerTokenAddress: (type === 'buy') ? market.baseTokenAddress : market.quoteTokenAddress,
-                takerTokenAmount: (type === 'buy') ? baseTokenAmount : quoteTokenAmount,
-            };
+            console.log({
+                type,
+                quantity: quantity.toString(),
+                price: price.toString(),
+                expiration: expiration.toString()
+            });
+            const order = yield request.post({
+                url: `${this.endpoint}/markets/${market.id}/order/limit`,
+                json: {
+                    type,
+                    quantity: quantity.toString(),
+                    price: price.toString(),
+                    expiration: expiration.toString()
+                }
+            });
+            order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
+            order.maker = this.account.address;
             const orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
             const ecSignature = yield this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
             order.ecSignature = ecSignature;
-            // TODO missing this endpoint
-            // return await request.post(`${this.endpoint}/markets/${market.id}/order/limit`, order);
-            yield request.post(`http://localhost:8080/0x/v0/order`, { json: order });
-            return order;
+            console.log(order);
+            // POST order to API
+            // await request.post(`${this.endpoint}/orders`, order);
+            // return order;
         });
     }
     // TODO fill individual order
