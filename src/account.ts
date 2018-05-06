@@ -14,7 +14,8 @@ export class Account {
   private zeroEx: ZeroEx;
   private endpoint: string;
 
-  constructor(connection: EthereumConnection, zeroEx: ZeroEx, apiEndpoint: string) {
+  constructor(connection: EthereumConnection, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]) {
+    // TODO tokens + decimal calculations and conversions
     this.endpoint = apiEndpoint;
     this.connection = connection;
     this.address = this.connection.defaultAccount;

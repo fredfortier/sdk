@@ -1,5 +1,5 @@
 import {SignedOrder} from '0x.js';
-import {TradeExecuter} from './trade-executer';
+import {Trade} from './trade';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -13,13 +13,13 @@ export class Market {
   public maxOrderSize: BigNumber;
   public quoteIncrement: BigNumber;
   public displayName: string;
+  public endpoint: string;
 
-  private tradeExecuter: TradeExecuter;
-  private endpoint: string;
+  private trade: Trade;
 
-  constructor(params, apiEndpoint: string, tradeExecuter: TradeExecuter) {
+  constructor(params, apiEndpoint: string, trade: Trade) {
       this.endpoint = apiEndpoint;
-      this.tradeExecuter = tradeExecuter;
+      this.trade = trade;
       this.id = params.id;
       this.baseTokenAddress = params.baseTokenAddress;
       this.quoteTokenAddress = params.quoteTokenAddress;
@@ -54,7 +54,7 @@ export class Market {
 
   // marketOrder
   public async marketOrderAsync(type: string, amount: BigNumber) {
-    return await this.tradeExecuter.marketOrder(this, type, amount);
+    return await this.trade.marketOrder(this, type, amount);
   }
 
   // limitOrder
@@ -63,13 +63,12 @@ export class Market {
     quantity: BigNumber,
     price: BigNumber,
     expiration: BigNumber) {
-
-    return await this.tradeExecuter.limitOrder(this, type, quantity, price, expiration);
+    return await this.trade.limitOrder(this, type, quantity, price, expiration);
   }
 
   // cancelOrder
   public async cancelOrderAsync(order: SignedOrder) {
-    return await this.tradeExecuter.cancelOrderAsync(order);
+    return await this.trade.cancelOrderAsync(order);
   }
 
 }

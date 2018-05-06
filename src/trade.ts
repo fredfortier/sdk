@@ -7,7 +7,10 @@ import {RelaySignedOrder} from '0x-relay-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
-export class TradeExecuter {
+// TODO move into config file
+const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
+
+export class Trade {
 
     public endpoint: string;
     private zeroEx: ZeroEx;
