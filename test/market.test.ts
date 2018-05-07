@@ -53,7 +53,7 @@ describe('RadarRelaySDK.Market', () => {
 
     signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('sell',
       new BigNumber(String(Math.random() * 10)),
-      new BigNumber('0.0015'),
+      new BigNumber('0.007'),
       new BigNumber((new Date().getTime() / 1000) + 43200).floor()
     );
 
@@ -65,9 +65,13 @@ describe('RadarRelaySDK.Market', () => {
     // verify valid signedOrder
     await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
   });
-  
-  it.skip('marketOrderAsync', async () => {
-      // TODO
+
+  it('marketOrderAsync', async () => {
+    const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync('buy',
+      new BigNumber(1)
+    );
+
+    expect(receipt.logs.length).to.be.gt(0);
   });
 
   it.skip('cancelOrderAsync', async () => {

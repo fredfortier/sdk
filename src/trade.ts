@@ -31,31 +31,33 @@ export class Trade {
     public async marketOrder(
       market: Market,
       type: string = 'buy',
-      amount: BigNumber = null
+      quantity: BigNumber = null
     ) {
 
-      const side = (type === 'buy') ? 'asks' : 'bids';
-      const orders = await market.getBookAsync()[side];
-      const signedOrders = [];
-      let current = new BigNumber(0);
+      const marketResponse = await request.post({
+          url: `${this.endpoint}/markets/${market.id}/order/market`,
+          json : {
+            type,
+            quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
+          }
+      });
 
-      for (const order of orders) {
-        if (current.gte(amount)) break;
-        if (order.signedOrder.maker === this.account.address) continue;
-
-        const orderAmount = (type === 'buy') ? order.remainingBaseTokenAmount : order.remainingQuoteTokenAmount;
-        current = current.plus(order.remainingQuoteTokenAmount);
-        signedOrders.push(order.signedOrder);
-      }
+      marketResponse.orders.forEach((order, i) => {
+        marketResponse.orders[i].takerTokenAmount = new BigNumber(order.takerTokenAmount);
+        marketResponse.orders[i].makerTokenAmount = new BigNumber(order.makerTokenAmount);
+        marketResponse.orders[i].expirationUnixTimestampSec = new BigNumber(order.expirationUnixTimestampSec);
+      });
 
       const txHash = await this.zeroEx.exchange.fillOrdersUpToAsync(
-        signedOrders,
-        amount,
+        marketResponse.orders,
+        quantity.times(10).pow(market.baseTokenDecimals.toNumber()),
         true,
         this.account.address);
 
+      this.events.emit('transactionPending', txHash);
       const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
       this.events.emit('transactionMined', receipt);
+
       return receipt;
     }
 
@@ -101,8 +103,9 @@ export class Trade {
     public async cancelOrderAsync(order: SignedOrder) {
       const txHash = await this.zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
       this.events.emit('transactionPending', txHash);
-      // const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
-      return txHash;
+      const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
+      this.events.emit('transactionMined', receipt);
+      return receipt;
     }
 
 }
