@@ -38,7 +38,7 @@ describe('RadarRelaySDK', () => {
       tradeInitialized = false;
     });
 
-    it('properly initializes and updates via event API lifecycle', async () => {
+    it.only('properly initializes and updates via event API lifecycle', async () => {
       rrsdk.events.on('ethereumNetworkUpdated', network => {
         ethereumNetworkUpdated = true;
       });
@@ -60,7 +60,10 @@ describe('RadarRelaySDK', () => {
       rrsdk.events.on('marketsInitialized', markets => {
         marketsInitialized = true;
       });
-      await rrsdk.initialize('http://localhost:8545', 'http://localhost:8080/v0');
+      await rrsdk.initialize(
+        'http://localhost:8545',
+        'http://localhost:8545',
+        'http://localhost:8080/v0');
 
       expect(accountUpdated).to.be.true;
       expect(ethereumNetworkUpdated).to.be.true;
@@ -72,7 +75,7 @@ describe('RadarRelaySDK', () => {
       expect(rrsdk.account.address).to.equal('0x5409ed021d9299bf6814279a6a1411a7e866a631');
     });
 
-    it('SDK reloads properly when the account is updated', async () => {
+    it.only('SDK reloads properly when the account is updated', async () => {
       rrsdk.events.on('accountUpdated', account => {
         accountUpdated = true;
       });

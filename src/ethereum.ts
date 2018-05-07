@@ -2,21 +2,22 @@ import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import {EventEmitter} from 'events';
 import {promisify} from 'es6-promisify';
-import {InjectedWeb3Subprovider} from '@0xproject/subproviders';
-import * as Web3ProviderEngine from 'web3-provider-engine';
-import * as RPCSubprovider from 'web3-provider-engine/subproviders/rpc';
-
+import {Web3Builder, WalletManager} from 'vault-manager';
+import {InfuraNetwork} from '../node_modules/vault-manager/src/types';
+import {CoreTransactionManager} from './lib/TransactionManager';
+import { Web3 as Web3Instance } from './lib/Web3';
 /**
- * EthereumConnection
+ * Ethereum
  */
- export class EthereumConnection {
+ export class Ethereum {
 
      public provider: Web3.Provider;
+     public networkId: number;
      private web3: Web3;
      private events: EventEmitter;
 
-     constructor(walletRPCUrl: string = '', dataRPCUrl: string = '') {
-       this.setProvider(walletRPCUrl, dataRPCUrl);
+     constructor(wallet: string | WalletManager, rpcUrl: string = '') {
+       this.setProvider(wallet, rpcUrl);
      }
 
      get defaultAccount(): string {
@@ -36,7 +37,8 @@ import * as RPCSubprovider from 'web3-provider-engine/subproviders/rpc';
       */
      public async getNetworkIdAsync(): Promise<number> {
        const networkId: string = await promisify(this.web3.version.getNetwork)();
-       return parseInt(networkId, 10);
+       this.networkId = parseInt(networkId, 10);
+       return this.networkId;
      }
 
      /**
@@ -60,21 +62,30 @@ import * as RPCSubprovider from 'web3-provider-engine/subproviders/rpc';
      }
 
      /**
-      * Set the rpc providers
+      * Set the rpc provider
+      *
+      * TODO eventually this can be more sophisticated
+      * than simply using an unlocked HTTPProvider
       */
-     private setProvider(walletRPCUrl: string, dataRPCUrl: string) {
-       const providerEngine = new Web3ProviderEngine();
+     private async setProvider(wallet: string | WalletManager, rpcUrl: string) {
 
-       // Init wallet provider (for signing, accounts, and transactions)
-       const walletProvider = new Web3.providers.HttpProvider(walletRPCUrl);
-       this.web3 = new Web3(walletProvider);
-       providerEngine.addProvider(new InjectedWeb3Subprovider(walletProvider));
+       if (wallet instanceof WalletManager) {
+         // Instantiate the Web3Builder
+         const web3Builder = new Web3Builder();
 
-       // Init provider for Ethereum data
-       providerEngine.addProvider(new RPCSubprovider({ rpcUrl: dataRPCUrl }));
-       providerEngine.start();
+         // Instantiate the TransactionManager. Pass the core wallet instance into the constructor.
+         const transactionManager = new CoreTransactionManager(wallet);
 
-       this.provider = providerEngine;
+         // Set web3
+         Web3Instance.Instance = web3Builder.setSignerAndRpcConnection(transactionManager, InfuraNetwork.Kovan);
+         this.web3 = Web3Instance.Instance;
+         this.provider = this.web3.currentProvider;
+       } else {
+         const provider = new Web3.providers.HttpProvider(rpcUrl);
+         this.web3 = new Web3(provider);
+         this.provider = this.web3.currentProvider;
+       }
+
      }
 
  }

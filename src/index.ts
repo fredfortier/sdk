@@ -73,7 +73,10 @@ export class RadarRelaySDK {
       this.lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
 
-    public async initialize(ethereumRpcUrl: string, radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
+    public async initialize(
+      walletRpcUrl: string,
+      dataRpcUrl: string,
+      radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
       // setting the API endpoint outside of the lifecycle
       // prevents the TradeExecuter class from loading twice
       this.apiEndpoint = radarRelayEndpoint;
@@ -82,14 +85,14 @@ export class RadarRelaySDK {
       this.lifecycle.setup(this);
 
       // set connection
-      return await this.setEthereumConnectionAsync(ethereumRpcUrl);
+      return await this.setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl);
     }
 
     // --- user configurable --- //
-    public async setEthereumConnectionAsync(ethereumRpcUrl: string) {
+    public async setEthereumConnectionAsync(walletRpcUrl: string, dataRpcUrl: string) {
       // same rpcUrl
-      if (this.ethereum && ethereumRpcUrl === (this.ethereum.provider as any).host) return;
-      this.ethereum = new EthereumConnection(ethereumRpcUrl);
+      if (this.ethereum && dataRpcUrl === (this.ethereum.provider as any).host) return;
+      this.ethereum = new EthereumConnection(walletRpcUrl, dataRpcUrl);
       return this.getCallback('ethereumNetworkUpdated', this.ethereum);
     }
 
@@ -125,6 +128,7 @@ export class RadarRelaySDK {
     private async initTokensAsync() {
       // only fetch if not already fetched
       if (this._prevApiEndpoint !== this.apiEndpoint) {
+        console.log(this.apiEndpoint);
         this.tokens = JSON.parse(await request.get(`${this.apiEndpoint}/tokens`));
       }
       // todo index by address

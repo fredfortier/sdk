@@ -57,17 +57,35 @@ class Trade {
                     expiration: expiration.toString()
                 }
             });
+            // TODO this appears to be
+            // broken, remove once fixed
+            if (type === 'sell') {
+                order.takerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount).times(price).floor().toString();
+            }
+            else {
+                order.makerTokenAmount = new bignumber_js_1.default(order.takerTokenAmount).times(price).floor().toString();
+            }
+            // add missing data
             order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
             order.maker = this.account.address;
+<<<<<<< HEAD
             console.log(order);
+=======
+            // sign order
+>>>>>>> mr-rpc-provider-engine
             const orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
             const ecSignature = yield this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
             order.ecSignature = ecSignature;
             // POST order to API
+<<<<<<< HEAD
             yield request.post({
                 url: `${this.endpoint}/orders`,
                 json: order
             });
+=======
+            // await request.post({url: `${this.endpoint}/orders`, json: order});
+            yield request.post({ url: `http://35.190.22.108/0x/v0/order`, json: order });
+>>>>>>> mr-rpc-provider-engine
             return order;
         });
     }

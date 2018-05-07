@@ -11,8 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _0x_js_1 = require("0x.js");
 const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
-// TODO move into config file
-const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
 class TradeExecuter {
     constructor(zeroEx, apiEndpoint, account, events) {
         this.zeroEx = zeroEx;
@@ -22,17 +20,16 @@ class TradeExecuter {
     }
     marketOrder(market, type = 'buy', amount = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            const side = (type === 'buy') ? 'bids' : 'asks';
+            const side = (type === 'buy') ? 'asks' : 'bids';
             const orders = yield market.getBookAsync()[side];
             const signedOrders = [];
             let current = new bignumber_js_1.default(0);
-            const decimals = (type === 'buy') ? market.baseTokenDecimals : market.quoteTokenDecimals;
             for (const order of orders) {
                 if (current.gte(amount))
                     break;
                 if (order.signedOrder.maker === this.account.address)
                     continue;
-                const orderAmount = (type === 'buy') ? order.remainingQuoteTokenAmount : order.remainingBaseTokenAmount;
+                const orderAmount = (type === 'buy') ? order.remainingBaseTokenAmount : order.remainingQuoteTokenAmount;
                 current = current.plus(order.remainingQuoteTokenAmount);
                 signedOrders.push(order.signedOrder);
             }
@@ -49,15 +46,6 @@ class TradeExecuter {
         expiration // expiration in seconds from now
     ) {
         return __awaiter(this, void 0, void 0, function* () {
-            // TODO fees
-            const makerFee = new bignumber_js_1.default(0);
-            const takerFee = new bignumber_js_1.default(0);
-            console.log({
-                type,
-                quantity: quantity.toString(),
-                price: price.toString(),
-                expiration: expiration.toString()
-            });
             const order = yield request.post({
                 url: `${this.endpoint}/markets/${market.id}/order/limit`,
                 json: {
@@ -67,15 +55,25 @@ class TradeExecuter {
                     expiration: expiration.toString()
                 }
             });
+            // TODO this appears to be
+            // broken, remove once fixed
+            if (type === 'sell') {
+                order.takerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount).times(price).floor().toString();
+            }
+            else {
+                order.makerTokenAmount = new bignumber_js_1.default(order.takerTokenAmount).times(price).floor().toString();
+            }
+            // add missing data
             order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
             order.maker = this.account.address;
+            // sign order
             const orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
             const ecSignature = yield this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
             order.ecSignature = ecSignature;
-            console.log(order);
             // POST order to API
-            // await request.post(`${this.endpoint}/orders`, order);
-            // return order;
+            // await request.post({url: `${this.endpoint}/orders`, json: order});
+            yield request.post({ url: `http://35.190.22.108/0x/v0/order`, json: order });
+            return order;
         });
     }
     // TODO fill individual order

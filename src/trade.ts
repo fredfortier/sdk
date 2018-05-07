@@ -70,7 +70,7 @@ export class Trade {
       expiration: BigNumber // expiration in seconds from now
     ) {
 
-      const order: Order = await request.post({
+      const order = await request.post({
           url: `${this.endpoint}/markets/${market.id}/order/limit`,
           json : {
             type,
@@ -80,9 +80,19 @@ export class Trade {
           }
       });
 
+      // TODO this appears to be
+      // broken, remove once fixed
+      if (type === 'sell') {
+        order.takerTokenAmount = new BigNumber(order.makerTokenAmount).times(price).floor().toString();
+      } else {
+        order.makerTokenAmount = new BigNumber(order.takerTokenAmount).times(price).floor().toString();
+      }
+
+      // add missing data
       order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
       order.maker = this.account.address;
 
+      // sign order
       const orderHash = ZeroEx.getOrderHashHex(order);
       const ecSignature: ECSignature = await this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
       (order as SignedOrder).ecSignature = ecSignature;

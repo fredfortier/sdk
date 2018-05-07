@@ -60,7 +60,7 @@ class RadarRelaySDK {
         this.events = new events_1.EventEmitter();
         this.lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
-    initialize(ethereumRpcUrl, radarRelayEndpoint = 'https://api.radarrelay.com/v0') {
+    initialize(walletRpcUrl, dataRpcUrl, radarRelayEndpoint = 'https://api.radarrelay.com/v0') {
         return __awaiter(this, void 0, void 0, function* () {
             // setting the API endpoint outside of the lifecycle
             // prevents the TradeExecuter class from loading twice
@@ -68,16 +68,16 @@ class RadarRelaySDK {
             // setup the lifecycle function bindings
             this.lifecycle.setup(this);
             // set connection
-            return yield this.setEthereumConnectionAsync(ethereumRpcUrl);
+            return yield this.setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl);
         });
     }
     // --- user configurable --- //
-    setEthereumConnectionAsync(ethereumRpcUrl) {
+    setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             // same rpcUrl
-            if (this.ethereum && ethereumRpcUrl === this.ethereum.provider.host)
+            if (this.ethereum && dataRpcUrl === this.ethereum.provider.host)
                 return;
-            this.ethereum = new ethereum_connection_1.EthereumConnection(ethereumRpcUrl);
+            this.ethereum = new ethereum_connection_1.EthereumConnection(walletRpcUrl, dataRpcUrl);
             return this.getCallback('ethereumNetworkUpdated', this.ethereum);
         });
     }
@@ -115,6 +115,7 @@ class RadarRelaySDK {
         return __awaiter(this, void 0, void 0, function* () {
             // only fetch if not already fetched
             if (this._prevApiEndpoint !== this.apiEndpoint) {
+                console.log(this.apiEndpoint);
                 this.tokens = JSON.parse(yield request.get(`${this.apiEndpoint}/tokens`));
             }
             // todo index by address
