@@ -43,9 +43,9 @@ class Trade {
     }
     // sign and post order to book
     limitOrder(market = null, type = 'buy', // ask == sell, bid == buy
-        quantity, // base token quantity
-        price, // price (in quote)
-        expiration // expiration in seconds from now
+    quantity, // base token quantity
+    price, // price (in quote)
+    expiration // expiration in seconds from now
     ) {
         return __awaiter(this, void 0, void 0, function* () {
             const order = yield request.post({
@@ -59,11 +59,15 @@ class Trade {
             });
             order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
             order.maker = this.account.address;
+            console.log(order);
             const orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
             const ecSignature = yield this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
             order.ecSignature = ecSignature;
             // POST order to API
-            yield request.post(`${this.endpoint}/orders`, order);
+            yield request.post({
+                url: `${this.endpoint}/orders`,
+                json: order
+            });
             return order;
         });
     }

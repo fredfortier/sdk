@@ -86,7 +86,10 @@ export class Trade {
       (order as SignedOrder).ecSignature = ecSignature;
 
       // POST order to API
-      await request.post(`${this.endpoint}/orders`, order);
+      await request.post({
+          url: `${this.endpoint}/orders`,
+          json : order
+      });
 
       return order;
     }
