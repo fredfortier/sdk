@@ -70,14 +70,12 @@ describe('RadarRelaySDK.Market', () => {
     const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync('buy',
       new BigNumber(1)
     );
-
     expect(receipt.logs.length).to.be.gt(0);
   });
 
-  it.skip('cancelOrderAsync', async () => {
-      
-      const hash = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(signedOrder);
-      console.log(hash);
+  it('cancelOrderAsync', async () => {
+      const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(signedOrder);
+      expect(receipt.logs.length).to.be.gt(0);
   });
 
 });
