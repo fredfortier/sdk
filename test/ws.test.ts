@@ -17,12 +17,12 @@ describe('RadarRelaySDK.Ws', () => {
 
   before(async () => {
     rrsdk = new RadarRelaySDK();
-    await rrsdk.initialize('http://35.196.15.153:8545', 'http://localhost:8080/v0');
+    await rrsdk.initialize('http://35.196.15.153:8100', 'http://localhost:8080/v0');
   });
 
   it('fires event on order create', async () => {
 
-    await new Promise((resolve, reject) => {
+    await new Promise(async (resolve, reject) => {
       const sock = socket('http://localhost:8080');
       const market = rrsdk.markets.get('ZRX-WETH');
 
@@ -31,9 +31,9 @@ describe('RadarRelaySDK.Ws', () => {
         resolve(true);
       });
 
-      order = rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
-        new BigNumber('10').pow(20),
-        new BigNumber('10').pow(17),
+      order = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
+        new BigNumber(String(Math.random() * 10)),
+        new BigNumber('0.0015'),
         new BigNumber((new Date().getTime() / 1000) + 43200).floor()
       );
     });

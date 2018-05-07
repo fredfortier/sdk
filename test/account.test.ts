@@ -13,7 +13,7 @@ describe('RadarRelaySDK.Account', () => {
 
     before(async () => {
       rrsdk = new RadarRelaySDK();
-      await rrsdk.initialize('http://35.196.15.153:8545', 'http://localhost:8080/v0');
+      await rrsdk.initialize('http://35.196.15.153:8100', 'http://localhost:8080/v0');
     });
 
     it('getEthBalanceAsync', async () => {
