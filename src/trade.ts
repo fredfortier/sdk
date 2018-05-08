@@ -1,4 +1,4 @@
-import {EthereumConnection} from './ethereum-connection';
+import {Ethereum} from './ethereum';
 import {Market} from './market';
 import {Account} from './account';
 import {EventEmitter} from 'events';

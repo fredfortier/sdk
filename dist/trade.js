@@ -20,22 +20,22 @@ class Trade {
         this.account = account;
         this.events = events;
     }
-    marketOrder(market, type = 'buy', amount = null) {
+    marketOrder(market, type = 'buy', quantity = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            const side = (type === 'buy') ? 'asks' : 'bids';
-            const orders = yield market.getBookAsync()[side];
-            const signedOrders = [];
-            let current = new bignumber_js_1.default(0);
-            for (const order of orders) {
-                if (current.gte(amount))
-                    break;
-                if (order.signedOrder.maker === this.account.address)
-                    continue;
-                const orderAmount = (type === 'buy') ? order.remainingBaseTokenAmount : order.remainingQuoteTokenAmount;
-                current = current.plus(order.remainingQuoteTokenAmount);
-                signedOrders.push(order.signedOrder);
-            }
-            const txHash = yield this.zeroEx.exchange.fillOrdersUpToAsync(signedOrders, amount, true, this.account.address);
+            const marketResponse = yield request.post({
+                url: `${this.endpoint}/markets/${market.id}/order/market`,
+                json: {
+                    type,
+                    quantity: quantity.toString(),
+                }
+            });
+            marketResponse.orders.forEach((order, i) => {
+                marketResponse.orders[i].takerTokenAmount = new bignumber_js_1.default(order.takerTokenAmount);
+                marketResponse.orders[i].makerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount);
+                marketResponse.orders[i].expirationUnixTimestampSec = new bignumber_js_1.default(order.expirationUnixTimestampSec);
+            });
+            const txHash = yield this.zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, quantity.times(10).pow(market.baseTokenDecimals.toNumber()), true, this.account.address);
+            this.events.emit('transactionPending', txHash);
             const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
             this.events.emit('transactionMined', receipt);
             return receipt;
@@ -68,24 +68,15 @@ class Trade {
             // add missing data
             order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
             order.maker = this.account.address;
-<<<<<<< HEAD
-            console.log(order);
-=======
             // sign order
->>>>>>> mr-rpc-provider-engine
             const orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
             const ecSignature = yield this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
             order.ecSignature = ecSignature;
             // POST order to API
-<<<<<<< HEAD
             yield request.post({
                 url: `${this.endpoint}/orders`,
                 json: order
             });
-=======
-            // await request.post({url: `${this.endpoint}/orders`, json: order});
-            yield request.post({ url: `http://35.190.22.108/0x/v0/order`, json: order });
->>>>>>> mr-rpc-provider-engine
             return order;
         });
     }
@@ -96,8 +87,9 @@ class Trade {
         return __awaiter(this, void 0, void 0, function* () {
             const txHash = yield this.zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
             this.events.emit('transactionPending', txHash);
-            // const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
-            return txHash;
+            const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
+            this.events.emit('transactionMined', receipt);
+            return receipt;
         });
     }
 }

@@ -1,5 +1,5 @@
 import {ZeroEx} from '0x.js';
-import {EthereumConnection} from './ethereum-connection';
+import {Ethereum} from './ethereum';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -10,20 +10,20 @@ const ZEROEX_PROXY_ADDRESS = '0x087eed4bc1ee3de49befbd66c662b434b15d49d4';
 export class Account {
 
   public address: string;
-  private connection: EthereumConnection;
+  private ethereum: Ethereum;
   private zeroEx: ZeroEx;
   private endpoint: string;
 
-  constructor(connection: EthereumConnection, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]) {
+  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]) {
     // TODO tokens + decimal calculations and conversions
     this.endpoint = apiEndpoint;
-    this.connection = connection;
-    this.address = this.connection.defaultAccount;
+    this.ethereum = ethereum;
+    this.address = this.ethereum.defaultAccount;
     this.zeroEx = zeroEx;
   }
 
   public async getEthBalanceAsync(): Promise<BigNumber> {
-    return await this.connection.getEthBalanceAsync(this.address);
+    return await this.ethereum.getEthBalanceAsync(this.address);
   }
 
   public async transferEthAsync() {

@@ -1,13 +1,14 @@
-
-import {EventEmitter} from 'events';
 import {ZeroEx, ZeroExConfig} from '0x.js';
+import {WalletManager} from 'vault-manager';
+import {EventEmitter} from 'events';
+import {Wallet} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
 // SDK Classes
 import {SDKInitLifeCycle, InitPriorityItem} from './sdk-init-lifecycle';
 import {EventBus} from './event-emitter';
-import {EthereumConnection} from './ethereum-connection';
+import {Ethereum} from './ethereum';
 import {Account} from './account';
 import {Market} from './market';
 import {Trade} from './trade';
@@ -18,19 +19,19 @@ import {Ws} from './ws';
  */
 export class RadarRelaySDK {
 
-    public ethereum: EthereumConnection;
+    public ethereum: Ethereum;
     public zeroEx: ZeroEx;
     public account: Account;
     public events: EventEmitter;
     public markets: Map<string, Market>;
+    public trade: Trade;
     public ws: Ws;
+    public apiEndpoint: string;
+    public tokens: any;
 
-    private trade: Trade;
-    private apiEndpoint: string;
+    private _networkId: number;
     private _prevApiEndpoint: string;
     private _markets: any;
-    private tokens: any;
-    private networkId: number;
     private lifecycle: SDKInitLifeCycle;
 
     /**
@@ -74,30 +75,42 @@ export class RadarRelaySDK {
     }
 
     public async initialize(
-      walletRpcUrl: string,
-      dataRpcUrl: string,
-      radarRelayEndpoint: string = 'https://api.radarrelay.com/v0') {
+      config: {
+        password?: string;
+        walletRpcUrl?: string;
+        dataRpcUrl: string;
+        radarRelayEndpoint: string;
+      }) {
       // setting the API endpoint outside of the lifecycle
       // prevents the TradeExecuter class from loading twice
-      this.apiEndpoint = radarRelayEndpoint;
+      this.apiEndpoint = config.radarRelayEndpoint;
 
       // setup the lifecycle function bindings
       this.lifecycle.setup(this);
 
+      let wallet: any = config.walletRpcUrl;
+      if (config.password) {
+        // Instantiate the WalletManager
+        const walletManager = new WalletManager();
+
+        // Create a new core wallet
+        wallet = await walletManager.core.createWalletAsync({ password: config.password });
+      }
+
       // set connection
-      return await this.setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl);
+      return await this.setEthereumAsync(wallet, config.dataRpcUrl);
     }
 
     // --- user configurable --- //
-    public async setEthereumConnectionAsync(walletRpcUrl: string, dataRpcUrl: string) {
+    public async setEthereumAsync(wallet: string | Wallet, rpcUrl: string) {
       // same rpcUrl
-      if (this.ethereum && dataRpcUrl === (this.ethereum.provider as any).host) return;
-      this.ethereum = new EthereumConnection(walletRpcUrl, dataRpcUrl);
+      if (this.ethereum && rpcUrl === (this.ethereum.provider as any).host) return;
+      this.ethereum = new Ethereum(wallet, rpcUrl);
       return this.getCallback('ethereumNetworkUpdated', this.ethereum);
     }
 
     public async setAccount(account: string | number) {
-      this.ethereum.setDefaultAccount(account);
+      await this.ethereum.setDefaultAccount(account);
       this.account = new Account(this.ethereum, this.zeroEx, this.apiEndpoint, this.tokens);
       return this.getCallback('accountUpdated', this.account);
     }
@@ -109,13 +122,13 @@ export class RadarRelaySDK {
 
     // --- not user configurable below this line --- //
     private async initEthereumNetworkIdAsync() {
-      this.networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-      return this.getCallback('ethereumNetworkIdInitialized', this.networkId);
+      this._networkId = await this.ethereum.getNetworkIdAsync.apply(this.ethereum);
+      return this.getCallback('ethereumNetworkIdInitialized', this._networkId);
     }
 
     private initZeroEx() {
       this.zeroEx = new ZeroEx(this.ethereum.provider, {
-        networkId: this.networkId
+        networkId: this._networkId
       });
       return this.getCallback('zeroExInitialized', this.zeroEx);
     }
@@ -128,7 +141,6 @@ export class RadarRelaySDK {
     private async initTokensAsync() {
       // only fetch if not already fetched
       if (this._prevApiEndpoint !== this.apiEndpoint) {
-        console.log(this.apiEndpoint);
         this.tokens = JSON.parse(await request.get(`${this.apiEndpoint}/tokens`));
       }
       // todo index by address

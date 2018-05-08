@@ -15,11 +15,17 @@ const subproviders_1 = require("@0xproject/subproviders");
 const Web3ProviderEngine = require("web3-provider-engine");
 const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 /**
- * EthereumConnection
+ * Ethereum
  */
+<<<<<<< Updated upstream
 class EthereumConnection {
     constructor(walletRPCUrl = '', dataRPCUrl = '') {
         this.setProvider(walletRPCUrl, dataRPCUrl);
+=======
+class Ethereum {
+    constructor(ethereumRPCUrl = '') {
+        this.setProvider(ethereumRPCUrl);
+>>>>>>> Stashed changes
     }
     get defaultAccount() {
         return this.web3.eth.defaultAccount;
@@ -79,4 +85,4 @@ class EthereumConnection {
         this.provider = providerEngine;
     }
 }
-exports.EthereumConnection = EthereumConnection;
+exports.Ethereum = Ethereum;

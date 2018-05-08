@@ -8,12 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const vault_manager_1 = require("vault-manager");
 const events_1 = require("events");
 const _0x_js_1 = require("0x.js");
 const request = require("request-promise");
 // SDK Classes
 const sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");
-const ethereum_connection_1 = require("./ethereum-connection");
+const ethereum_1 = require("./ethereum");
 const account_1 = require("./account");
 const market_1 = require("./market");
 const trade_1 = require("./trade");
@@ -60,30 +61,37 @@ class RadarRelaySDK {
         this.events = new events_1.EventEmitter();
         this.lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
-    initialize(walletRpcUrl, dataRpcUrl, radarRelayEndpoint = 'https://api.radarrelay.com/v0') {
+    initialize(config) {
         return __awaiter(this, void 0, void 0, function* () {
             // setting the API endpoint outside of the lifecycle
             // prevents the TradeExecuter class from loading twice
-            this.apiEndpoint = radarRelayEndpoint;
+            this.apiEndpoint = config.radarRelayEndpoint;
             // setup the lifecycle function bindings
             this.lifecycle.setup(this);
+            let wallet = config.walletRpcUrl;
+            if (config.password) {
+                // Instantiate the WalletManager
+                const walletManager = new vault_manager_1.WalletManager();
+                // Create a new core wallet
+                wallet = yield walletManager.core.createWalletAsync({ password: config.password });
+            }
             // set connection
-            return yield this.setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl);
+            return yield this.setEthereumAsync(wallet, config.dataRpcUrl);
         });
     }
     // --- user configurable --- //
-    setEthereumConnectionAsync(walletRpcUrl, dataRpcUrl) {
+    setEthereumAsync(wallet, rpcUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             // same rpcUrl
-            if (this.ethereum && dataRpcUrl === this.ethereum.provider.host)
+            if (this.ethereum && rpcUrl === this.ethereum.provider.host)
                 return;
-            this.ethereum = new ethereum_connection_1.EthereumConnection(walletRpcUrl, dataRpcUrl);
+            this.ethereum = new ethereum_1.Ethereum(wallet, rpcUrl);
             return this.getCallback('ethereumNetworkUpdated', this.ethereum);
         });
     }
     setAccount(account) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.ethereum.setDefaultAccount(account);
+            yield this.ethereum.setDefaultAccount(account);
             this.account = new account_1.Account(this.ethereum, this.zeroEx, this.apiEndpoint, this.tokens);
             return this.getCallback('accountUpdated', this.account);
         });
@@ -97,13 +105,13 @@ class RadarRelaySDK {
     // --- not user configurable below this line --- //
     initEthereumNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.networkId = yield this.ethereum.getNetworkIdAsync.apply(this.ethereum);
-            return this.getCallback('ethereumNetworkIdInitialized', this.networkId);
+            this._networkId = yield this.ethereum.getNetworkIdAsync.apply(this.ethereum);
+            return this.getCallback('ethereumNetworkIdInitialized', this._networkId);
         });
     }
     initZeroEx() {
         this.zeroEx = new _0x_js_1.ZeroEx(this.ethereum.provider, {
-            networkId: this.networkId
+            networkId: this._networkId
         });
         return this.getCallback('zeroExInitialized', this.zeroEx);
     }
@@ -115,7 +123,6 @@ class RadarRelaySDK {
         return __awaiter(this, void 0, void 0, function* () {
             // only fetch if not already fetched
             if (this._prevApiEndpoint !== this.apiEndpoint) {
-                console.log(this.apiEndpoint);
                 this.tokens = JSON.parse(yield request.get(`${this.apiEndpoint}/tokens`));
             }
             // todo index by address

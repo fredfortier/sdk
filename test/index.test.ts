@@ -14,9 +14,9 @@ describe('RadarRelaySDK', () => {
 
     const rrsdk = new RadarRelaySDK();
 
-    // rrsdk.events.on('loading', data => {
-    //   console.log(data);
-    // });
+    rrsdk.events.on('loading', data => {
+      console.log(data);
+    });
 
     let apiEndpointUpdated = false;
     let ethereumNetworkUpdated = false;
@@ -60,10 +60,11 @@ describe('RadarRelaySDK', () => {
       rrsdk.events.on('marketsInitialized', markets => {
         marketsInitialized = true;
       });
-      await rrsdk.initialize(
-        'http://localhost:8545',
-        'http://localhost:8545',
-        'http://localhost:8080/v0');
+      await rrsdk.initialize({
+        password: 'password',
+        dataRpcUrl: 'http://35.196.15.153:8100',
+        radarRelayEndpoint: 'http://localhost:8080/v0'
+      });
 
       expect(accountUpdated).to.be.true;
       expect(ethereumNetworkUpdated).to.be.true;
