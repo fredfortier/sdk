@@ -43,9 +43,9 @@ class Trade {
     }
     // sign and post order to book
     limitOrder(market = null, type = 'buy', // ask == sell, bid == buy
-    quantity, // base token quantity
-    price, // price (in quote)
-    expiration // expiration in seconds from now
+        quantity, // base token quantity
+        price, // price (in quote)
+        expiration // expiration in seconds from now
     ) {
         return __awaiter(this, void 0, void 0, function* () {
             const order = yield request.post({

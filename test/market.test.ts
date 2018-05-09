@@ -20,10 +20,12 @@ describe('RadarRelaySDK.Market', () => {
     // mockRequests();
 
     rrsdk = new RadarRelaySDK();
-    await rrsdk.initialize(
-      // 'http://localhost:8545',
-      'http://35.196.15.153:8100',
-      'http://localhost:8080/v0');
+    await rrsdk.initialize({
+      password: 'password',
+      // walletRpcUrl: 'http://35.196.15.153:8100',
+      dataRpcUrl: 'http://35.196.15.153:8100',
+      radarRelayEndpoint: 'http://localhost:8080/v0'
+    });
   });
 
   it('getBookAsync', async () => {

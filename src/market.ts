@@ -13,13 +13,14 @@ export class Market {
   public maxOrderSize: BigNumber;
   public quoteIncrement: BigNumber;
   public displayName: string;
-  public endpoint: string;
 
-  private trade: Trade;
+  private _endpoint: string;
+  private _trade: Trade;
 
   constructor(params, apiEndpoint: string, trade: Trade) {
-      this.endpoint = apiEndpoint;
-      this.trade = trade;
+      this._endpoint = apiEndpoint;
+      this._trade = trade;
+
       this.id = params.id;
       this.baseTokenAddress = params.baseTokenAddress;
       this.quoteTokenAddress = params.quoteTokenAddress;
@@ -34,27 +35,27 @@ export class Market {
   // getBook
   // TODO managed books?
   public async getBookAsync() {
-    return JSON.parse(await request.get(`${this.endpoint}/markets/${this.id}/book`));
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/book`));
   }
 
   // getFills
   public async getFillsAsync() {
-    return JSON.parse(await request.get(`${this.endpoint}/markets/${this.id}/fills`));
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/fills`));
   }
 
   // getCandles
   public async getCandlesAsync() {
-    return JSON.parse(await request.get(`${this.endpoint}/markets/${this.id}/candles`));
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/candles`));
   }
 
   // getTicker
   public async getTickerAsync() {
-    return JSON.parse(await request.get(`${this.endpoint}/markets/${this.id}/ticker`));
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
   }
 
   // marketOrder
   public async marketOrderAsync(type: string, amount: BigNumber) {
-    return await this.trade.marketOrder(this, type, amount);
+    return await this._trade.marketOrder(this, type, amount);
   }
 
   // limitOrder
@@ -63,12 +64,12 @@ export class Market {
     quantity: BigNumber,
     price: BigNumber,
     expiration: BigNumber) {
-    return await this.trade.limitOrder(this, type, quantity, price, expiration);
+    return await this._trade.limitOrder(this, type, quantity, price, expiration);
   }
 
   // cancelOrder
   public async cancelOrderAsync(order: SignedOrder) {
-    return await this.trade.cancelOrderAsync(order);
+    return await this._trade.cancelOrderAsync(order);
   }
 
 }

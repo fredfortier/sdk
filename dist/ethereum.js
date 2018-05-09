@@ -8,13 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Web3ProviderEngine = require("web3-provider-engine");
+const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3 = require("web3");
 const bignumber_js_1 = require("bignumber.js");
 const es6_promisify_1 = require("es6-promisify");
 const vault_manager_1 = require("vault-manager");
 const subproviders_1 = require("@0xproject/subproviders");
-const Web3ProviderEngine = require("web3-provider-engine");
-const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 /**
  * Ethereum
  */

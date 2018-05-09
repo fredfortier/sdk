@@ -12,20 +12,20 @@ const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
 
 export class Trade {
 
-    public endpoint: string;
-    private zeroEx: ZeroEx;
-    private account: Account;
-    private events: EventEmitter;
+    private _endpoint: string;
+    private _account: Account;
+    private _zeroEx: ZeroEx;
+    private _events: EventEmitter;
 
     constructor(
       zeroEx: ZeroEx,
       apiEndpoint: string,
       account: Account,
       events: EventEmitter) {
-        this.zeroEx = zeroEx;
-        this.endpoint = apiEndpoint;
-        this.account = account;
-        this.events = events;
+        this._zeroEx = zeroEx;
+        this._endpoint = apiEndpoint;
+        this._account = account;
+        this._events = events;
     }
 
     public async marketOrder(
@@ -35,7 +35,7 @@ export class Trade {
     ) {
 
       const marketResponse = await request.post({
-          url: `${this.endpoint}/markets/${market.id}/order/market`,
+          url: `${this._endpoint}/markets/${market.id}/order/market`,
           json : {
             type,
             quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
@@ -48,15 +48,15 @@ export class Trade {
         marketResponse.orders[i].expirationUnixTimestampSec = new BigNumber(order.expirationUnixTimestampSec);
       });
 
-      const txHash = await this.zeroEx.exchange.fillOrdersUpToAsync(
+      const txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
         marketResponse.orders,
         quantity.times(10).pow(market.baseTokenDecimals.toNumber()),
         true,
-        this.account.address);
+        this._account.address);
 
-      this.events.emit('transactionPending', txHash);
-      const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
-      this.events.emit('transactionMined', receipt);
+      this._events.emit('transactionPending', txHash);
+      const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+      this._events.emit('transactionMined', receipt);
 
       return receipt;
     }
@@ -71,7 +71,7 @@ export class Trade {
     ) {
 
       const order = await request.post({
-          url: `${this.endpoint}/markets/${market.id}/order/limit`,
+          url: `${this._endpoint}/markets/${market.id}/order/limit`,
           json : {
             type,
             quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
@@ -89,17 +89,17 @@ export class Trade {
       }
 
       // add missing data
-      order.exchangeContractAddress = this.zeroEx.exchange.getContractAddress();
-      order.maker = this.account.address;
+      order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();
+      order.maker = this._account.address;
 
       // sign order
       const orderHash = ZeroEx.getOrderHashHex(order);
-      const ecSignature: ECSignature = await this.zeroEx.signOrderHashAsync(orderHash, this.account.address, false);
+      const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, false);
       (order as SignedOrder).ecSignature = ecSignature;
 
       // POST order to API
       await request.post({
-          url: `${this.endpoint}/orders`,
+          url: `${this._endpoint}/orders`,
           json : order
       });
 
@@ -111,10 +111,10 @@ export class Trade {
     // cancel a signed order
     // TODO cancel partial?
     public async cancelOrderAsync(order: SignedOrder) {
-      const txHash = await this.zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
-      this.events.emit('transactionPending', txHash);
-      const receipt = await this.zeroEx.awaitTransactionMinedAsync(txHash);
-      this.events.emit('transactionMined', receipt);
+      const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
+      this._events.emit('transactionPending', txHash);
+      const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+      this._events.emit('transactionMined', receipt);
       return receipt;
     }
 

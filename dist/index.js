@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const _0x_js_1 = require("0x.js");
 const vault_manager_1 = require("vault-manager");
 const events_1 = require("events");
-const _0x_js_1 = require("0x.js");
 const request = require("request-promise");
 // SDK Classes
 const sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");

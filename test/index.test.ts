@@ -15,85 +15,89 @@ describe('RadarRelaySDK', () => {
     const rrsdk = new RadarRelaySDK();
 
     rrsdk.events.on('loading', data => {
-      console.log(data);
+      // console.log(data);
     });
 
-    let apiEndpointUpdated = false;
     let ethereumNetworkUpdated = false;
-    let accountUpdated = false;
+    let accountInitialized = false;
     let ethereumNetworkIdInitialized = false;
     let zeroExInitialized = false;
     let tokensInitialized = false;
     let marketsInitialized = false;
     let tradeInitialized = false;
 
+    rrsdk.events.on('ethereumNetworkUpdated', network => {
+      ethereumNetworkUpdated = true;
+    });
+    rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
+      ethereumNetworkIdInitialized = true;
+    });
+    rrsdk.events.on('tokensInitialized', account => {
+      tokensInitialized = true;
+    });
+    rrsdk.events.on('accountInitialized', account => {
+      accountInitialized = true;
+    });
+    rrsdk.events.on('zeroExInitialized', zeroEx => {
+      zeroExInitialized = true;
+    });
+    rrsdk.events.on('tradeInitialized', trade => {
+      tradeInitialized = true;
+    });
+    rrsdk.events.on('marketsInitialized', markets => {
+      marketsInitialized = true;
+    });
+
     beforeEach(() => {
-      apiEndpointUpdated = false;
       ethereumNetworkUpdated = false;
       tokensInitialized = false;
-      accountUpdated = false;
+      accountInitialized = false;
       ethereumNetworkIdInitialized = false;
       zeroExInitialized = false;
       marketsInitialized = false;
       tradeInitialized = false;
     });
 
-    it.only('properly initializes and updates via event API lifecycle', async () => {
-      rrsdk.events.on('ethereumNetworkUpdated', network => {
-        ethereumNetworkUpdated = true;
-      });
-      rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
-        ethereumNetworkIdInitialized = true;
-      });
-      rrsdk.events.on('tokensInitialized', account => {
-        tokensInitialized = true;
-      });
-      rrsdk.events.on('accountUpdated', account => {
-        accountUpdated = true;
-      });
-      rrsdk.events.on('zeroExInitialized', zeroEx => {
-        zeroExInitialized = true;
-      });
-      rrsdk.events.on('tradeInitialized', trade => {
-        tradeInitialized = true;
-      });
-      rrsdk.events.on('marketsInitialized', markets => {
-        marketsInitialized = true;
-      });
+    it('properly initializes and updates via event API lifecycle', async () => {
+
       await rrsdk.initialize({
         password: 'password',
         dataRpcUrl: 'http://35.196.15.153:8100',
         radarRelayEndpoint: 'http://localhost:8080/v0'
       });
 
-      expect(accountUpdated).to.be.true;
+      expect(accountInitialized).to.be.true;
       expect(ethereumNetworkUpdated).to.be.true;
       expect(tokensInitialized).to.be.true;
-      expect(accountUpdated).to.be.true;
+      expect(accountInitialized).to.be.true;
       expect(zeroExInitialized).to.be.true;
       expect(tradeInitialized).to.be.true;
       expect(marketsInitialized).to.be.true;
-      expect(rrsdk.account.address).to.equal('0x5409ed021d9299bf6814279a6a1411a7e866a631');
     });
 
-    it.only('SDK reloads properly when the account is updated', async () => {
-      rrsdk.events.on('accountUpdated', account => {
-        accountUpdated = true;
-      });
-      rrsdk.events.on('tradeInitialized', trade => {
-        tradeInitialized = true;
-      });
-      rrsdk.events.on('marketsInitialized', markets => {
-        marketsInitialized = true;
+    it('SDK reloads properly when an account address is changed', async () => {
+      const addresses = await rrsdk.account.getAvailableAddressesAsync();
+      await rrsdk.account.setAddressAsync(addresses[1]);
+      expect(rrsdk.account.address).to.be.eq(addresses[1]);
+      // check nested dependency
+      expect((rrsdk.trade as any)._account.address).to.be.eq(addresses[1]);
+    });
+
+    // TODO may not be necessary
+    it('SDK reloads properly when using walletRpcUrl is updated', async () => {
+
+      await rrsdk.setEthereumAsync({
+        walletRpcUrl: 'http://35.196.15.153:8100',
+        dataRpcUrl: 'http://35.196.15.153:8100'
       });
 
-      await rrsdk.setAccount(1);
-
-      expect(tokensInitialized).to.be.false;
-      expect(accountUpdated).to.be.true;
+      expect(accountInitialized).to.be.true;
+      expect(ethereumNetworkUpdated).to.be.true;
+      expect(tokensInitialized).to.be.true;
+      expect(accountInitialized).to.be.true;
+      expect(zeroExInitialized).to.be.true;
       expect(tradeInitialized).to.be.true;
       expect(marketsInitialized).to.be.true;
-      expect(rrsdk.account.address).to.equal('0x6ecbe1db9ef729cbe972c83fb886247691fb6beb');
     });
 
     it.skip('properly handles setting invalid connection');

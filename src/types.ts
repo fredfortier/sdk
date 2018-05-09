@@ -29,6 +29,7 @@ export interface Wallet {
   type: WalletType;
   signer: Signer;
   getAccounts(): string[];
+  addNewAccounts(numberOfAccounts: number): void;
 }
 
 export interface TransactionManager {
