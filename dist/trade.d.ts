@@ -9,7 +9,8 @@ export declare class Trade {
     private _account;
     private _zeroEx;
     private _events;
-    constructor(zeroEx: ZeroEx, apiEndpoint: string, account: Account, events: EventEmitter);
+    private _tokens;
+    constructor(zeroEx: ZeroEx, apiEndpoint: string, account: Account, events: EventEmitter, tokens: any[]);
     marketOrder(market: Market, type?: string, quantity?: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
     limitOrder(market: Market, type: string, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<Order>;
     cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs>;

@@ -121,17 +121,20 @@ class Ethereum {
             // Instantiate the Web3Builder
             const web3Builder = new vault_manager_1.Web3Builder();
             // Set web3
+            //  To avoid passing a static instance of the Web3 object around
+            //  this class implements `TransactionManager` and is passed
+            //  in to the `setSignerAndRpcConnection` to init Web3
             this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl);
             this.provider = this.web3.currentProvider;
         }
         else {
             // --- Use unlocked node --- //
             const providerEngine = new Web3ProviderEngine();
-            // Init wallet provider (for signing, accounts, and transactions)
+            // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
             const walletProvider = new Web3.providers.HttpProvider(wallet);
             this.web3 = new Web3(walletProvider);
             providerEngine.addProvider(new subproviders_1.InjectedWeb3Subprovider(walletProvider));
-            // Init provider for Ethereum data
+            // Init RPCProvider for Ethereum data
             providerEngine.addProvider(new RPCSubprovider({ rpcUrl }));
             providerEngine.start();
             this.provider = providerEngine;

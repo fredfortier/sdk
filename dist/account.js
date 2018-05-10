@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const _0x_js_1 = require("0x.js");
 const types_1 = require("./types");
 const es6_promisify_1 = require("es6-promisify");
 const request = require("request-promise");
@@ -17,6 +18,7 @@ class Account {
     constructor(ethereum, zeroEx, apiEndpoint, tokens) {
         // TODO tokens + decimal calculations and conversions
         this._endpoint = apiEndpoint;
+        this._tokens = tokens;
         this._ethereum = ethereum;
         this._zeroEx = zeroEx;
         this._wallet = this._ethereum.wallet || undefined;
@@ -24,6 +26,16 @@ class Account {
     }
     get walletType() {
         return this._wallet ? types_1.WalletType.Core : types_1.WalletType.Rpc;
+    }
+    exportSeedPhraseAsync(password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._wallet.exportSeedPhraseAsync(password);
+        });
+    }
+    exportAddressPrivateKeyAsync(password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._wallet.exportAccountPrivateKeyAsync(this.address, password);
+        });
     }
     setAddressAsync(account) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,7 +50,8 @@ class Account {
     }
     getEthBalanceAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._ethereum.getEthBalanceAsync(this.address);
+            const balance = yield this._ethereum.getEthBalanceAsync(this.address);
+            return _0x_js_1.ZeroEx.toUnitAmount(balance, 18);
         });
     }
     transferEthAsync() {
@@ -49,8 +62,7 @@ class Account {
     wrapEthAsync(amount) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
-            const amt = amount.times(10).pow(18);
-            const txHash = yield this._zeroEx.etherToken.depositAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', amt, this.address);
+            const txHash = yield this._zeroEx.etherToken.depositAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
@@ -58,19 +70,20 @@ class Account {
     unwrapEthAsync(amount) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
-            const amt = amount.times(10).pow(18);
-            const txHash = yield this._zeroEx.etherToken.withdrawAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', amt, this.address);
+            const txHash = yield this._zeroEx.etherToken.withdrawAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
     }
     getTokenBalanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._zeroEx.token.getBalanceAsync(token, this.address);
+            const balance = yield this._zeroEx.token.getBalanceAsync(token, this.address);
+            return _0x_js_1.ZeroEx.toBaseUnitAmount(balance, this._tokens[token].decimals);
         });
     }
     transferTokenAsync(token, to, amount) {
         return __awaiter(this, void 0, void 0, function* () {
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
             const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amount);
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
@@ -78,12 +91,14 @@ class Account {
     }
     getTokenAllowanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
+            const baseUnitallowance = yield this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
+            return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
         });
     }
     setTokenAllowanceAsync(token, amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amount);
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+            const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });

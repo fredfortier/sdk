@@ -28,7 +28,7 @@ describe('RadarRelaySDK.Ws', () => {
   it('fires event on order create', async () => {
 
     await new Promise(async (resolve, reject) => {
-      const sock = socket('http://localhost:8080');
+      const sock = socket('http://35.190.74.75');
       const market = rrsdk.markets.get('ZRX-WETH');
 
       sock.on(`${market.quoteTokenAddress}:${market.baseTokenAddress}`, message => {

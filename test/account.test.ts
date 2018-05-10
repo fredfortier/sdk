@@ -62,7 +62,7 @@ describe('RadarRelaySDK.Account', () => {
 
     it('setUnlimitedTokenAllowanceAsync', async () => {
       const receipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-        rrsdk.markets.get('ZRX-WETH').quoteTokenAddress
+        rrsdk.markets.get('ZRX-WETH').baseTokenAddress
       );
       expect(receipt.logs.length).to.be.gt(0);
     });

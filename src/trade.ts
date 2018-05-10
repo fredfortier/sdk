@@ -13,16 +13,19 @@ export class Trade {
     private _account: Account;
     private _zeroEx: ZeroEx;
     private _events: EventEmitter;
+    private _tokens: any[];
 
     constructor(
       zeroEx: ZeroEx,
       apiEndpoint: string,
       account: Account,
-      events: EventEmitter) {
+      events: EventEmitter,
+      tokens: any[]) {
         this._zeroEx = zeroEx;
         this._endpoint = apiEndpoint;
         this._account = account;
         this._events = events;
+        this._tokens = tokens;
     }
 
     public async marketOrder(
@@ -47,7 +50,7 @@ export class Trade {
 
       const txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
         marketResponse.orders,
-        quantity.pow(10, market.baseTokenDecimals.toNumber()),
+        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
         true,
         this._account.address);
 

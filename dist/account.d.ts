@@ -9,8 +9,11 @@ export declare class Account {
     private _ethereum;
     private _zeroEx;
     private _endpoint;
+    private _tokens;
     constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]);
     readonly walletType: WalletType;
+    exportSeedPhraseAsync(password: string): Promise<string>;
+    exportAddressPrivateKeyAsync(password: string): Promise<string>;
     setAddressAsync(account: string | number): Promise<void>;
     getAvailableAddressesAsync(): Promise<string[]>;
     getEthBalanceAsync(): Promise<BigNumber>;

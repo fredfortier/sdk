@@ -117,14 +117,18 @@ class RadarRelaySDK {
         return this.getCallback('zeroExInitialized', this.zeroEx);
     }
     initTrade() {
-        this.trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events);
+        this.trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
         return this.getCallback('tradeInitialized', this.trade);
     }
     initTokensAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             // only fetch if not already fetched
             if (this._prevApiEndpoint !== this._apiEndpoint) {
-                this.tokens = JSON.parse(yield request.get(`${this._apiEndpoint}/tokens`));
+                const tokens = JSON.parse(yield request.get(`${this._apiEndpoint}/tokens`));
+                this.tokens = tokens.reduce((result, token) => {
+                    result[token.address] = token;
+                    return result;
+                }, {});
             }
             // todo index by address
             return this.getCallback('tokensInitialized', this.tokens);

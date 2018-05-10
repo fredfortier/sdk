@@ -13,11 +13,12 @@ const _0x_js_1 = require("0x.js");
 const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 class Trade {
-    constructor(zeroEx, apiEndpoint, account, events) {
+    constructor(zeroEx, apiEndpoint, account, events, tokens) {
         this._zeroEx = zeroEx;
         this._endpoint = apiEndpoint;
         this._account = account;
         this._events = events;
+        this._tokens = tokens;
     }
     marketOrder(market, type = 'buy', quantity = null) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -33,7 +34,7 @@ class Trade {
                 marketResponse.orders[i].makerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount);
                 marketResponse.orders[i].expirationUnixTimestampSec = new bignumber_js_1.default(order.expirationUnixTimestampSec);
             });
-            const txHash = yield this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, quantity.pow(10, market.baseTokenDecimals.toNumber()), true, this._account.address);
+            const txHash = yield this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address);
             this._events.emit('transactionPending', txHash);
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             this._events.emit('transactionMined', receipt);

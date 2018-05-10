@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { ZeroEx } from '0x.js';
 import { EventEmitter } from 'events';
+import { SDKConfig } from './types';
 import { Account } from './account';
 import { Market } from './market';
 import { Trade } from './trade';
@@ -31,12 +32,7 @@ export declare class RadarRelaySDK {
      */
     private loadPriorityList;
     constructor();
-    initialize(config: {
-        password?: string;
-        walletRpcUrl?: string;
-        dataRpcUrl: string;
-        radarRelayEndpoint: string;
-    }): Promise<string | boolean>;
+    initialize(config: SDKConfig): Promise<string | boolean>;
     setEthereumAsync(config: {
         password?: string;
         walletRpcUrl?: string;

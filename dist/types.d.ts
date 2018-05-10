@@ -1,3 +1,9 @@
+export interface SDKConfig {
+    password?: string;
+    walletRpcUrl?: string;
+    dataRpcUrl: string;
+    radarRelayEndpoint: string;
+}
 export interface PartialTxParams {
     nonce: string;
     gasPrice?: string;

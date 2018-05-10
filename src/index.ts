@@ -1,7 +1,7 @@
 import {ZeroEx, ZeroExConfig} from '0x.js';
 import {WalletManager} from 'vault-manager';
 import {EventEmitter} from 'events';
-import {Wallet} from './types';
+import {Wallet, SDKConfig} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -73,13 +73,7 @@ export class RadarRelaySDK {
       this.lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
 
-    public async initialize(
-      config: {
-        password?: string;
-        walletRpcUrl?: string;
-        dataRpcUrl: string;
-        radarRelayEndpoint: string;
-      }) {
+    public async initialize(config: SDKConfig) {
 
       // set the api endpoint outside
       // of the init lifecycle
@@ -145,14 +139,18 @@ export class RadarRelaySDK {
     }
 
     private initTrade() {
-      this.trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events);
+      this.trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
       return this.getCallback('tradeInitialized', this.trade);
     }
 
     private async initTokensAsync() {
       // only fetch if not already fetched
       if (this._prevApiEndpoint !== this._apiEndpoint) {
-        this.tokens = JSON.parse(await request.get(`${this._apiEndpoint}/tokens`));
+        const tokens = JSON.parse(await request.get(`${this._apiEndpoint}/tokens`));
+        this.tokens = tokens.reduce((result, token) => {
+          result[token.address] = token;
+          return result;
+        }, {});
       }
       // todo index by address
       return this.getCallback('tokensInitialized', this.tokens);
