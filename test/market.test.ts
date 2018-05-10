@@ -10,7 +10,7 @@ import {mockRequests} from './lib/mockRequests';
 
 const expect = chai.expect;
 
-describe.only('RadarRelaySDK.Market', () => {
+describe('RadarRelaySDK.Market', () => {
 
   let rrsdk;
   let signedOrder;
@@ -24,7 +24,7 @@ describe.only('RadarRelaySDK.Market', () => {
       password: 'password',
       // walletRpcUrl: 'http://35.196.15.153:8100',
       dataRpcUrl: 'http://35.196.15.153:8100',
-      radarRelayEndpoint: 'http://localhost:8080/v0'
+      radarRelayEndpoint: 'http://35.190.74.75/v0'
     });
   });
 
@@ -51,10 +51,10 @@ describe.only('RadarRelaySDK.Market', () => {
     expect(ticker).to.not.be.empty;
   });
 
-  it.only('limitOrderAsync', async () => {
+  it('limitOrderAsync', async () => {
 
-    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('sell',
-      new BigNumber(String(Math.random() * 10)),
+    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
+      new BigNumber(String(0.01)),
       new BigNumber('0.007'),
       new BigNumber((new Date().getTime() / 1000) + 43200).floor()
     );

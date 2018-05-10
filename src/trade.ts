@@ -3,13 +3,9 @@ import {Market} from './market';
 import {Account} from './account';
 import {EventEmitter} from 'events';
 import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature} from '0x.js';
-import {RelaySignedOrder} from '0x-relay-types';
 import {WalletType} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-
-// TODO move into config file
-const feeRecipientAddress = '0xa258b39954cef5cb142fd567a46cddb31a670124';
 
 export class Trade {
 
@@ -51,7 +47,7 @@ export class Trade {
 
       const txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
         marketResponse.orders,
-        quantity.times(10).pow(market.baseTokenDecimals.toNumber()),
+        quantity.pow(10, market.baseTokenDecimals.toNumber()),
         true,
         this._account.address);
 
@@ -80,14 +76,6 @@ export class Trade {
             expiration: expiration.toString()
           }
       });
-
-      // TODO this appears to be
-      // broken, remove once fixed
-      if (type === 'sell') {
-        order.takerTokenAmount = new BigNumber(order.makerTokenAmount).times(price).floor().toString();
-      } else {
-        order.makerTokenAmount = new BigNumber(order.takerTokenAmount).times(price).floor().toString();
-      }
 
       // add missing data
       order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();

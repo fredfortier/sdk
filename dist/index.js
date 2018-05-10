@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _0x_js_1 = require("0x.js");
 const vault_manager_1 = require("vault-manager");
 const events_1 = require("events");
+const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 // SDK Classes
 const sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");
@@ -18,6 +19,7 @@ const ethereum_1 = require("./ethereum");
 const account_1 = require("./account");
 const market_1 = require("./market");
 const trade_1 = require("./trade");
+bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
  * RadarRelaySDK
  */
@@ -41,14 +43,11 @@ class RadarRelaySDK {
                 event: 'zeroExInitialized',
                 func: this.initTokensAsync
             }, {
-                event: 'apiEndpointUpdated',
-                func: this.initTokensAsync
-            }, {
                 event: 'tokensInitialized',
-                func: this.setAccount,
+                func: this.initAccountAsync,
                 args: [0] // pass default account of 0 to setAccount
             }, {
-                event: 'accountUpdated',
+                event: 'accountInitialized',
                 func: this.initTrade
             }, {
                 event: 'tradeInitialized',
@@ -63,67 +62,69 @@ class RadarRelaySDK {
     }
     initialize(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            // setting the API endpoint outside of the lifecycle
-            // prevents the TradeExecuter class from loading twice
-            this.apiEndpoint = config.radarRelayEndpoint;
+            // set the api endpoint outside
+            // of the init lifecycle
+            this._apiEndpoint = config.radarRelayEndpoint;
             // setup the lifecycle function bindings
             this.lifecycle.setup(this);
-            let wallet = config.walletRpcUrl;
-            if (config.password) {
-                // Instantiate the WalletManager
-                const walletManager = new vault_manager_1.WalletManager();
-                // Create a new core wallet
-                wallet = yield walletManager.core.createWalletAsync({ password: config.password });
-            }
-            // set connection
-            return yield this.setEthereumAsync(wallet, config.dataRpcUrl);
+            // setup ethereum class
+            return yield this.setEthereumAsync(config);
         });
     }
     // --- user configurable --- //
-    setEthereumAsync(wallet, rpcUrl) {
+    setEthereumAsync(config) {
         return __awaiter(this, void 0, void 0, function* () {
+            // init wallet as unlocked rpc node
+            let wallet = config.walletRpcUrl;
+            // if a password is passed in
+            // instantiate the WalletManager
+            if (config.password) {
+                const walletManager = new vault_manager_1.WalletManager();
+                // attempt to load core wallet
+                try {
+                    wallet = yield walletManager.core.loadWalletAsync(config.password);
+                }
+                catch (err) {
+                    // create a new core wallet
+                    // defaulting to 5 addresses
+                    wallet = yield walletManager.core.createWalletAsync({ password: config.password });
+                    wallet.addNewAccounts(4);
+                }
+            }
             // same rpcUrl
-            if (this.ethereum && rpcUrl === this.ethereum.provider.host)
-                return;
-            this.ethereum = new ethereum_1.Ethereum(wallet, rpcUrl);
-            return this.getCallback('ethereumNetworkUpdated', this.ethereum);
-        });
-    }
-    setAccount(account) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.ethereum.setDefaultAccount(account);
-            this.account = new account_1.Account(this.ethereum, this.zeroEx, this.apiEndpoint, this.tokens);
-            return this.getCallback('accountUpdated', this.account);
-        });
-    }
-    setApiEndpoint(endpoint) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.apiEndpoint = endpoint;
-            return this.getCallback('apiEndpointUpdated', this.apiEndpoint);
+            this._ethereum = new ethereum_1.Ethereum(wallet, config.dataRpcUrl);
+            return this.getCallback('ethereumNetworkUpdated', this._ethereum);
         });
     }
     // --- not user configurable below this line --- //
+    initAccountAsync(account) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this._ethereum.setDefaultAccount(account);
+            this.account = new account_1.Account(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+            return this.getCallback('accountInitialized', this.account);
+        });
+    }
     initEthereumNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            this._networkId = yield this.ethereum.getNetworkIdAsync.apply(this.ethereum);
+            this._networkId = yield this._ethereum.getNetworkIdAsync.apply(this._ethereum);
             return this.getCallback('ethereumNetworkIdInitialized', this._networkId);
         });
     }
     initZeroEx() {
-        this.zeroEx = new _0x_js_1.ZeroEx(this.ethereum.provider, {
+        this.zeroEx = new _0x_js_1.ZeroEx(this._ethereum.provider, {
             networkId: this._networkId
         });
         return this.getCallback('zeroExInitialized', this.zeroEx);
     }
     initTrade() {
-        this.trade = new trade_1.Trade(this.zeroEx, this.apiEndpoint, this.account, this.events);
+        this.trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events);
         return this.getCallback('tradeInitialized', this.trade);
     }
     initTokensAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             // only fetch if not already fetched
-            if (this._prevApiEndpoint !== this.apiEndpoint) {
-                this.tokens = JSON.parse(yield request.get(`${this.apiEndpoint}/tokens`));
+            if (this._prevApiEndpoint !== this._apiEndpoint) {
+                this.tokens = JSON.parse(yield request.get(`${this._apiEndpoint}/tokens`));
             }
             // todo index by address
             return this.getCallback('tokensInitialized', this.tokens);
@@ -132,12 +133,12 @@ class RadarRelaySDK {
     initMarketsAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             // only fetch if not already fetched
-            if (this._prevApiEndpoint !== this.apiEndpoint) {
-                this._markets = JSON.parse(yield request.get(`${this.apiEndpoint}/markets`));
+            if (this._prevApiEndpoint !== this._apiEndpoint) {
+                this._markets = JSON.parse(yield request.get(`${this._apiEndpoint}/markets`));
             }
             // TODO probably not the best place for this
-            this._prevApiEndpoint = this.apiEndpoint;
-            this.markets = new Map(this._markets.map(market => [market.id, new market_1.Market(market, this.apiEndpoint, this.trade)]));
+            this._prevApiEndpoint = this._apiEndpoint;
+            this.markets = new Map(this._markets.map(market => [market.id, new market_1.Market(market, this._apiEndpoint, this.trade)]));
             return this.getCallback('marketsInitialized', this.markets);
         });
     }

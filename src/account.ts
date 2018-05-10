@@ -48,13 +48,19 @@ export class Account {
   }
 
   public async wrapEthAsync(amount: BigNumber) {
-    const txHash = await this._zeroEx.etherToken.depositAsync(WETH_TOKEN_ADDRESS, amount, this.address);
+    // TODO get addr from tokens array
+    const amt = amount.times(10).pow(18);
+    const txHash = await this._zeroEx.etherToken.depositAsync(
+      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', amt, this.address);
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     return receipt;
   }
 
   public async unwrapEthAsync(amount: BigNumber) {
-    const txHash = await this._zeroEx.etherToken.withdrawAsync(WETH_TOKEN_ADDRESS, amount, this.address);
+    // TODO get addr from tokens array
+    const amt = amount.times(10).pow(18);
+    const txHash = await this._zeroEx.etherToken.withdrawAsync(
+      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', amt, this.address);
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     return receipt;
   }
@@ -75,8 +81,14 @@ export class Account {
 
   public async setTokenAllowanceAsync(token: string, amount: BigNumber) {
     const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amount);
-      const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-      return receipt;
+    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+    return receipt;
+  }
+
+  public async setUnlimitedTokenAllowanceAsync(token: string) {
+    const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
+    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+    return receipt;
   }
 
   public async getOrdersAsync(page: number, perPage: number = 100) {

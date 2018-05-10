@@ -21,7 +21,7 @@ describe('RadarRelaySDK.Ws', () => {
       password: 'password',
       // walletRpcUrl: 'http://35.196.15.153:8100',
       dataRpcUrl: 'http://35.196.15.153:8100',
-      radarRelayEndpoint: 'http://localhost:8080/v0'
+      radarRelayEndpoint: 'http://35.190.74.75/v0'
     });
   });
 

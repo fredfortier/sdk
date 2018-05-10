@@ -25,6 +25,10 @@ import { TransactionManager, Signer, PartialTxParams,
        this.setProvider(wallet, rpcUrl);
      }
 
+     get defaultAccount(): string {
+       return this.web3.eth.defaultAccount;
+     }
+
      /**
       * Get accounts from the connected wallet
       */
@@ -36,16 +40,28 @@ import { TransactionManager, Signer, PartialTxParams,
        * Entry method for signing a message
        */
        public signMessageAsync(unsignedMsg: UnsignedPayload) {
-         return this.wallet.signer.signPersonalMessageAsync(unsignedMsg.params.from, unsignedMsg.params.data);
+         return this.wallet.signer.signPersonalMessageHashAsync(
+           unsignedMsg.params.from, unsignedMsg.params.data
+         );
        }
 
      /**
       * Entry method for signing/sending a transaction
       */
       public async signTransactionAsync(unsignedTx: UnsignedPayload) {
-        // Populate the missing tx params
-        unsignedTx.params = await this.populateMissingTxParams(unsignedTx);
-        return this.wallet.signer.signTransactionAsync(unsignedTx.params as PartialTxParams);
+
+          // set default params if not defined
+          if ((unsignedTx.params as PartialTxParams).gasPrice === undefined) {
+            (unsignedTx.params as PartialTxParams).gasPrice = await this.getDefaultGasPrice();
+          }
+          if ((unsignedTx.params as PartialTxParams).gas === undefined) {
+            (unsignedTx.params as PartialTxParams).gas = await this.getGasLimit(unsignedTx);
+          }
+          if ((unsignedTx.params as PartialTxParams).nonce === undefined) {
+            (unsignedTx.params as PartialTxParams).nonce = await this.getTxNonce(unsignedTx);
+          }
+
+          return this.wallet.signer.signTransactionAsync(unsignedTx.params as PartialTxParams);
       }
 
      /**
@@ -128,29 +144,31 @@ import { TransactionManager, Signer, PartialTxParams,
 
      }
 
-     /**
-      * Populates the missing tx params
-      */
-      private async populateMissingTxParams(unsignedPayload: UnsignedPayload): Promise<PartialTxParams> {
-        const defaultGasPrice = await promisify<BigNumber>(this.web3.eth.getGasPrice)();
-        const gasLimit = await promisify<number>(this.web3.eth.estimateGas)(unsignedPayload.params);
-
-        const nonce = await promisify<number>(
-          this.web3.eth.getTransactionCount
-        )(unsignedPayload.params.from, 'pending');
-
-        const filledParams = unsignedPayload.params as PartialTxParams;
-
-        // Fill Params
-        filledParams.gasPrice = `0x${defaultGasPrice.toString(16)}`;
-        filledParams.gas = `0x${gasLimit.toString(16)}`;
-        filledParams.nonce = `0x${nonce.toString(16)}`;
-
-        return filledParams;
+      /*
+       * Get default gas price
+       */
+      private async getDefaultGasPrice(): Promise<string> {
+        const defaultGasPrice = await promisify<BigNumber>(this.web3.eth.getGasPrice.bind(this))();
+        return `0x${defaultGasPrice.toString(16)}`;
       }
 
-     get defaultAccount(): string {
-       return this.web3.eth.defaultAccount;
-     }
+      /*
+       * Get a tx gas limit estimate
+       */
+      private async getGasLimit(unsignedPayload: UnsignedPayload): Promise<string> {
+        const gasLimit = await promisify<number>(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
+        return `0x${gasLimit.toString(16)}`;
+      }
+
+      /*
+       * Get a tx nonce
+       */
+      private async getTxNonce(unsignedPayload: UnsignedPayload): Promise<string> {
+        const nonce = await promisify<number>(this.web3.eth.getTransactionCount.bind(this))(
+          unsignedPayload.params.from, 'pending'
+        );
+
+        return `0x${nonce.toString(16)}`;
+      }
 
  }

@@ -4,6 +4,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {RadarRelaySDK} from '../src/index';
+import BigNumber from 'bignumber.js';
 
 const expect = chai.expect;
 
@@ -17,7 +18,7 @@ describe('RadarRelaySDK.Account', () => {
         password: 'password',
         // walletRpcUrl: 'http://35.196.15.153:8100',
         dataRpcUrl: 'http://35.196.15.153:8100',
-        radarRelayEndpoint: 'http://localhost:8080/v0'
+        radarRelayEndpoint: 'http://35.190.74.75/v0'
       });
       console.log('address:', rrsdk.account.address);
     });
@@ -31,12 +32,14 @@ describe('RadarRelaySDK.Account', () => {
       // TODO
     });
 
-    it.skip('wrapEthAsync', async () => {
-      // TODO
+    it('wrapEthAsync', async () => {
+      const receipt = await rrsdk.account.wrapEthAsync(new BigNumber('0.1'));
+      expect(receipt.logs.length).to.be.gt(0);
     });
 
-    it.skip('unwrapEthAsync', async () => {
-      // TODO
+    it('unwrapEthAsync', async () => {
+      const receipt = await rrsdk.account.unwrapEthAsync(new BigNumber('0.1'));
+      expect(receipt.logs.length).to.be.gt(0);
     });
 
     it('getTokenBalanceAsync', async () => {
@@ -55,6 +58,13 @@ describe('RadarRelaySDK.Account', () => {
 
     it.skip('setTokenAllowanceAsync', async () => {
       // TODO
+    });
+
+    it('setUnlimitedTokenAllowanceAsync', async () => {
+      const receipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
+        rrsdk.markets.get('ZRX-WETH').quoteTokenAddress
+      );
+      expect(receipt.logs.length).to.be.gt(0);
     });
 
     it('getOrdersAsync', async () => {

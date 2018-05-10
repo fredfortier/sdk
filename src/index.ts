@@ -14,6 +14,8 @@ import {Market} from './market';
 import {Trade} from './trade';
 import {Ws} from './ws';
 
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
+
 /**
  * RadarRelaySDK
  */

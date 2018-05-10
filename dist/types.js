@@ -10,6 +10,7 @@ var WalletType;
 (function (WalletType) {
     WalletType[WalletType["Core"] = 0] = "Core";
     WalletType[WalletType["Ledger"] = 1] = "Ledger";
+    WalletType[WalletType["Rpc"] = 2] = "Rpc";
 })(WalletType = exports.WalletType || (exports.WalletType = {}));
 var InfuraNetwork;
 (function (InfuraNetwork) {
