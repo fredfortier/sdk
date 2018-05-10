@@ -1,7 +1,7 @@
 {
-  "name": "relayjs",
-  "version": "0.1.0",
-  "description": "A JavaScript library for interacting with 0x Relayers",
+  "name": "radar-relay-sdk",
+  "version": "0.0.1",
+  "description": "A JavaScript library for interacting with Radar Relay",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -21,7 +21,7 @@
     "relay"
   ],
   "author": "Mike Roth <mike@radarrelay.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/RadarRelay/radar-relay-sdk.git/issues"
   },
