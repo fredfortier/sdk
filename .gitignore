@@ -67,3 +67,4 @@ docs
 dist-test
 
 .radar-core-wallet
+.npmrc
