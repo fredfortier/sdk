@@ -34,16 +34,16 @@ describe('RadarRelaySDK.Account', () => {
 
     it('wrapEthAsync', async () => {
       const receipt = await rrsdk.account.wrapEthAsync(
-        new BigNumber('0.1'), true // awaitTxMined
+        new BigNumber('0.1'), true // wait for tx to mine
       );
       expect(receipt.logs.length).to.be.gt(0);
     });
 
     it('unwrapEthAsync', async () => {
-      const receipt = await rrsdk.account.unwrapEthAsync(
-        new BigNumber('0.1'), true // awaitTxMined
+      const hash = await rrsdk.account.unwrapEthAsync(
+        new BigNumber('0.1')
       );
-      expect(receipt.logs.length).to.be.gt(0);
+      expect(hash);
     });
 
     it('getTokenBalanceAsync', async () => {
@@ -67,10 +67,10 @@ describe('RadarRelaySDK.Account', () => {
     });
 
     it('setUnlimitedTokenAllowanceAsync', async () => {
-      const receipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-        rrsdk.markets['ZRX-WETH'].baseTokenAddress, true // awaitTxMined
+      const hash = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
+        rrsdk.markets['ZRX-WETH'].baseTokenAddress
       );
-      expect(receipt.logs.length).to.be.gt(0);
+      expect(hash);
     });
 
     it('getOrdersAsync', async () => {
