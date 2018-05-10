@@ -46,7 +46,8 @@ export enum PayloadType {
 
 export enum WalletType {
   Core,
-  Ledger
+  Ledger,
+  Rpc
 }
 
 export enum InfuraNetwork {

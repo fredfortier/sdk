@@ -10,7 +10,7 @@ import {mockRequests} from './lib/mockRequests';
 
 const expect = chai.expect;
 
-describe('RadarRelaySDK.Market', () => {
+describe.only('RadarRelaySDK.Market', () => {
 
   let rrsdk;
   let signedOrder;
@@ -51,7 +51,7 @@ describe('RadarRelaySDK.Market', () => {
     expect(ticker).to.not.be.empty;
   });
 
-  it('limitOrderAsync', async () => {
+  it.only('limitOrderAsync', async () => {
 
     signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('sell',
       new BigNumber(String(Math.random() * 10)),

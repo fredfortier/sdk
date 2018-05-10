@@ -4,6 +4,7 @@ import {Account} from './account';
 import {EventEmitter} from 'events';
 import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature} from '0x.js';
 import {RelaySignedOrder} from '0x-relay-types';
+import {WalletType} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -93,8 +94,9 @@ export class Trade {
       order.maker = this._account.address;
 
       // sign order
+      const prefix = (this._account.walletType === WalletType.Core);
       const orderHash = ZeroEx.getOrderHashHex(order);
-      const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, false);
+      const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
       (order as SignedOrder).ecSignature = ecSignature;
 
       // POST order to API

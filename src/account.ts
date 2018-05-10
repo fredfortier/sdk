@@ -1,6 +1,6 @@
 import {ZeroEx} from '0x.js';
 import {Ethereum} from './ethereum';
-import {Wallet} from './types';
+import {Wallet, WalletType} from './types';
 import {promisify} from 'es6-promisify';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
@@ -24,6 +24,10 @@ export class Account {
     this._zeroEx = zeroEx;
     this._wallet = this._ethereum.wallet || undefined;
     this.address = this._ethereum.defaultAccount;
+  }
+
+  get walletType() {
+    return this._wallet ? WalletType.Core : WalletType.Rpc;
   }
 
   public async setAddressAsync(account: string | number) {

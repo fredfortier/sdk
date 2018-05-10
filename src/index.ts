@@ -25,9 +25,9 @@ export class RadarRelaySDK {
     public markets: Map<string, Market>;
     public trade: Trade;
     public ws: Ws;
+    public zeroEx: ZeroEx;
 
     private _ethereum: Ethereum;
-    private _zeroEx: ZeroEx;
     private _apiEndpoint: string;
     private _networkId: number;
     private _prevApiEndpoint: string;
@@ -126,7 +126,7 @@ export class RadarRelaySDK {
 
     private async initAccountAsync(account: string | number) {
       await this._ethereum.setDefaultAccount(account);
-      this.account = new Account(this._ethereum, this._zeroEx, this._apiEndpoint, this.tokens);
+      this.account = new Account(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
       return this.getCallback('accountInitialized', this.account);
     }
 
@@ -136,14 +136,14 @@ export class RadarRelaySDK {
     }
 
     private initZeroEx() {
-      this._zeroEx = new ZeroEx(this._ethereum.provider, {
+      this.zeroEx = new ZeroEx(this._ethereum.provider, {
         networkId: this._networkId
       });
-      return this.getCallback('zeroExInitialized', this._zeroEx);
+      return this.getCallback('zeroExInitialized', this.zeroEx);
     }
 
     private initTrade() {
-      this.trade = new Trade(this._zeroEx, this._apiEndpoint, this.account, this.events);
+      this.trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events);
       return this.getCallback('tradeInitialized', this.trade);
     }
 
