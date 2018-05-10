@@ -11,7 +11,7 @@ export declare class Trade {
     private _events;
     private _tokens;
     constructor(zeroEx: ZeroEx, apiEndpoint: string, account: Account, events: EventEmitter, tokens: any[]);
-    marketOrder(market: Market, type?: string, quantity?: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
+    marketOrder(market: Market, type?: string, quantity?: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     limitOrder(market: Market, type: string, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<Order>;
-    cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs>;
+    cancelOrderAsync(order: SignedOrder, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
 }

@@ -29,14 +29,14 @@ describe('RadarRelaySDK.Ws', () => {
 
     await new Promise(async (resolve, reject) => {
       const sock = socket('http://35.190.74.75');
-      const market = rrsdk.markets.get('ZRX-WETH');
+      const market = rrsdk.markets['ZRX-WETH'];
 
       sock.on(`${market.quoteTokenAddress}:${market.baseTokenAddress}`, message => {
         console.log(message);
         resolve(true);
       });
 
-      order = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
+      order = await rrsdk.markets['ZRX-WETH'].limitOrderAsync('buy',
         new BigNumber(String(Math.random() * 10)),
         new BigNumber('0.0015'),
         new BigNumber((new Date().getTime() / 1000) + 43200).floor()

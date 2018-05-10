@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import {EventEmitter} from 'events';
 import {promisify} from 'es6-promisify';
 import {Web3Builder, WalletManager} from 'vault-manager';
-import {InjectedWeb3Subprovider} from '@0xproject/subproviders';
+import {InjectedWeb3Subprovider, NonceTrackerSubprovider} from '@0xproject/subproviders';
 import { TransactionManager, Signer, PartialTxParams,
     UnsignedPayload, Wallet } from './types';
 
@@ -49,7 +49,6 @@ import { TransactionManager, Signer, PartialTxParams,
       * Entry method for signing/sending a transaction
       */
       public async signTransactionAsync(unsignedTx: UnsignedPayload): Promise<string> {
-
           // set default params if not defined
           if ((unsignedTx.params as PartialTxParams).gasPrice === undefined) {
             (unsignedTx.params as PartialTxParams).gasPrice = await this.getDefaultGasPrice();
@@ -127,7 +126,7 @@ import { TransactionManager, Signer, PartialTxParams,
          //  To avoid passing a static instance of the Web3 object around
          //  this class implements `TransactionManager` and is passed
          //  in to the `setSignerAndRpcConnection` to init Web3
-         this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl);
+         this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl, new NonceTrackerSubprovider());
          this.provider = this.web3.currentProvider;
        } else {
           // --- Use unlocked node --- //

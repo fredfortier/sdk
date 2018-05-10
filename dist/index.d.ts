@@ -1,22 +1,23 @@
-/// <reference types="node" />
 import { ZeroEx } from '0x.js';
-import { EventEmitter } from 'events';
 import { SDKConfig } from './types';
+import { RadarToken } from 'radar-types';
+import { EventBus } from './event-emitter';
 import { Account } from './account';
 import { Market } from './market';
-import { Trade } from './trade';
 import { Ws } from './ws';
 /**
  * RadarRelaySDK
  */
 export declare class RadarRelaySDK {
-    events: EventEmitter;
+    events: EventBus;
     account: Account;
-    tokens: any;
-    markets: Map<string, Market>;
-    trade: Trade;
+    tokens: RadarToken[];
+    markets: {
+        [key: string]: Market;
+    };
     ws: Ws;
     zeroEx: ZeroEx;
+    private _trade;
     private _ethereum;
     private _apiEndpoint;
     private _networkId;
@@ -33,11 +34,7 @@ export declare class RadarRelaySDK {
     private loadPriorityList;
     constructor();
     initialize(config: SDKConfig): Promise<string | boolean>;
-    setEthereumAsync(config: {
-        password?: string;
-        walletRpcUrl?: string;
-        dataRpcUrl: string;
-    }): Promise<string | boolean>;
+    setEthereumAsync(config: SDKConfig): Promise<string | boolean>;
     private initAccountAsync(account);
     private initEthereumNetworkIdAsync();
     private initZeroEx();

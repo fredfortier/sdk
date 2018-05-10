@@ -1,6 +1,6 @@
 {
   "name": "radar-relay-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A JavaScript library for interacting with Radar Relay",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -50,7 +50,7 @@
     "request-promise": "^4.2.2",
     "socket.io-client": "^2.0.4",
     "typescript": "^2.7.2",
-    "vault-manager": "0.1.0",
+    "vault-manager": "^0.1.1",
     "web3": "^0.20.0",
     "web3-provider-engine": "^14.0.5"
   }

@@ -52,6 +52,7 @@ class Ethereum {
             if (unsignedTx.params.nonce === undefined) {
                 unsignedTx.params.nonce = yield this.getTxNonce(unsignedTx);
             }
+            console.log(unsignedTx.params);
             return this.wallet.signer.signTransactionAsync(unsignedTx.params);
         });
     }
@@ -124,7 +125,7 @@ class Ethereum {
             //  To avoid passing a static instance of the Web3 object around
             //  this class implements `TransactionManager` and is passed
             //  in to the `setSignerAndRpcConnection` to init Web3
-            this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl);
+            web3Builder.setSignerAndRpcConnection(this, rpcUrl);
             this.provider = this.web3.currentProvider;
         }
         else {

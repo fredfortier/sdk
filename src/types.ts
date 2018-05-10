@@ -1,9 +1,17 @@
+import {EventBus} from './event-emitter';
+import {Ethereum} from './ethereum';
+import {Account} from './account';
+import {Market} from './market';
+import {Trade} from './trade';
+import {Ws} from './ws';
+import {RadarToken, RadarMarket} from 'radar-types';
+import {ZeroEx} from '0x.js';
 
 export interface SDKConfig {
   password?: string;
   walletRpcUrl?: string;
   dataRpcUrl: string;
-  radarRelayEndpoint: string;
+  radarRelayEndpoint?: string;
 }
 
 export interface PartialTxParams {

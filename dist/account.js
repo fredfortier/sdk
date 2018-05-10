@@ -59,20 +59,24 @@ class Account {
             // TODO
         });
     }
-    wrapEthAsync(amount) {
+    wrapEthAsync(amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
             const txHash = yield this._zeroEx.etherToken.depositAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            return receipt;
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
-    unwrapEthAsync(amount) {
+    unwrapEthAsync(amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
             const txHash = yield this._zeroEx.etherToken.withdrawAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            return receipt;
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
     getTokenBalanceAsync(token) {
@@ -81,12 +85,14 @@ class Account {
             return _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens[token].decimals);
         });
     }
-    transferTokenAsync(token, to, amount) {
+    transferTokenAsync(token, to, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
             const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amount);
-            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            return receipt;
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
     getTokenAllowanceAsync(token) {
@@ -95,27 +101,31 @@ class Account {
             return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
         });
     }
-    setTokenAllowanceAsync(token, amount) {
+    setTokenAllowanceAsync(token, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
             const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
-            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            return receipt;
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
-    setUnlimitedTokenAllowanceAsync(token) {
+    setUnlimitedTokenAllowanceAsync(token, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const txHash = yield this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
-            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            return receipt;
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
-    getOrdersAsync(page, perPage = 100) {
+    getOrdersAsync(page = 1, perPage = 100) {
         return __awaiter(this, void 0, void 0, function* () {
             return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/orders`));
         });
     }
-    getFillsAsync(page, perPage = 100) {
+    getFillsAsync(page = 1, perPage = 100) {
         return __awaiter(this, void 0, void 0, function* () {
             return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/fills`));
         });
