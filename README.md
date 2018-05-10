@@ -99,7 +99,7 @@ rrsdk.initialize('http://localhost:8545', 'http://localhost:8080');
 // called automatically on initialize
 // but can be called at any point
 // each will trigger an event (see events below)
-rrsdk.setEthereumConnectionAsync
+rrsdk.setEthereumAsync
 rrsdk.setEthereumNetworkIdAsync
 rrsdk.setAccount
 rrsdk.setApiEndpoint

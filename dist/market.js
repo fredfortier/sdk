@@ -12,8 +12,8 @@ const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 class Market {
     constructor(params, apiEndpoint, trade) {
-        this.endpoint = apiEndpoint;
-        this.trade = trade;
+        this._endpoint = apiEndpoint;
+        this._trade = trade;
         this.id = params.id;
         this.baseTokenAddress = params.baseTokenAddress;
         this.quoteTokenAddress = params.quoteTokenAddress;
@@ -28,43 +28,43 @@ class Market {
     // TODO managed books?
     getBookAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/markets/${this.id}/book`));
+            return JSON.parse(yield request.get(`${this._endpoint}/markets/${this.id}/book`));
         });
     }
     // getFills
     getFillsAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/markets/${this.id}/fills`));
+            return JSON.parse(yield request.get(`${this._endpoint}/markets/${this.id}/fills`));
         });
     }
     // getCandles
     getCandlesAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/markets/${this.id}/candles`));
+            return JSON.parse(yield request.get(`${this._endpoint}/markets/${this.id}/candles`));
         });
     }
     // getTicker
     getTickerAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/markets/${this.id}/ticker`));
+            return JSON.parse(yield request.get(`${this._endpoint}/markets/${this.id}/ticker`));
         });
     }
     // marketOrder
     marketOrderAsync(type, amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.trade.marketOrder(this, type, amount);
+            return yield this._trade.marketOrder(this, type, amount);
         });
     }
     // limitOrder
     limitOrderAsync(type = 'buy', quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.trade.limitOrder(this, type, quantity, price, expiration);
+            return yield this._trade.limitOrder(this, type, quantity, price, expiration);
         });
     }
     // cancelOrder
     cancelOrderAsync(order) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.trade.cancelOrderAsync(order);
+            return yield this._trade.cancelOrderAsync(order);
         });
     }
 }

@@ -20,10 +20,12 @@ describe('RadarRelaySDK.Market', () => {
     // mockRequests();
 
     rrsdk = new RadarRelaySDK();
-    await rrsdk.initialize(
-      // 'http://localhost:8545',
-      'http://35.196.15.153:8100',
-      'http://localhost:8080/v0');
+    await rrsdk.initialize({
+      password: 'password',
+      // walletRpcUrl: 'http://35.196.15.153:8100',
+      dataRpcUrl: 'http://35.196.15.153:8100',
+      radarRelayEndpoint: 'http://35.190.74.75/v0'
+    });
   });
 
   it('getBookAsync', async () => {
@@ -51,8 +53,8 @@ describe('RadarRelaySDK.Market', () => {
 
   it('limitOrderAsync', async () => {
 
-    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('sell',
-      new BigNumber(String(Math.random() * 10)),
+    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
+      new BigNumber(String(0.01)),
       new BigNumber('0.007'),
       new BigNumber((new Date().getTime() / 1000) + 43200).floor()
     );

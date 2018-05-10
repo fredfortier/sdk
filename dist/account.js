@@ -8,21 +8,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const _0x_js_1 = require("0x.js");
+const types_1 = require("./types");
+const es6_promisify_1 = require("es6-promisify");
 const request = require("request-promise");
 // TODO move to config
 const WETH_TOKEN_ADDRESS = '';
-const ZEROEX_PROXY_ADDRESS = '0x087eed4bc1ee3de49befbd66c662b434b15d49d4';
 class Account {
-    constructor(connection, zeroEx, apiEndpoint, tokens) {
+    constructor(ethereum, zeroEx, apiEndpoint, tokens) {
         // TODO tokens + decimal calculations and conversions
-        this.endpoint = apiEndpoint;
-        this.connection = connection;
-        this.address = this.connection.defaultAccount;
-        this.zeroEx = zeroEx;
+        this._endpoint = apiEndpoint;
+        this._tokens = tokens;
+        this._ethereum = ethereum;
+        this._zeroEx = zeroEx;
+        this._wallet = this._ethereum.wallet || undefined;
+        this.address = this._ethereum.defaultAccount;
+    }
+    get walletType() {
+        return this._wallet ? types_1.WalletType.Core : types_1.WalletType.Rpc;
+    }
+    exportSeedPhraseAsync(password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._wallet.exportSeedPhraseAsync(password);
+        });
+    }
+    exportAddressPrivateKeyAsync(password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._wallet.exportAccountPrivateKeyAsync(this.address, password);
+        });
+    }
+    setAddressAsync(account) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this._ethereum.setDefaultAccount(account);
+            this.address = this._ethereum.defaultAccount;
+        });
+    }
+    getAvailableAddressesAsync() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield es6_promisify_1.promisify(this._ethereum.web3.eth.getAccounts)();
+        });
     }
     getEthBalanceAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.connection.getEthBalanceAsync(this.address);
+            const balance = yield this._ethereum.getEthBalanceAsync(this.address);
+            return _0x_js_1.ZeroEx.toUnitAmount(balance, 18);
         });
     }
     transferEthAsync() {
@@ -32,50 +61,63 @@ class Account {
     }
     wrapEthAsync(amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this.zeroEx.etherToken.depositAsync(WETH_TOKEN_ADDRESS, amount, this.address);
-            const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
+            // TODO get addr from tokens array
+            const txHash = yield this._zeroEx.etherToken.depositAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
     }
     unwrapEthAsync(amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this.zeroEx.etherToken.withdrawAsync(WETH_TOKEN_ADDRESS, amount, this.address);
-            const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
+            // TODO get addr from tokens array
+            const txHash = yield this._zeroEx.etherToken.withdrawAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
     }
     getTokenBalanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.zeroEx.token.getBalanceAsync(token, this.address);
+            const balance = yield this._zeroEx.token.getBalanceAsync(token, this.address);
+            return _0x_js_1.ZeroEx.toBaseUnitAmount(balance, this._tokens[token].decimals);
         });
     }
     transferTokenAsync(token, to, amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this.zeroEx.token.transferAsync(token, this.address, to, amount);
-            const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+            const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amount);
+            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
     }
     getTokenAllowanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.zeroEx.token.getProxyAllowanceAsync(token, this.address);
+            const baseUnitallowance = yield this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
+            return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
         });
     }
     setTokenAllowanceAsync(token, amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this.zeroEx.token.setProxyAllowanceAsync(token, this.address, amount);
-            const receipt = yield this.zeroEx.awaitTransactionMinedAsync(txHash);
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+            const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
+            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+            return receipt;
+        });
+    }
+    setUnlimitedTokenAllowanceAsync(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const txHash = yield this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
+            const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
             return receipt;
         });
     }
     getOrdersAsync(page, perPage = 100) {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/accounts/${this.address}/orders`));
+            return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/orders`));
         });
     }
     getFillsAsync(page, perPage = 100) {
         return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this.endpoint}/accounts/${this.address}/fills`));
+            return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/fills`));
         });
     }
 }
