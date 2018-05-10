@@ -1,5 +1,6 @@
-import {SignedOrder} from '0x.js';
+import {SignedOrder, TransactionReceiptWithDecodedLogs, Order} from '0x.js';
 import {Trade} from './trade';
+import {RadarBook, RadarFill, RadarSignedOrder, RadarCandle, RadarTicker} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -34,27 +35,27 @@ export class Market {
 
   // getBook
   // TODO managed books?
-  public async getBookAsync() {
+  public async getBookAsync(): Promise<RadarBook> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/book`));
   }
 
   // getFills
-  public async getFillsAsync() {
+  public async getFillsAsync(): Promise<RadarFill[]> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/fills`));
   }
 
   // getCandles
-  public async getCandlesAsync() {
+  public async getCandlesAsync(): Promise<RadarCandle[]> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/candles`));
   }
 
   // getTicker
-  public async getTickerAsync() {
+  public async getTickerAsync(): Promise<RadarTicker> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
   }
 
   // marketOrder
-  public async marketOrderAsync(type: string, amount: BigNumber) {
+  public async marketOrderAsync(type: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
     return await this._trade.marketOrder(this, type, amount);
   }
 
@@ -63,12 +64,12 @@ export class Market {
     type: string = 'buy',
     quantity: BigNumber,
     price: BigNumber,
-    expiration: BigNumber) {
+    expiration: BigNumber): Promise<Order> {
     return await this._trade.limitOrder(this, type, quantity, price, expiration);
   }
 
   // cancelOrder
-  public async cancelOrderAsync(order: SignedOrder) {
+  public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
     return await this._trade.cancelOrderAsync(order);
   }
 

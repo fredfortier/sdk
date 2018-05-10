@@ -45,12 +45,13 @@
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",
     "promisify": "0.0.3",
+    "radar-types": "^0.4.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "socket.io-client": "^2.0.4",
     "typescript": "^2.7.2",
+    "vault-manager": "../vault-manager",
     "web3": "^0.20.0",
-    "web3-provider-engine": "^14.0.5",
-    "vault-manager": "../vault-manager"
+    "web3-provider-engine": "^14.0.5"
   }
 }

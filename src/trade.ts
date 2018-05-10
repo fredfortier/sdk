@@ -2,8 +2,8 @@ import {Ethereum} from './ethereum';
 import {Market} from './market';
 import {Account} from './account';
 import {EventEmitter} from 'events';
-import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature} from '0x.js';
 import {WalletType} from './types';
+import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs} from '0x.js';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -29,7 +29,7 @@ export class Trade {
       market: Market,
       type: string = 'buy',
       quantity: BigNumber = null
-    ) {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
 
       const marketResponse = await request.post({
           url: `${this._endpoint}/markets/${market.id}/order/market`,
@@ -65,7 +65,7 @@ export class Trade {
       quantity: BigNumber, // base token quantity
       price: BigNumber, // price (in quote)
       expiration: BigNumber // expiration in seconds from now
-    ) {
+    ): Promise<Order> {
 
       const order = await request.post({
           url: `${this._endpoint}/markets/${market.id}/order/limit`,
@@ -100,7 +100,7 @@ export class Trade {
 
     // cancel a signed order
     // TODO cancel partial?
-    public async cancelOrderAsync(order: SignedOrder) {
+    public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
       const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
       this._events.emit('transactionPending', txHash);
       const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);

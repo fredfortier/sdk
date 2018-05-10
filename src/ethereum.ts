@@ -1,5 +1,5 @@
-import * as Web3ProviderEngine from 'web3-provider-engine';
-import * as RPCSubprovider from 'web3-provider-engine/subproviders/rpc';
+import Web3ProviderEngine = require('web3-provider-engine');
+import RPCSubprovider = require('web3-provider-engine/subproviders/rpc');
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import {EventEmitter} from 'events';
@@ -32,14 +32,14 @@ import { TransactionManager, Signer, PartialTxParams,
      /**
       * Get accounts from the connected wallet
       */
-      public getAccounts() {
+      public getAccounts(): string[] {
         return this.wallet.getAccounts();
       }
 
       /**
        * Entry method for signing a message
        */
-       public signMessageAsync(unsignedMsg: UnsignedPayload) {
+       public signMessageAsync(unsignedMsg: UnsignedPayload): Promise<string> {
          return this.wallet.signer.signPersonalMessageHashAsync(
            unsignedMsg.params.from, unsignedMsg.params.data
          );
@@ -48,7 +48,7 @@ import { TransactionManager, Signer, PartialTxParams,
      /**
       * Entry method for signing/sending a transaction
       */
-      public async signTransactionAsync(unsignedTx: UnsignedPayload) {
+      public async signTransactionAsync(unsignedTx: UnsignedPayload): Promise<string> {
 
           // set default params if not defined
           if ((unsignedTx.params as PartialTxParams).gasPrice === undefined) {
@@ -96,7 +96,7 @@ import { TransactionManager, Signer, PartialTxParams,
       * set eth defaultAccount to a
       * new address index or address
       */
-     public async setDefaultAccount(account: number | string) {
+     public async setDefaultAccount(account: number | string): Promise<void> {
        const accounts = await promisify(this.web3.eth.getAccounts)();
        if (typeof(account) === 'number') {
          if (typeof(accounts[account]) === 'undefined') throw new Error('unable to retrieve account');
@@ -116,7 +116,7 @@ import { TransactionManager, Signer, PartialTxParams,
      /**
       * Set the rpc providers
       */
-     private setProvider(wallet: string | Wallet, rpcUrl: string) {
+     private setProvider(wallet: string | Wallet, rpcUrl: string): void {
        if (wallet instanceof Object) {
          this.wallet = (wallet as Wallet);
          // --- Use vault-manager ---//
@@ -148,7 +148,7 @@ import { TransactionManager, Signer, PartialTxParams,
        * Get default gas price
        */
       private async getDefaultGasPrice(): Promise<string> {
-        const defaultGasPrice = await promisify<BigNumber>(this.web3.eth.getGasPrice.bind(this))();
+        const defaultGasPrice = await promisify(this.web3.eth.getGasPrice.bind(this))();
         return `0x${defaultGasPrice.toString(16)}`;
       }
 
@@ -156,7 +156,7 @@ import { TransactionManager, Signer, PartialTxParams,
        * Get a tx gas limit estimate
        */
       private async getGasLimit(unsignedPayload: UnsignedPayload): Promise<string> {
-        const gasLimit = await promisify<number>(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
+        const gasLimit = await promisify(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
         return `0x${gasLimit.toString(16)}`;
       }
 
@@ -164,10 +164,9 @@ import { TransactionManager, Signer, PartialTxParams,
        * Get a tx nonce
        */
       private async getTxNonce(unsignedPayload: UnsignedPayload): Promise<string> {
-        const nonce = await promisify<number>(this.web3.eth.getTransactionCount.bind(this))(
+        const nonce = await promisify(this.web3.eth.getTransactionCount.bind(this))(
           unsignedPayload.params.from, 'pending'
         );
-
         return `0x${nonce.toString(16)}`;
       }
 

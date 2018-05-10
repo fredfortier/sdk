@@ -31,6 +31,8 @@ export interface Wallet {
   signer: Signer;
   getAccounts(): string[];
   addNewAccounts(numberOfAccounts: number): void;
+  exportSeedPhraseAsync(password: string): string;
+  exportAccountPrivateKeyAsync(account: string, password: string);
 }
 
 export interface TransactionManager {

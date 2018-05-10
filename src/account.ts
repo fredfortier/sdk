@@ -1,7 +1,8 @@
-import {ZeroEx} from '0x.js';
+import {ZeroEx, TransactionReceiptWithDecodedLogs} from '0x.js';
 import {Ethereum} from './ethereum';
 import {Wallet, WalletType} from './types';
 import {promisify} from 'es6-promisify';
+import {RadarSignedOrder, RadarFill} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -47,7 +48,7 @@ export class Account {
     // TODO
   }
 
-  public async wrapEthAsync(amount: BigNumber) {
+  public async wrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
     // TODO get addr from tokens array
     const amt = amount.times(10).pow(18);
     const txHash = await this._zeroEx.etherToken.depositAsync(
@@ -56,7 +57,7 @@ export class Account {
     return receipt;
   }
 
-  public async unwrapEthAsync(amount: BigNumber) {
+  public async unwrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
     // TODO get addr from tokens array
     const amt = amount.times(10).pow(18);
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
@@ -65,37 +66,39 @@ export class Account {
     return receipt;
   }
 
-  public async getTokenBalanceAsync(token: string) {
+  public async getTokenBalanceAsync(token: string): Promise<BigNumber> {
     return await this._zeroEx.token.getBalanceAsync(token, this.address);
   }
 
-  public async transferTokenAsync(token: string, to: string, amount: BigNumber) {
+  public async transferTokenAsync(
+    token: string, to: string, amount: BigNumber
+  ): Promise<TransactionReceiptWithDecodedLogs> {
     const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amount);
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     return receipt;
   }
 
-  public async getTokenAllowanceAsync(token: string) {
+  public async getTokenAllowanceAsync(token: string): Promise<BigNumber> {
     return await this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
   }
 
-  public async setTokenAllowanceAsync(token: string, amount: BigNumber) {
+  public async setTokenAllowanceAsync(token: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
     const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amount);
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     return receipt;
   }
 
-  public async setUnlimitedTokenAllowanceAsync(token: string) {
+  public async setUnlimitedTokenAllowanceAsync(token: string): Promise<TransactionReceiptWithDecodedLogs> {
     const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     return receipt;
   }
 
-  public async getOrdersAsync(page: number, perPage: number = 100) {
+  public async getOrdersAsync(page: number, perPage: number = 100): Promise<RadarSignedOrder[]> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/orders`));
   }
 
-  public async getFillsAsync(page: number, perPage: number = 100) {
+  public async getFillsAsync(page: number, perPage: number = 100): Promise<RadarFill> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/fills`));
   }
 }

@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const _0x_js_1 = require("0x.js");
 const types_1 = require("./types");
+const _0x_js_1 = require("0x.js");
 const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 class Trade {
