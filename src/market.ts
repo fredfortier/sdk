@@ -55,8 +55,10 @@ export class Market {
   }
 
   // marketOrder
-  public async marketOrderAsync(type: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-    return await this._trade.marketOrder(this, type, amount);
+  public async marketOrderAsync(
+    type: string, amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
+    return await this._trade.marketOrder(this, type, amount, awaitTransactionMined);
   }
 
   // limitOrder
@@ -69,8 +71,10 @@ export class Market {
   }
 
   // cancelOrder
-  public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
-    return await this._trade.cancelOrderAsync(order);
+  public async cancelOrderAsync(
+    order: SignedOrder, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
+    return await this._trade.cancelOrderAsync(order, awaitTransactionMined);
   }
 
 }

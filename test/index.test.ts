@@ -79,8 +79,8 @@ describe('RadarRelaySDK', () => {
       const addresses = await rrsdk.account.getAvailableAddressesAsync();
       await rrsdk.account.setAddressAsync(addresses[1]);
       expect(rrsdk.account.address).to.be.eq(addresses[1]);
-      // check nested dependency
-      expect((rrsdk.trade as any)._account.address).to.be.eq(addresses[1]);
+      // check nested dependency (NOTE: private vars)
+      expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
     });
 
     // TODO may not be necessary

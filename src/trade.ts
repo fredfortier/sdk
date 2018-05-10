@@ -31,8 +31,9 @@ export class Trade {
     public async marketOrder(
       market: Market,
       type: string = 'buy',
-      quantity: BigNumber = null
-    ): Promise<TransactionReceiptWithDecodedLogs> {
+      quantity: BigNumber = null,
+      awaitTransactionMined: boolean = false
+    ): Promise<TransactionReceiptWithDecodedLogs | string> {
 
       const marketResponse = await request.post({
           url: `${this._endpoint}/markets/${market.id}/order/market`,
@@ -55,9 +56,13 @@ export class Trade {
         this._account.address);
 
       this._events.emit('transactionPending', txHash);
-      const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-      this._events.emit('transactionMined', receipt);
 
+      if (!awaitTransactionMined) {
+        return txHash;
+      }
+
+      const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
+      this._events.emit('transactionComplete', receipt);
       return receipt;
     }
 
@@ -103,11 +108,18 @@ export class Trade {
 
     // cancel a signed order
     // TODO cancel partial?
-    public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
+    public async cancelOrderAsync(
+      order: SignedOrder, awaitTransactionMined: boolean = false
+    ): Promise<TransactionReceiptWithDecodedLogs | string> {
       const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
       this._events.emit('transactionPending', txHash);
+
+      if (!awaitTransactionMined) {
+        return txHash;
+      }
+
       const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-      this._events.emit('transactionMined', receipt);
+      this._events.emit('transactionComplete', receipt);
       return receipt;
     }
 

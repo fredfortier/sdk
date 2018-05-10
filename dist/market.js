@@ -50,9 +50,9 @@ class Market {
         });
     }
     // marketOrder
-    marketOrderAsync(type, amount) {
+    marketOrderAsync(type, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._trade.marketOrder(this, type, amount);
+            return yield this._trade.marketOrder(this, type, amount, awaitTransactionMined);
         });
     }
     // limitOrder
@@ -62,9 +62,9 @@ class Market {
         });
     }
     // cancelOrder
-    cancelOrderAsync(order) {
+    cancelOrderAsync(order, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._trade.cancelOrderAsync(order);
+            return yield this._trade.cancelOrderAsync(order, awaitTransactionMined);
         });
     }
 }

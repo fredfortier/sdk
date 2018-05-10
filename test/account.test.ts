@@ -3,7 +3,7 @@
 
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import {RadarRelaySDK} from '../src/index';
+import {RadarRelaySDK} from '../src';
 import BigNumber from 'bignumber.js';
 
 const expect = chai.expect;
@@ -33,17 +33,21 @@ describe('RadarRelaySDK.Account', () => {
     });
 
     it('wrapEthAsync', async () => {
-      const receipt = await rrsdk.account.wrapEthAsync(new BigNumber('0.1'));
+      const receipt = await rrsdk.account.wrapEthAsync(
+        new BigNumber('0.1'), true // awaitTxMined
+      );
       expect(receipt.logs.length).to.be.gt(0);
     });
 
     it('unwrapEthAsync', async () => {
-      const receipt = await rrsdk.account.unwrapEthAsync(new BigNumber('0.1'));
+      const receipt = await rrsdk.account.unwrapEthAsync(
+        new BigNumber('0.1'), true // awaitTxMined
+      );
       expect(receipt.logs.length).to.be.gt(0);
     });
 
     it('getTokenBalanceAsync', async () => {
-      const balance = await rrsdk.account.getTokenBalanceAsync(rrsdk.markets.get('ZRX-WETH').baseTokenAddress);
+      const balance = await rrsdk.account.getTokenBalanceAsync(rrsdk.markets['ZRX-WETH'].baseTokenAddress);
       expect(balance.toNumber()).to.be.gt(0);
     });
 
@@ -52,7 +56,9 @@ describe('RadarRelaySDK.Account', () => {
     });
 
     it('getTokenAllowanceAsync', async () => {
-      const allowance = await rrsdk.account.getTokenAllowanceAsync(rrsdk.markets.get('ZRX-WETH').baseTokenAddress);
+      const allowance = await rrsdk.account.getTokenAllowanceAsync(
+        rrsdk.markets['ZRX-WETH'].baseTokenAddress
+      );
       expect(allowance.toNumber()).to.be.gt(0);
     });
 
@@ -62,7 +68,7 @@ describe('RadarRelaySDK.Account', () => {
 
     it('setUnlimitedTokenAllowanceAsync', async () => {
       const receipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-        rrsdk.markets.get('ZRX-WETH').baseTokenAddress
+        rrsdk.markets['ZRX-WETH'].baseTokenAddress, true // awaitTxMined
       );
       expect(receipt.logs.length).to.be.gt(0);
     });

@@ -2,6 +2,7 @@ import {ZeroEx, ZeroExConfig} from '0x.js';
 import {WalletManager} from 'vault-manager';
 import {EventEmitter} from 'events';
 import {Wallet, SDKConfig} from './types';
+import {RadarToken, RadarMarket} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -21,19 +22,19 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
  */
 export class RadarRelaySDK {
 
-    public events: EventEmitter;
+    public events: EventBus;
     public account: Account;
-    public tokens: any;
-    public markets: Map<string, Market>;
-    public trade: Trade;
+    public tokens: RadarToken[];
+    public markets: { [key: string]: Market; };
     public ws: Ws;
     public zeroEx: ZeroEx;
 
+    private _trade: Trade;
     private _ethereum: Ethereum;
     private _apiEndpoint: string;
     private _networkId: number;
     private _prevApiEndpoint: string;
-    private _markets: any;
+    private _markets: RadarMarket[];
     private lifecycle: SDKInitLifeCycle;
 
     /**
@@ -73,7 +74,7 @@ export class RadarRelaySDK {
       this.lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
     }
 
-    public async initialize(config: SDKConfig) {
+    public async initialize(config: SDKConfig): Promise<string | boolean> {
 
       // set the api endpoint outside
       // of the init lifecycle
@@ -88,11 +89,7 @@ export class RadarRelaySDK {
 
     // --- user configurable --- //
 
-    public async setEthereumAsync(config: {
-      password?: string;
-      walletRpcUrl?: string;
-      dataRpcUrl: string;
-    }) {
+    public async setEthereumAsync(config: SDKConfig): Promise<string | boolean> {
 
       // init wallet as unlocked rpc node
       let wallet: any = config.walletRpcUrl;
@@ -120,30 +117,30 @@ export class RadarRelaySDK {
 
     // --- not user configurable below this line --- //
 
-    private async initAccountAsync(account: string | number) {
+    private async initAccountAsync(account: string | number): Promise<string | boolean> {
       await this._ethereum.setDefaultAccount(account);
       this.account = new Account(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
       return this.getCallback('accountInitialized', this.account);
     }
 
-    private async initEthereumNetworkIdAsync() {
+    private async initEthereumNetworkIdAsync(): Promise<string | boolean> {
       this._networkId = await this._ethereum.getNetworkIdAsync.apply(this._ethereum);
       return this.getCallback('ethereumNetworkIdInitialized', this._networkId);
     }
 
-    private initZeroEx() {
+    private initZeroEx(): Promise<string | boolean> {
       this.zeroEx = new ZeroEx(this._ethereum.provider, {
         networkId: this._networkId
       });
       return this.getCallback('zeroExInitialized', this.zeroEx);
     }
 
-    private initTrade() {
-      this.trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
-      return this.getCallback('tradeInitialized', this.trade);
+    private initTrade(): Promise<string | boolean> {
+      this._trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+      return this.getCallback('tradeInitialized', this._trade);
     }
 
-    private async initTokensAsync() {
+    private async initTokensAsync(): Promise<string | boolean> {
       // only fetch if not already fetched
       if (this._prevApiEndpoint !== this._apiEndpoint) {
         const tokens = JSON.parse(await request.get(`${this._apiEndpoint}/tokens`));
@@ -156,7 +153,7 @@ export class RadarRelaySDK {
       return this.getCallback('tokensInitialized', this.tokens);
     }
 
-    private async initMarketsAsync() {
+    private async initMarketsAsync(): Promise<string | boolean> {
         // only fetch if not already fetched
         if (this._prevApiEndpoint !== this._apiEndpoint) {
           this._markets = JSON.parse(await request.get(`${this._apiEndpoint}/markets`));
@@ -164,15 +161,15 @@ export class RadarRelaySDK {
         // TODO probably not the best place for this
         this._prevApiEndpoint = this._apiEndpoint;
 
-        this.markets = new Map(
-          this._markets.map(
-            market => [market.id, new Market(market, this._apiEndpoint, this.trade)]
-          )
-        );
+        this.markets = this._markets.reduce((result, market) => {
+          result[market.id] = new Market(market, this._apiEndpoint, this._trade);
+          return result;
+        }, {});
+
         return this.getCallback('marketsInitialized', this.markets);
     }
 
-    private getCallback(event, data) {
+    private getCallback(event, data): Promise<string | boolean> {
       const callback = this.lifecycle.promise(event);
       this.events.emit(event, data);
       return callback;

@@ -18,13 +18,13 @@ export declare class Account {
     getAvailableAddressesAsync(): Promise<string[]>;
     getEthBalanceAsync(): Promise<BigNumber>;
     transferEthAsync(): Promise<void>;
-    wrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
-    unwrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
+    wrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    unwrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     getTokenBalanceAsync(token: string): Promise<BigNumber>;
-    transferTokenAsync(token: string, to: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
+    transferTokenAsync(token: string, to: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     getTokenAllowanceAsync(token: string): Promise<BigNumber>;
-    setTokenAllowanceAsync(token: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
-    setUnlimitedTokenAllowanceAsync(token: string): Promise<TransactionReceiptWithDecodedLogs>;
-    getOrdersAsync(page: number, perPage?: number): Promise<RadarSignedOrder[]>;
-    getFillsAsync(page: number, perPage?: number): Promise<RadarFill>;
+    setTokenAllowanceAsync(token: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    setUnlimitedTokenAllowanceAsync(token: string, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    getOrdersAsync(page?: number, perPage?: number): Promise<RadarSignedOrder[]>;
+    getFillsAsync(page?: number, perPage?: number): Promise<RadarFill>;
 }

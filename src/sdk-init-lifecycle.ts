@@ -48,7 +48,7 @@ export class SDKInitLifeCycle {
   //
   // The scope is the class that the
   // functions belong to.
-  public setup(scope) {
+  public setup(scope): void {
     for (const item of this.priorityList) {
       if (item.func) {
         if (item.args) {
@@ -85,7 +85,7 @@ export class SDKInitLifeCycle {
     }
   }
 
-  private handleEvent(event: string) {
+  private handleEvent(event: string): void {
     const current = this.priority[event];
     this.current = (current >= this.current) ? current : this.current;
 

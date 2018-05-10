@@ -20,7 +20,7 @@ class Trade {
         this._events = events;
         this._tokens = tokens;
     }
-    marketOrder(market, type = 'buy', quantity = null) {
+    marketOrder(market, type = 'buy', quantity = null, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const marketResponse = yield request.post({
                 url: `${this._endpoint}/markets/${market.id}/order/market`,
@@ -36,8 +36,11 @@ class Trade {
             });
             const txHash = yield this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address);
             this._events.emit('transactionPending', txHash);
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            this._events.emit('transactionMined', receipt);
+            this._events.emit('transactionComplete', receipt);
             return receipt;
         });
     }
@@ -76,12 +79,15 @@ class Trade {
     // TODO fill individual order
     // cancel a signed order
     // TODO cancel partial?
-    cancelOrderAsync(order) {
+    cancelOrderAsync(order, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const txHash = yield this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
             this._events.emit('transactionPending', txHash);
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
             const receipt = yield this._zeroEx.awaitTransactionMinedAsync(txHash);
-            this._events.emit('transactionMined', receipt);
+            this._events.emit('transactionComplete', receipt);
             return receipt;
         });
     }

@@ -117,8 +117,8 @@ class RadarRelaySDK {
         return this.getCallback('zeroExInitialized', this.zeroEx);
     }
     initTrade() {
-        this.trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
-        return this.getCallback('tradeInitialized', this.trade);
+        this._trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+        return this.getCallback('tradeInitialized', this._trade);
     }
     initTokensAsync() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -142,7 +142,10 @@ class RadarRelaySDK {
             }
             // TODO probably not the best place for this
             this._prevApiEndpoint = this._apiEndpoint;
-            this.markets = new Map(this._markets.map(market => [market.id, new market_1.Market(market, this._apiEndpoint, this.trade)]));
+            this.markets = this._markets.reduce((result, market) => {
+                result[market.id] = new market_1.Market(market, this._apiEndpoint, this._trade);
+                return result;
+            }, {});
             return this.getCallback('marketsInitialized', this.markets);
         });
     }

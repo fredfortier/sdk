@@ -19,7 +19,7 @@ export declare class Market {
     getFillsAsync(): Promise<RadarFill[]>;
     getCandlesAsync(): Promise<RadarCandle[]>;
     getTickerAsync(): Promise<RadarTicker>;
-    marketOrderAsync(type: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs>;
+    marketOrderAsync(type: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     limitOrderAsync(type: string, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<Order>;
-    cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs>;
+    cancelOrderAsync(order: SignedOrder, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
 }

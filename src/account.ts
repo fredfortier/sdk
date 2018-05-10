@@ -59,20 +59,28 @@ export class Account {
     // TODO
   }
 
-  public async wrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+  public async wrapEthAsync(
+    amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.depositAsync(
       '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    return receipt;
+      if (!awaitTransactionMined) {
+        return txHash;
+      }
+      return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
-  public async unwrapEthAsync(amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+  public async unwrapEthAsync(
+    amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
       '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    return receipt;
+      if (!awaitTransactionMined) {
+        return txHash;
+      }
+      return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async getTokenBalanceAsync(token: string): Promise<BigNumber> {
@@ -81,12 +89,14 @@ export class Account {
   }
 
   public async transferTokenAsync(
-    token: string, to: string, amount: BigNumber
-  ): Promise<TransactionReceiptWithDecodedLogs> {
+    token: string, to: string, amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
     const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amount);
-    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    return receipt;
+    if (!awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async getTokenAllowanceAsync(token: string): Promise<BigNumber> {
@@ -94,24 +104,32 @@ export class Account {
     return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
   }
 
-  public async setTokenAllowanceAsync(token: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+  public async setTokenAllowanceAsync(
+    token: string, amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
     const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
-    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    return receipt;
+    if (!awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
-  public async setUnlimitedTokenAllowanceAsync(token: string): Promise<TransactionReceiptWithDecodedLogs> {
+  public async setUnlimitedTokenAllowanceAsync(
+    token: string, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
-    const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    return receipt;
+    if (!awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
-  public async getOrdersAsync(page: number, perPage: number = 100): Promise<RadarSignedOrder[]> {
+  public async getOrdersAsync(page: number = 1, perPage: number = 100): Promise<RadarSignedOrder[]> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/orders`));
   }
 
-  public async getFillsAsync(page: number, perPage: number = 100): Promise<RadarFill> {
+  public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/fills`));
   }
 }
