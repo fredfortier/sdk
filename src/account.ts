@@ -77,7 +77,7 @@ export class Account {
 
   public async getTokenBalanceAsync(token: string): Promise<BigNumber> {
     const balance = await this._zeroEx.token.getBalanceAsync(token, this.address);
-    return ZeroEx.toBaseUnitAmount(balance, this._tokens[token].decimals);
+    return ZeroEx.toUnitAmount(balance, this._tokens[token].decimals);
   }
 
   public async transferTokenAsync(

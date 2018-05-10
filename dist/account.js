@@ -78,7 +78,7 @@ class Account {
     getTokenBalanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const balance = yield this._zeroEx.token.getBalanceAsync(token, this.address);
-            return _0x_js_1.ZeroEx.toBaseUnitAmount(balance, this._tokens[token].decimals);
+            return _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens[token].decimals);
         });
     }
     transferTokenAsync(token, to, amount) {
