@@ -19,8 +19,13 @@ const subproviders_1 = require("@0xproject/subproviders");
  * Ethereum
  */
 class Ethereum {
-    constructor(wallet, rpcUrl = '') {
-        this.setProvider(wallet, rpcUrl);
+    constructor(wallet, rpcUrl = '', gasPrice) {
+        if (!wallet)
+            throw new Error('Wallet RPC URL or class instance not set.');
+        if (!rpcUrl)
+            throw new Error('Data RPC URL not set.');
+        this._gasPrice = gasPrice;
+        this._setProvider(wallet, rpcUrl);
     }
     get defaultAccount() {
         return this.web3.eth.defaultAccount;
@@ -44,15 +49,14 @@ class Ethereum {
         return __awaiter(this, void 0, void 0, function* () {
             // set default params if not defined
             if (unsignedTx.params.gasPrice === undefined) {
-                unsignedTx.params.gasPrice = yield this.getDefaultGasPrice();
+                unsignedTx.params.gasPrice = yield this._getDefaultGasPrice();
             }
             if (unsignedTx.params.gas === undefined) {
-                unsignedTx.params.gas = yield this.getGasLimit(unsignedTx);
+                unsignedTx.params.gas = yield this._getGasLimit(unsignedTx);
             }
             if (unsignedTx.params.nonce === undefined) {
-                unsignedTx.params.nonce = yield this.getTxNonce(unsignedTx);
+                unsignedTx.params.nonce = yield this._getTxNonce(unsignedTx);
             }
-            console.log(unsignedTx.params);
             return this.wallet.signer.signTransactionAsync(unsignedTx.params);
         });
     }
@@ -115,7 +119,7 @@ class Ethereum {
     /**
      * Set the rpc providers
      */
-    setProvider(wallet, rpcUrl) {
+    _setProvider(wallet, rpcUrl) {
         if (wallet instanceof Object) {
             this.wallet = wallet;
             // --- Use vault-manager ---//
@@ -125,7 +129,7 @@ class Ethereum {
             //  To avoid passing a static instance of the Web3 object around
             //  this class implements `TransactionManager` and is passed
             //  in to the `setSignerAndRpcConnection` to init Web3
-            web3Builder.setSignerAndRpcConnection(this, rpcUrl);
+            this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl, new subproviders_1.NonceTrackerSubprovider());
             this.provider = this.web3.currentProvider;
         }
         else {
@@ -142,18 +146,36 @@ class Ethereum {
         }
     }
     /*
+     * Set the default gas price
+     */
+    _setDefaultGasPrice(gasPrice) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (gasPrice) {
+                const priceInWei = this.web3.toWei(gasPrice, 'gwei');
+                this._defaultGasPrice = `0x${priceInWei.toString(16)}`;
+            }
+            else {
+                const defaultGasPrice = yield es6_promisify_1.promisify(this.web3.eth.getGasPrice.bind(this))();
+                this._defaultGasPrice = `0x${defaultGasPrice.toString(16)}`;
+            }
+        });
+    }
+    /*
      * Get default gas price
      */
-    getDefaultGasPrice() {
+    _getDefaultGasPrice() {
         return __awaiter(this, void 0, void 0, function* () {
-            const defaultGasPrice = yield es6_promisify_1.promisify(this.web3.eth.getGasPrice.bind(this))();
-            return `0x${defaultGasPrice.toString(16)}`;
+            if (this._defaultGasPrice) {
+                return this._defaultGasPrice;
+            }
+            yield this._setDefaultGasPrice(this._gasPrice);
+            return this._defaultGasPrice;
         });
     }
     /*
      * Get a tx gas limit estimate
      */
-    getGasLimit(unsignedPayload) {
+    _getGasLimit(unsignedPayload) {
         return __awaiter(this, void 0, void 0, function* () {
             const gasLimit = yield es6_promisify_1.promisify(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
             return `0x${gasLimit.toString(16)}`;
@@ -162,7 +184,7 @@ class Ethereum {
     /*
      * Get a tx nonce
      */
-    getTxNonce(unsignedPayload) {
+    _getTxNonce(unsignedPayload) {
         return __awaiter(this, void 0, void 0, function* () {
             const nonce = yield es6_promisify_1.promisify(this.web3.eth.getTransactionCount.bind(this))(unsignedPayload.params.from, 'pending');
             return `0x${nonce.toString(16)}`;

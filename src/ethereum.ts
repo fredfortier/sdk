@@ -20,12 +20,21 @@ import { TransactionManager, Signer, PartialTxParams,
      public web3: Web3;
 
      private _events: EventEmitter;
+     private _gasPrice: BigNumber;
+     private _defaultGasPrice: string;
 
-     constructor(wallet: string | Wallet, rpcUrl: string = '') {
-       this.setProvider(wallet, rpcUrl);
+     constructor(
+       wallet: string | Wallet,
+       rpcUrl: string = '',
+       gasPrice?: BigNumber) {
+         if (!wallet) throw new Error('Wallet RPC URL or class instance not set.');
+         if (!rpcUrl) throw new Error('Data RPC URL not set.');
+
+         this._gasPrice = gasPrice;
+         this._setProvider(wallet, rpcUrl);
      }
 
-     get defaultAccount(): string {
+     public get defaultAccount(): string {
        return this.web3.eth.defaultAccount;
      }
 
@@ -51,13 +60,13 @@ import { TransactionManager, Signer, PartialTxParams,
       public async signTransactionAsync(unsignedTx: UnsignedPayload): Promise<string> {
           // set default params if not defined
           if ((unsignedTx.params as PartialTxParams).gasPrice === undefined) {
-            (unsignedTx.params as PartialTxParams).gasPrice = await this.getDefaultGasPrice();
+            (unsignedTx.params as PartialTxParams).gasPrice = await this._getDefaultGasPrice();
           }
           if ((unsignedTx.params as PartialTxParams).gas === undefined) {
-            (unsignedTx.params as PartialTxParams).gas = await this.getGasLimit(unsignedTx);
+            (unsignedTx.params as PartialTxParams).gas = await this._getGasLimit(unsignedTx);
           }
           if ((unsignedTx.params as PartialTxParams).nonce === undefined) {
-            (unsignedTx.params as PartialTxParams).nonce = await this.getTxNonce(unsignedTx);
+            (unsignedTx.params as PartialTxParams).nonce = await this._getTxNonce(unsignedTx);
           }
 
           return this.wallet.signer.signTransactionAsync(unsignedTx.params as PartialTxParams);
@@ -115,7 +124,7 @@ import { TransactionManager, Signer, PartialTxParams,
      /**
       * Set the rpc providers
       */
-     private setProvider(wallet: string | Wallet, rpcUrl: string): void {
+     private _setProvider(wallet: string | Wallet, rpcUrl: string): void {
        if (wallet instanceof Object) {
          this.wallet = (wallet as Wallet);
          // --- Use vault-manager ---//
@@ -146,18 +155,34 @@ import { TransactionManager, Signer, PartialTxParams,
 
      }
 
+     /*
+      * Set the default gas price
+      */
+     private async _setDefaultGasPrice(gasPrice?: BigNumber): Promise<void> {
+       if (gasPrice) {
+         const priceInWei = this.web3.toWei(gasPrice, 'gwei');
+         this._defaultGasPrice = `0x${priceInWei.toString(16)}`;
+       } else {
+         const defaultGasPrice = await promisify(this.web3.eth.getGasPrice.bind(this))();
+         this._defaultGasPrice = `0x${defaultGasPrice.toString(16)}`;
+       }
+     }
+
       /*
        * Get default gas price
        */
-      private async getDefaultGasPrice(): Promise<string> {
-        const defaultGasPrice = await promisify(this.web3.eth.getGasPrice.bind(this))();
-        return `0x${defaultGasPrice.toString(16)}`;
+      private async _getDefaultGasPrice(): Promise<string> {
+        if (this._defaultGasPrice) {
+          return this._defaultGasPrice;
+        }
+        await this._setDefaultGasPrice(this._gasPrice);
+        return this._defaultGasPrice;
       }
 
       /*
        * Get a tx gas limit estimate
        */
-      private async getGasLimit(unsignedPayload: UnsignedPayload): Promise<string> {
+      private async _getGasLimit(unsignedPayload: UnsignedPayload): Promise<string> {
         const gasLimit = await promisify(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
         return `0x${gasLimit.toString(16)}`;
       }
@@ -165,7 +190,7 @@ import { TransactionManager, Signer, PartialTxParams,
       /*
        * Get a tx nonce
        */
-      private async getTxNonce(unsignedPayload: UnsignedPayload): Promise<string> {
+      private async _getTxNonce(unsignedPayload: UnsignedPayload): Promise<string> {
         const nonce = await promisify(this.web3.eth.getTransactionCount.bind(this))(
           unsignedPayload.params.from, 'pending'
         );

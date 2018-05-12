@@ -10,7 +10,9 @@ export declare class Ethereum implements TransactionManager {
     networkId: number;
     web3: Web3;
     private _events;
-    constructor(wallet: string | Wallet, rpcUrl?: string);
+    private _gasPrice;
+    private _defaultGasPrice;
+    constructor(wallet: string | Wallet, rpcUrl?: string, gasPrice?: BigNumber);
     readonly defaultAccount: string;
     /**
      * Get accounts from the connected wallet
@@ -44,8 +46,9 @@ export declare class Ethereum implements TransactionManager {
     /**
      * Set the rpc providers
      */
-    private setProvider(wallet, rpcUrl);
-    private getDefaultGasPrice();
-    private getGasLimit(unsignedPayload);
-    private getTxNonce(unsignedPayload);
+    private _setProvider(wallet, rpcUrl);
+    private _setDefaultGasPrice(gasPrice?);
+    private _getDefaultGasPrice();
+    private _getGasLimit(unsignedPayload);
+    private _getTxNonce(unsignedPayload);
 }

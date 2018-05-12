@@ -1,8 +1,11 @@
-export interface SDKConfig {
+import BigNumber from 'bignumber.js';
+export { RadarToken, RadarMarket } from 'radar-types';
+export interface RadarRelayConfig {
     password?: string;
     walletRpcUrl?: string;
-    dataRpcUrl: string;
     radarRelayEndpoint?: string;
+    defaultGasPrice?: BigNumber;
+    dataRpcUrl: string;
 }
 export interface PartialTxParams {
     nonce: string;

@@ -1,17 +1,13 @@
-import {EventBus} from './event-emitter';
-import {Ethereum} from './ethereum';
-import {Account} from './account';
-import {Market} from './market';
-import {Trade} from './trade';
-import {Ws} from './ws';
-import {RadarToken, RadarMarket} from 'radar-types';
-import {ZeroEx} from '0x.js';
+import BigNumber from 'bignumber.js';
 
-export interface SDKConfig {
+export {RadarToken, RadarMarket} from 'radar-types';
+
+export interface RadarRelayConfig {
   password?: string;
   walletRpcUrl?: string;
-  dataRpcUrl: string;
   radarRelayEndpoint?: string;
+  defaultGasPrice?: BigNumber;
+  dataRpcUrl: string;
 }
 
 export interface PartialTxParams {
