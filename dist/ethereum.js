@@ -20,6 +20,10 @@ const subproviders_1 = require("@0xproject/subproviders");
  */
 class Ethereum {
     constructor(wallet, rpcUrl = '', gasPrice) {
+        if (!wallet)
+            throw new Error('Wallet RPC URL or class instance not set.');
+        if (!rpcUrl)
+            throw new Error('Data RPC URL not set.');
         this._gasPrice = gasPrice;
         this._setProvider(wallet, rpcUrl);
     }
@@ -125,7 +129,6 @@ class Ethereum {
             //  To avoid passing a static instance of the Web3 object around
             //  this class implements `TransactionManager` and is passed
             //  in to the `setSignerAndRpcConnection` to init Web3
-            console.log(this, rpcUrl);
             this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl, new subproviders_1.NonceTrackerSubprovider());
             this.provider = this.web3.currentProvider;
         }

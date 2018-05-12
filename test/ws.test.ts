@@ -1,6 +1,8 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
+// TODO https://github.com/thoov/mock-socket
+
 import {ZeroEx} from '0x.js';
 import * as mocha from 'mocha';
 import * as chai from 'chai';

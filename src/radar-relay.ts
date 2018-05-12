@@ -76,7 +76,6 @@ export class RadarRelay {
     }
 
     public async initialize(config: RadarRelayConfig): Promise<string | boolean> {
-
       // set the api endpoint outside
       // of the init _lifecycle
       this._apiEndpoint = config.radarRelayEndpoint;
