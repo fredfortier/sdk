@@ -2,7 +2,7 @@ import {ZeroEx, TransactionReceiptWithDecodedLogs} from '0x.js';
 import {Ethereum} from './ethereum';
 import {Wallet, WalletType} from './types';
 import {promisify} from 'es6-promisify';
-import {RadarSignedOrder, RadarFill} from 'radar-types';
+import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -16,10 +16,10 @@ export class Account {
   private _wallet: Wallet;
   private _ethereum: Ethereum;
   private _zeroEx: ZeroEx;
+  private _tokens: Map<string, RadarToken>;
   private _endpoint: string;
-  private _tokens: any[];
 
-  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]) {
+  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: Map<string, RadarToken>) {
     // TODO tokens + decimal calculations and conversions
     this._endpoint = apiEndpoint;
     this._tokens = tokens;
@@ -85,13 +85,13 @@ export class Account {
 
   public async getTokenBalanceAsync(token: string): Promise<BigNumber> {
     const balance = await this._zeroEx.token.getBalanceAsync(token, this.address);
-    return ZeroEx.toUnitAmount(balance, this._tokens[token].decimals);
+    return ZeroEx.toUnitAmount(balance, this._tokens.get(token).decimals);
   }
 
   public async transferTokenAsync(
     token: string, to: string, amount: BigNumber, awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
     const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amount);
     if (!awaitTransactionMined) {
       return txHash;
@@ -101,13 +101,13 @@ export class Account {
 
   public async getTokenAllowanceAsync(token: string): Promise<BigNumber> {
     const baseUnitallowance = await this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
-    return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
+    return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(token).decimals);
   }
 
   public async setTokenAllowanceAsync(
     token: string, amount: BigNumber, awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
     const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
     if (!awaitTransactionMined) {
       return txHash;

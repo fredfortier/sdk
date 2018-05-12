@@ -4,6 +4,7 @@ import {Account} from './account';
 import {EventEmitter} from 'events';
 import {WalletType} from './types';
 import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs} from '0x.js';
+import {RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -13,14 +14,14 @@ export class Trade {
     private _account: Account;
     private _zeroEx: ZeroEx;
     private _events: EventEmitter;
-    private _tokens: any[];
+    private _tokens: Map<string, RadarToken>;
 
     constructor(
       zeroEx: ZeroEx,
       apiEndpoint: string,
       account: Account,
       events: EventEmitter,
-      tokens: any[]) {
+      tokens: Map<string, RadarToken>) {
         this._zeroEx = zeroEx;
         this._endpoint = apiEndpoint;
         this._account = account;

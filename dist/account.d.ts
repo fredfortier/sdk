@@ -1,16 +1,16 @@
 import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { Ethereum } from './ethereum';
 import { WalletType } from './types';
-import { RadarSignedOrder, RadarFill } from 'radar-types';
+import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
 export declare class Account {
     address: string;
     private _wallet;
     private _ethereum;
     private _zeroEx;
-    private _endpoint;
     private _tokens;
-    constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: any[]);
+    private _endpoint;
+    constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: Map<string, RadarToken>);
     readonly walletType: WalletType;
     exportSeedPhraseAsync(password: string): Promise<string>;
     exportAddressPrivateKeyAsync(password: string): Promise<string>;

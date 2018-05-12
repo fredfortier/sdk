@@ -82,12 +82,12 @@ class Account {
     getTokenBalanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const balance = yield this._zeroEx.token.getBalanceAsync(token, this.address);
-            return _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens[token].decimals);
+            return _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(token).decimals);
         });
     }
     transferTokenAsync(token, to, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
             const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amount);
             if (!awaitTransactionMined) {
                 return txHash;
@@ -98,12 +98,12 @@ class Account {
     getTokenAllowanceAsync(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const baseUnitallowance = yield this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
-            return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens[token].decimals);
+            return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(token).decimals);
         });
     }
     setTokenAllowanceAsync(token, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens[token].decimals);
+            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
             const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
             if (!awaitTransactionMined) {
                 return txHash;

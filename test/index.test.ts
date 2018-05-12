@@ -6,13 +6,13 @@
 
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import {RadarRelaySDK} from '../src/index';
+import {RadarRelay} from '../src/index';
 
 const expect = chai.expect;
 
-describe('RadarRelaySDK', () => {
+describe('RadarRelay', () => {
 
-    const rrsdk = new RadarRelaySDK();
+    const rrsdk = new RadarRelay();
 
     rrsdk.events.on('loading', data => {
       // console.log(data);

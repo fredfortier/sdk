@@ -86,74 +86,77 @@ Each init method must trigger an event on the `EventEmitter`, which indicates th
 `~ npm install radar-relay-sdk`
 
 ```javascript
-import RadarRelaySDK from 'radar-relay-sdk';
+import RadarRelay from 'radar-relay-sdk';
 
-const rrsdk = new RadarRelaySDK();
+const rr = new RadarRelay();
 
 // unlocked node RPC endpoint,  API endpoint
-rrsdk.initialize('http://localhost:8545', 'http://localhost:8080'); 
-
+rr.initialize({
+  password?: string; // set if using local wallet
+  walletRpcUrl?: string; // set if using unlocked node
+  radarRelayEndpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
+  defaultGasPrice?: BigNumber; // set a gas price to default to
+  dataRpcUrl: string; // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
+}); 
 
 // initialize
 // ----------
 // called automatically on initialize
 // but can be called at any point
 // each will trigger an event (see events below)
-rrsdk.setEthereumAsync
-rrsdk.setEthereumNetworkIdAsync
-rrsdk.setAccount
-rrsdk.setApiEndpoint
-rrsdk.fetchMarketData
-rrsdk.updateZeroEx
-rrsdk.updateTradeExecutor
-rrsdk.updateMarkets
+rr.initialize
+rr.setEthereumAsync
 
 // events
 // ------
 // anything that triggers state change (like changing the network, or a fill)
 // fires an event that you can listen to
-rrsdk.events.on(
-  'marketDataUpdated | ethereumNetworkIdUpdated | zeroExUpdated | ethereumNetworkUpdated | accountUpdated | apiEndpointUpdated | transactionPending | transactionMined'
+rr.events.on(
+  'ethereumNetworkUpdated | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
 )
-rrsdk.events.emit('see_above' | 'or you can emit anything', with, some, data)
+rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
 
 // account data
 // -------------
-rrsdk.account.getEthBalanceAsync
-rrsdk.account.transferEthAsync
-rrsdk.account.wrapEthAsync
-rrsdk.account.unwrapEthAsync
-rrsdk.account.getTokenBalanceAsync
-rrsdk.account.getTokenAllowanceAsync
-rrsdk.account.setTokenAllowanceAsync
-rrsdk.account.getFillsAsync
-rrsdk.account.getOrdersAsync
+rr.account.getAvailableAddressesAsync
+rr.account.setAddressAsync
+rr.account.getEthBalanceAsync
+rr.account.transferEthAsync
+rr.account.wrapEthAsync
+rr.account.unwrapEthAsync
+rr.account.getTokenBalanceAsync
+rr.account.getTokenAllowanceAsync
+rr.account.setTokenAllowanceAsync
+rr.account.getFillsAsync
+rr.account.getOrdersAsync
 
 // markets
 // -------
 // markets are marketId mapped Market classes with all 
 // the same methods and the following instance vars:
-rrsdk.markets.get('ZRX-WETH') 
+rr.markets.get('ZRX-WETH') 
 {
-    baseTokenAddress
-    quoteTokenAddress
-    baseTokenDecimals
-    quoteTokenDecimals
-    baseMinSize
-    baseMaxSize
-    quoteIncrement // analogous to the current "precision"
-    displayName
+  id: string;
+  baseTokenAddress: string;
+  quoteTokenAddress: string;
+  baseTokenDecimals: BigNumber;
+  quoteTokenDecimals: BigNumber;
+  minOrderSize: BigNumber;
+  maxOrderSize: BigNumber;
+  quoteIncrement: BigNumber;
+  displayName: string;
 }
 
 // market class methods
-rrsdk.markets.get('ZRX-WETH').limitOrderAsync
-rrsdk.markets.get('REP-WETH').marketOrderAsync
-rrsdk.markets.get('ZRX-WETH').getFillsAsync
-rrsdk.markets.get('ZRX-WETH').getCandlesAsync
-rrsdk.markets.get('ZRX-WETH').getTickerAsync
-rrsdk.markets.get('ZRX-WETH').getOrderBookAsync
+rr.markets.get('ZRX-WETH').limitOrderAsync
+rr.markets.get('REP-WETH').marketOrderAsync
+rr.markets.get('REP-WETH').cancelOrderAsync
+rr.markets.get('ZRX-WETH').getFillsAsync
+rr.markets.get('ZRX-WETH').getCandlesAsync
+rr.markets.get('ZRX-WETH').getTickerAsync
+rr.markets.get('ZRX-WETH').getOrderBookAsync
 
 // [WIP] Websockets 
 // -----------------
-rrsdk.ws.subscribe('ZRX-WETH', 'baseTokenAddress:quoteTokenAddress') // book state changes (new, remove, fills)
+rr.ws.subscribe('ZRX-WETH', 'baseTokenAddress:quoteTokenAddress') // book state changes (new, remove, fills)
 ```
