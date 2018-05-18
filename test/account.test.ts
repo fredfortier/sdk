@@ -4,6 +4,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {RadarRelay} from '../src';
+import {mockRequests} from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
 
 const expect = chai.expect;
@@ -13,12 +14,13 @@ describe('RadarRelay.Account', () => {
     let rrsdk;
 
     before(async () => {
+      mockRequests();
+
       rrsdk = new RadarRelay();
       await rrsdk.initialize({
         password: 'password',
-        // walletRpcUrl: 'http://35.196.15.153:8100',
-        dataRpcUrl: 'http://35.196.15.153:8100',
-        radarRelayEndpoint: 'http://35.190.74.75/v0'
+        dataRpcUrl: 'http://localhost:8545',
+        radarRelayEndpoint: 'http://localhost:8080/v0'
       });
       console.log('address:', rrsdk.account.address);
     });

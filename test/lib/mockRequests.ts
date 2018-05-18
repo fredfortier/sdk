@@ -6,7 +6,28 @@ export function mockRequests() {
   nock('http://localhost:8080')
               .get('/v0/tokens')
               .reply(200, [
-                
+                {
+                  address: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
+                  symbol: 'WETH',
+                  decimals: 18,
+                  name: 'Wrapped Ether',
+                  zeroex_official: 1,
+                  active: 1,
+                  quote: 0,
+                  deprecated: 0,
+                  createdDate: '2018-03-19T23:16:50.000Z'
+                },
+                {
+                  address: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
+                  symbol: 'ZRX',
+                  decimals: 18,
+                  name: '0x Protocol Token',
+                  zeroex_official: 1,
+                  active: 1,
+                  quote: 0,
+                  deprecated: 0,
+                  createdDate: '2018-03-19T23:16:50.000Z'
+                }
               ]);
 
   nock('http://localhost:8080')
@@ -22,7 +43,7 @@ export function mockRequests() {
                 minOrderSize: '1',
                 maxOrderSize: '1'
               }]);
-  
+
   nock('http://localhost:8080')
               .get('/v0/markets/ZRX-WETH/book')
               .reply(200, {
@@ -35,15 +56,15 @@ export function mockRequests() {
   nock('http://localhost:8080')
               .get('/v0/markets/ZRX-WETH/fills')
               .reply(200, [{}]);
-  
+
   nock('http://localhost:8080')
               .get('/v0/markets/ZRX-WETH/candles')
               .reply(200, [{}]);
-              
+
   nock('http://localhost:8080')
               .get('/v0/markets/ZRX-WETH/ticker')
               .reply(200, {});
-  
+
   nock('http://localhost:8080')
               .post('/v0/markets/ZRX-WETH/order/limit')
               .reply(200, { exchangeContractAddress: 'SET',
@@ -59,9 +80,23 @@ export function mockRequests() {
                             takerFee: '0',
                             takerTokenAddress: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
                             takerTokenAmount: '9426957243589264000' });
-    
+
+  nock('http://localhost:8080')
+              .get('/v0/accounts/0xeecf1adcfebd51290ba78a0c0341d4a5e2dd3dcd/fills')
+              .reply(200, [{}]);
+
+  nock('http://localhost:8080')
+              .get('/v0/accounts/0xeecf1adcfebd51290ba78a0c0341d4a5e2dd3dcd/orders')
+              .reply(200, [{}]);
+
   nock('http://localhost:8080')
               .post('/v0/orders')
-              .reply(200);
+              .reply(201);
+
+  nock('http://localhost:8080')
+              .post('/v0/markets/ZRX-WETH/order/market')
+              .reply(200, {
+                orders: []
+              });
 
 }

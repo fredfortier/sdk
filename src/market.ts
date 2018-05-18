@@ -1,6 +1,7 @@
 import {SignedOrder, TransactionReceiptWithDecodedLogs, Order} from '0x.js';
 import {Trade} from './trade';
-import {RadarBook, RadarFill, RadarSignedOrder, RadarCandle, RadarTicker} from 'radar-types';
+import {RadarBook, RadarFill, RadarSignedOrder, RadarCandle,
+  RadarTicker, UserOrderType, RadarMarket} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -18,7 +19,7 @@ export class Market {
   private _endpoint: string;
   private _trade: Trade;
 
-  constructor(params, apiEndpoint: string, trade: Trade) {
+  constructor(params: RadarMarket, apiEndpoint: string, trade: Trade) {
       this._endpoint = apiEndpoint;
       this._trade = trade;
 
@@ -56,23 +57,27 @@ export class Market {
 
   // marketOrder
   public async marketOrderAsync(
-    type: string, amount: BigNumber, awaitTransactionMined: boolean = false
+    type: UserOrderType,
+    amount: BigNumber,
+    awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     return await this._trade.marketOrder(this, type, amount, awaitTransactionMined);
   }
 
   // limitOrder
   public async limitOrderAsync(
-    type: string = 'buy',
+    type: UserOrderType,
     quantity: BigNumber,
     price: BigNumber,
-    expiration: BigNumber): Promise<Order> {
+    expiration: BigNumber
+  ): Promise<Order> {
     return await this._trade.limitOrder(this, type, quantity, price, expiration);
   }
 
   // cancelOrder
   public async cancelOrderAsync(
-    order: SignedOrder, awaitTransactionMined: boolean = false
+    order: SignedOrder,
+    awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     return await this._trade.cancelOrderAsync(order, awaitTransactionMined);
   }

@@ -64,7 +64,7 @@ export class Account {
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.depositAsync(
-      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address);
       if (!awaitTransactionMined) {
         return txHash;
       }
@@ -76,7 +76,7 @@ export class Account {
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
-      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address);
       if (!awaitTransactionMined) {
         return txHash;
       }
@@ -131,5 +131,15 @@ export class Account {
 
   public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/fills`));
+  }
+
+  private _getWETHTokenAddress(): string {
+    let token;
+    this._tokens.forEach(t => {
+      if (t.symbol === 'WETH') {
+        token = t;
+      }
+    });
+    return token.address;
   }
 }

@@ -4,7 +4,7 @@ import {Account} from './account';
 import {EventEmitter} from 'events';
 import {WalletType} from './types';
 import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs} from '0x.js';
-import {RadarToken} from 'radar-types';
+import {RadarToken, UserOrderType} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -31,8 +31,8 @@ export class Trade {
 
     public async marketOrder(
       market: Market,
-      type: string = 'buy',
-      quantity: BigNumber = null,
+      type: UserOrderType,
+      quantity: BigNumber,
       awaitTransactionMined: boolean = false
     ): Promise<TransactionReceiptWithDecodedLogs | string> {
 
@@ -70,7 +70,7 @@ export class Trade {
     // sign and post order to book
     public async limitOrder(
       market: Market = null,
-      type: string = 'buy', // ask == sell, bid == buy
+      type: UserOrderType, // ask == sell, bid == buy
       quantity: BigNumber, // base token quantity
       price: BigNumber, // price (in quote)
       expiration: BigNumber // expiration in seconds from now
