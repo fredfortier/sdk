@@ -56,7 +56,7 @@ class Market {
         });
     }
     // limitOrder
-    limitOrderAsync(type = 'buy', quantity, price, expiration) {
+    limitOrderAsync(type, quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._trade.limitOrder(this, type, quantity, price, expiration);
         });

@@ -12,8 +12,6 @@ const _0x_js_1 = require("0x.js");
 const types_1 = require("./types");
 const es6_promisify_1 = require("es6-promisify");
 const request = require("request-promise");
-// TODO move to config
-const WETH_TOKEN_ADDRESS = '';
 class Account {
     constructor(ethereum, zeroEx, apiEndpoint, tokens) {
         // TODO tokens + decimal calculations and conversions
@@ -54,15 +52,25 @@ class Account {
             return _0x_js_1.ZeroEx.toUnitAmount(balance, 18);
         });
     }
-    transferEthAsync() {
+    transferEthAsync(to, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            // TODO
+            const params = {
+                from: this.address,
+                to,
+                value: this._ethereum.web3.toWei(amount, 'ether')
+            };
+            const txHash = yield es6_promisify_1.promisify(cb => this._ethereum.web3.eth.sendTransaction(params, cb))();
+            yield this._ethereum.transferEthAsync.apply(this._ethereum, [this.address, to, amount]);
+            if (!awaitTransactionMined) {
+                return txHash;
+            }
+            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
         });
     }
     wrapEthAsync(amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
-            const txHash = yield this._zeroEx.etherToken.depositAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+            const txHash = yield this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
             if (!awaitTransactionMined) {
                 return txHash;
             }
@@ -72,7 +80,7 @@ class Account {
     unwrapEthAsync(amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             // TODO get addr from tokens array
-            const txHash = yield this._zeroEx.etherToken.withdrawAsync('0xd0a1e359811322d97991e03f863a0c30c2cf029c', _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+            const txHash = yield this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
             if (!awaitTransactionMined) {
                 return txHash;
             }
@@ -88,7 +96,7 @@ class Account {
     transferTokenAsync(token, to, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-            const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amount);
+            const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amt);
             if (!awaitTransactionMined) {
                 return txHash;
             }
@@ -129,6 +137,15 @@ class Account {
         return __awaiter(this, void 0, void 0, function* () {
             return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/fills`));
         });
+    }
+    _getWETHTokenAddress() {
+        let token;
+        this._tokens.forEach(t => {
+            if (t.symbol === 'WETH') {
+                token = t;
+            }
+        });
+        return token.address;
     }
 }
 exports.Account = Account;

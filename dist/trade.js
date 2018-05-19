@@ -20,7 +20,7 @@ class Trade {
         this._events = events;
         this._tokens = tokens;
     }
-    marketOrder(market, type = 'buy', quantity = null, awaitTransactionMined = false) {
+    marketOrder(market, type, quantity, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const marketResponse = yield request.post({
                 url: `${this._endpoint}/markets/${market.id}/order/market`,
@@ -45,10 +45,10 @@ class Trade {
         });
     }
     // sign and post order to book
-    limitOrder(market = null, type = 'buy', // ask == sell, bid == buy
-    quantity, // base token quantity
-    price, // price (in quote)
-    expiration // expiration in seconds from now
+    limitOrder(market = null, type, // ask == sell, bid == buy
+        quantity, // base token quantity
+        price, // price (in quote)
+        expiration // expiration in seconds from now
     ) {
         return __awaiter(this, void 0, void 0, function* () {
             const order = yield request.post({
@@ -69,8 +69,12 @@ class Trade {
             const ecSignature = yield this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
             order.ecSignature = ecSignature;
             // POST order to API
+            // HACK for local dev order seeding
+            const orderPostURL = process.env.RADAR_SDK_ORDER_URL
+                ? process.env.RADAR_SDK_ORDER_URL
+                : `${this._endpoint}/orders`;
             yield request.post({
-                url: `${this._endpoint}/orders`,
+                url: orderPostURL,
                 json: order
             });
             return order;

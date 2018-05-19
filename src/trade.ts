@@ -97,8 +97,12 @@ export class Trade {
       (order as SignedOrder).ecSignature = ecSignature;
 
       // POST order to API
+      // HACK for local dev order seeding
+      const orderPostURL = process.env.RADAR_SDK_ORDER_URL
+                         ? process.env.RADAR_SDK_ORDER_URL
+                         : `${this._endpoint}/orders`;
       await request.post({
-          url: `${this._endpoint}/orders`,
+          url: orderPostURL,
           json : order
       });
 
