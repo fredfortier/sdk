@@ -7,12 +7,15 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {RadarRelay} from '../src/index';
+import {mockRequestsKovan} from './lib/mockRequests';
 
 const expect = chai.expect;
 
 describe('RadarRelay', () => {
 
     const rrsdk = new RadarRelay();
+
+    mockRequestsKovan();
 
     rrsdk.events.on('loading', data => {
       // console.log(data);
@@ -62,8 +65,8 @@ describe('RadarRelay', () => {
 
       await rrsdk.initialize({
         password: 'password',
-        dataRpcUrl: 'http://35.196.15.153:8100',
-        radarRelayEndpoint: 'http://35.190.74.75/v0'
+        dataRpcUrl: 'https://kovan.infura.io/radar',
+        radarRelayEndpoint: 'http://localhost:8080/v0'
       });
 
       expect(accountInitialized).to.be.true;
@@ -84,11 +87,13 @@ describe('RadarRelay', () => {
     });
 
     // TODO may not be necessary
-    it('SDK reloads properly when using walletRpcUrl is updated', async () => {
+    it('SDK reloads properly when using walletRpcUrl', async () => {
 
       await rrsdk.setEthereumAsync({
+        // walletRpcUrl: 'http://localhost:8545',
+        // dataRpcUrl: 'http://localhost:8545'
         walletRpcUrl: 'http://35.196.15.153:8100',
-        dataRpcUrl: 'http://35.196.15.153:8100'
+        dataRpcUrl: 'https://kovan.infura.io/radar'
       });
 
       expect(accountInitialized).to.be.true;
@@ -98,6 +103,7 @@ describe('RadarRelay', () => {
       expect(zeroExInitialized).to.be.true;
       expect(tradeInitialized).to.be.true;
       expect(marketsInitialized).to.be.true;
+      expect(rrsdk.account.address).to.equal('0x9d94d5c4dcf7784023afc5826059ba8c0f17657f');
     });
 
     it.skip('properly handles setting invalid connection');

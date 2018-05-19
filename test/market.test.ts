@@ -2,7 +2,7 @@
 /* tslint:disable:no-implicit-dependencies */
 
 import {RadarRelay} from '../src';
-import {mockRequests} from './lib/mockRequests';
+import {mockRequestsKovan} from './lib/mockRequests';
 import {ZeroEx, TransactionReceiptWithDecodedLogs} from '0x.js';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
@@ -17,14 +17,16 @@ describe('RadarRelay.Market', () => {
 
   before(async () => {
     // TODO mock and testrpc
-    // mockRequests();
+    mockRequestsKovan();
 
     rrsdk = new RadarRelay();
     await rrsdk.initialize({
       password: 'password',
       // walletRpcUrl: 'http://35.196.15.153:8100',
-      dataRpcUrl: 'http://35.196.15.153:8100',
-      radarRelayEndpoint: 'http://35.190.74.75/v0',
+      dataRpcUrl: 'https://kovan.infura.io/radar',
+      // walletRpcUrl: 'http://localhost:8545',
+      // dataRpcUrl: 'http://localhost:8545',
+      radarRelayEndpoint: 'http://localhost:8080/v0',
       defaultGasPrice: new BigNumber(2)
     });
 
@@ -54,7 +56,6 @@ describe('RadarRelay.Market', () => {
   });
 
   it('limitOrderAsync', async () => {
-
     signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
       new BigNumber(String(0.01)),
       new BigNumber('0.007'),

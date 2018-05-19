@@ -33,7 +33,7 @@ export declare class Ethereum implements TransactionManager {
     /**
      * transfer ether to another account
      */
-    transferEthAsync(from: string, to: string, value: BigNumber): Promise<BigNumber>;
+    transferEthAsync(from: string, to: string, value: BigNumber): Promise<string>;
     /**
      * get the RPC Connections networkId
      */

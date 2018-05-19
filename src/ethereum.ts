@@ -83,12 +83,9 @@ import { TransactionManager, Signer, PartialTxParams,
      /**
       * transfer ether to another account
       */
-     public async transferEthAsync(from: string, to: string, value: BigNumber): Promise<BigNumber> {
-       return await promisify(this.web3.eth.sendTransaction)({
-          from,
-          to,
-          value: this.web3.toWei(value, 'ether')
-        });
+     public async transferEthAsync(from: string, to: string, value: BigNumber): Promise<string> {
+       const params = { from, to, value: this.web3.toWei(value, 'ether') };
+       return await promisify(cb => this.web3.eth.sendTransaction(params, cb))();
      }
 
      /**
@@ -140,6 +137,9 @@ import { TransactionManager, Signer, PartialTxParams,
        } else {
           // --- Use unlocked node --- //
           const providerEngine = new Web3ProviderEngine();
+
+          // Add nonce subprovider tracker
+          // providerEngine.addProvider(new NonceTrackerSubprovider());
 
           // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
           const walletProvider = new Web3.providers.HttpProvider(wallet);

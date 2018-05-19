@@ -74,11 +74,8 @@ class Ethereum {
      */
     transferEthAsync(from, to, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield es6_promisify_1.promisify(this.web3.eth.sendTransaction)({
-                from,
-                to,
-                value: this.web3.toWei(value, 'ether')
-            });
+            const params = { from, to, value: this.web3.toWei(value, 'ether') };
+            return yield es6_promisify_1.promisify(cb => this.web3.eth.sendTransaction(params, cb))();
         });
     }
     /**
@@ -135,6 +132,8 @@ class Ethereum {
         else {
             // --- Use unlocked node --- //
             const providerEngine = new Web3ProviderEngine();
+            // Add nonce subprovider tracker
+            // providerEngine.addProvider(new NonceTrackerSubprovider());
             // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
             const walletProvider = new Web3.providers.HttpProvider(wallet);
             this.web3 = new Web3(walletProvider);

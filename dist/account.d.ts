@@ -17,7 +17,7 @@ export declare class Account {
     setAddressAsync(account: string | number): Promise<void>;
     getAvailableAddressesAsync(): Promise<string[]>;
     getEthBalanceAsync(): Promise<BigNumber>;
-    transferEthAsync(): Promise<void>;
+    transferEthAsync(to: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     wrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     unwrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     getTokenBalanceAsync(token: string): Promise<BigNumber>;
@@ -27,4 +27,5 @@ export declare class Account {
     setUnlimitedTokenAllowanceAsync(token: string, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     getOrdersAsync(page?: number, perPage?: number): Promise<RadarSignedOrder[]>;
     getFillsAsync(page?: number, perPage?: number): Promise<RadarFill>;
+    private _getWETHTokenAddress();
 }

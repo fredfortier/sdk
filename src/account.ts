@@ -6,9 +6,6 @@ import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
-// TODO move to config
-const WETH_TOKEN_ADDRESS = '';
-
 export class Account {
 
   public address: string;
@@ -55,8 +52,14 @@ export class Account {
     return ZeroEx.toUnitAmount(balance, 18);
   }
 
-  public async transferEthAsync() {
-    // TODO
+  public async transferEthAsync(
+    to: string, amount: BigNumber, awaitTransactionMined: boolean = false
+  ): Promise<TransactionReceiptWithDecodedLogs | string> {
+    const txHash = await this._ethereum.transferEthAsync(this.address, to, amount);
+    if (!awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async wrapEthAsync(
@@ -64,11 +67,12 @@ export class Account {
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.depositAsync(
-      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-      if (!awaitTransactionMined) {
-        return txHash;
-      }
-      return await this._zeroEx.awaitTransactionMinedAsync(txHash);
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address
+    );
+    if (!awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async unwrapEthAsync(
@@ -76,7 +80,7 @@ export class Account {
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
-      '0xd0a1e359811322d97991e03f863a0c30c2cf029c', ZeroEx.toBaseUnitAmount(amount, 18), this.address);
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address);
       if (!awaitTransactionMined) {
         return txHash;
       }
@@ -92,7 +96,7 @@ export class Account {
     token: string, to: string, amount: BigNumber, awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-    const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amount);
+    const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amt);
     if (!awaitTransactionMined) {
       return txHash;
     }
@@ -131,5 +135,15 @@ export class Account {
 
   public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill> {
     return JSON.parse(await request.get(`${this._endpoint}/accounts/${this.address}/fills`));
+  }
+
+  private _getWETHTokenAddress(): string {
+    let token;
+    this._tokens.forEach(t => {
+      if (t.symbol === 'WETH') {
+        token = t;
+      }
+    });
+    return token.address;
   }
 }
