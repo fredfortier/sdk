@@ -38,6 +38,7 @@ describe('RadarRelay.Market', () => {
 
     // set allowance
     await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, true);
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(zrxAddr, true);
   });
 
   it('getBookAsync', async () => {
