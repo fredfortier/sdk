@@ -37,8 +37,9 @@ describe('RadarRelay.Account', () => {
       addresses = await rrsdk.account.getAvailableAddressesAsync();
       if (addresses.length === 1) {
         rrsdk.account.addNewAddresses(1);
+        addresses = await rrsdk.account.getAvailableAddressesAsync();
       }
-      console.log('[address]', rrsdk.account.address);
+      console.log('[addresses]', addresses);
     });
 
     it('getOrdersAsync', async () => {
