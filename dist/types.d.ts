@@ -1,8 +1,14 @@
 import BigNumber from 'bignumber.js';
 export { RadarToken, RadarMarket } from 'radar-types';
+export interface CoreWalletOptions {
+    password: string;
+    seedPhrase?: string;
+    salt?: string;
+    hdPathString?: string;
+}
 export interface RadarRelayConfig {
-    password?: string;
-    walletRpcUrl?: string;
+    wallet?: CoreWalletOptions;
+    rpcWallet?: string;
     radarRelayEndpoint?: string;
     defaultGasPrice?: BigNumber;
     dataRpcUrl: string;

@@ -41,6 +41,9 @@ class Account {
             this.address = this._ethereum.defaultAccount;
         });
     }
+    addNewAddresses(num) {
+        this._wallet.addNewAccounts(num);
+    }
     getAvailableAddressesAsync() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield es6_promisify_1.promisify(this._ethereum.web3.eth.getAccounts)();
@@ -54,13 +57,7 @@ class Account {
     }
     transferEthAsync(to, amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const params = {
-                from: this.address,
-                to,
-                value: this._ethereum.web3.toWei(amount, 'ether')
-            };
-            const txHash = yield es6_promisify_1.promisify(cb => this._ethereum.web3.eth.sendTransaction(params, cb))();
-            yield this._ethereum.transferEthAsync.apply(this._ethereum, [this.address, to, amount]);
+            const txHash = yield this._ethereum.transferEthAsync(this.address, to, amount);
             if (!awaitTransactionMined) {
                 return txHash;
             }
@@ -79,7 +76,6 @@ class Account {
     }
     unwrapEthAsync(amount, awaitTransactionMined = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            // TODO get addr from tokens array
             const txHash = yield this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
             if (!awaitTransactionMined) {
                 return txHash;

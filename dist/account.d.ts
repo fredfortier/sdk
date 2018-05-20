@@ -15,6 +15,7 @@ export declare class Account {
     exportSeedPhraseAsync(password: string): Promise<string>;
     exportAddressPrivateKeyAsync(password: string): Promise<string>;
     setAddressAsync(account: string | number): Promise<void>;
+    addNewAddresses(num: number): void;
     getAvailableAddressesAsync(): Promise<string[]>;
     getEthBalanceAsync(): Promise<BigNumber>;
     transferEthAsync(to: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;

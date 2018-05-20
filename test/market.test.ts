@@ -15,6 +15,8 @@ describe('RadarRelay.Market', () => {
 
   let rrsdk;
   let signedOrder;
+  let wethAddr;
+  let zrxAddr;
 
   before(async () => {
     mockRequests();
@@ -30,6 +32,12 @@ describe('RadarRelay.Market', () => {
       defaultGasPrice: new BigNumber(2)
     });
 
+    // set addr for later use
+    zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
+    wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
+
+    // set allowance
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, true);
   });
 
   it('getBookAsync', async () => {
@@ -56,7 +64,7 @@ describe('RadarRelay.Market', () => {
   });
 
   it('limitOrderAsync', async () => {
-    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('buy',
+    signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync('BUY',
       new BigNumber(String(0.01)),
       new BigNumber('0.007'),
       new BigNumber((new Date().getTime() / 1000) + 43200).floor()
@@ -72,7 +80,10 @@ describe('RadarRelay.Market', () => {
   });
 
   it('marketOrderAsync', async () => {
-    const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync('buy',
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(
+      wethAddr, true
+    );
+    const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync('BUY',
       new BigNumber(0.001), true // awaitTxMined
     );
     expect(receipt.status).to.be.eq(1);

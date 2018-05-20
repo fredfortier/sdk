@@ -61,7 +61,7 @@ describe('RadarRelay', () => {
       tradeInitialized = false;
     });
 
-    it('properly initializes and updates via event API lifecycle', async () => {
+    it('properly initializes and updates via init lifecycle', async () => {
 
       await rrsdk.initialize({
         wallet: {
