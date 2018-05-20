@@ -7,7 +7,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {RadarRelay} from '../src/index';
-import {mockRequestsKovan} from './lib/mockRequests';
+import {mockRequests} from './lib/mockRequests';
 
 const expect = chai.expect;
 
@@ -15,7 +15,7 @@ describe('RadarRelay', () => {
 
     const rrsdk = new RadarRelay();
 
-    mockRequestsKovan();
+    mockRequests();
 
     rrsdk.events.on('loading', data => {
       // console.log(data);
@@ -61,11 +61,14 @@ describe('RadarRelay', () => {
       tradeInitialized = false;
     });
 
-    it('properly initializes and updates via event API lifecycle', async () => {
+    it('properly initializes and updates via init lifecycle', async () => {
 
       await rrsdk.initialize({
-        password: 'password',
-        dataRpcUrl: 'https://kovan.infura.io/radar',
+        wallet: {
+          password: 'password',
+          seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+        },
+        dataRpcUrl: 'http://localhost:8545',
         radarRelayEndpoint: 'http://localhost:8080/v0'
       });
 
@@ -87,13 +90,11 @@ describe('RadarRelay', () => {
     });
 
     // TODO may not be necessary
-    it('SDK reloads properly when using walletRpcUrl', async () => {
+    it('SDK reloads properly when using rpcWallet', async () => {
 
       await rrsdk.setEthereumAsync({
-        // walletRpcUrl: 'http://localhost:8545',
-        // dataRpcUrl: 'http://localhost:8545'
-        walletRpcUrl: 'http://35.196.15.153:8100',
-        dataRpcUrl: 'https://kovan.infura.io/radar'
+        rpcWallet: 'http://localhost:8545',
+        dataRpcUrl: 'http://localhost:8545'
       });
 
       expect(accountInitialized).to.be.true;
@@ -103,7 +104,7 @@ describe('RadarRelay', () => {
       expect(zeroExInitialized).to.be.true;
       expect(tradeInitialized).to.be.true;
       expect(marketsInitialized).to.be.true;
-      expect(rrsdk.account.address).to.equal('0x9d94d5c4dcf7784023afc5826059ba8c0f17657f');
+      expect(rrsdk.account.address).to.equal('0x5409ed021d9299bf6814279a6a1411a7e866a631');
     });
 
     it.skip('properly handles setting invalid connection');

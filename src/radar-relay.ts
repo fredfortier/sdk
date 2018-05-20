@@ -92,21 +92,19 @@ export class RadarRelay {
     public async setEthereumAsync(config: RadarRelayConfig): Promise<string | boolean> {
 
       // init wallet as unlocked rpc node
-      let wallet: any = config.walletRpcUrl;
+      let wallet: any = config.rpcWallet;
 
       // if a password is passed in
       // instantiate the WalletManager
-      if (config.password) {
+      if (config.wallet) {
         const walletManager = new WalletManager();
 
-        // attempt to load core wallet
+        // attempt to load existing core wallet
         try {
-          wallet = await walletManager.core.loadWalletAsync(config.password);
+          wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
         } catch (err) {
           // create a new core wallet
-          // defaulting to 5 addresses
-          wallet = await walletManager.core.createWalletAsync({ password: config.password });
-          (wallet as Wallet).addNewAccounts(4);
+          wallet = await walletManager.core.createWalletAsync(config.wallet);
         }
       }
 
