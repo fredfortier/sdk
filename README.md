@@ -1,5 +1,9 @@
 # Radar Relay SDK
 
+The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
+
+[![CircleCI](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta.svg?style=svg)](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta)
+
 ## Setting up an Ethereum Node
 
 **Install Parity**
