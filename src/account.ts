@@ -43,6 +43,10 @@ export class Account {
     this.address = this._ethereum.defaultAccount;
   }
 
+  public addNewAddresses(num: number): void {
+    this._wallet.addNewAccounts(num);
+  }
+
   public async getAvailableAddressesAsync(): Promise<string[]> {
     return await promisify(this._ethereum.web3.eth.getAccounts)();
   }
@@ -78,7 +82,6 @@ export class Account {
   public async unwrapEthAsync(
     amount: BigNumber, awaitTransactionMined: boolean = false
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
       this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address);
       if (!awaitTransactionMined) {

@@ -101,6 +101,7 @@ export class Trade {
       const orderPostURL = process.env.RADAR_SDK_ORDER_URL
                          ? process.env.RADAR_SDK_ORDER_URL
                          : `${this._endpoint}/orders`;
+
       await request.post({
           url: orderPostURL,
           json : order
