@@ -7,7 +7,7 @@ import {promisify} from 'es6-promisify';
 import {Web3Builder, WalletManager} from 'vault-manager';
 import {InjectedWeb3Subprovider, NonceTrackerSubprovider} from '@0xproject/subproviders';
 import { TransactionManager, Signer, PartialTxParams,
-    UnsignedPayload, Wallet } from './types';
+    UnsignedPayload, Wallet, WalletType } from './types';
 
 /**
  * Ethereum
@@ -24,14 +24,15 @@ import { TransactionManager, Signer, PartialTxParams,
      private _defaultGasPrice: string;
 
      constructor(
-       wallet: string | Wallet,
-       rpcUrl: string = '',
-       gasPrice?: BigNumber) {
-         if (!wallet) throw new Error('Wallet RPC URL or class instance not set.');
-         if (!rpcUrl) throw new Error('Data RPC URL not set.');
+       type: WalletType,
+       config: 
+     ) {
 
+         
+         
+         
          this._gasPrice = gasPrice;
-         this._setProvider(wallet, rpcUrl);
+         this._setProvider(type, wallet, rpcUrl);
      }
 
      public get defaultAccount(): string {
@@ -118,22 +119,45 @@ import { TransactionManager, Signer, PartialTxParams,
        }
      }
 
+     private _setCoreWalletProvider(config) {
+       const walletManager = new WalletManager();
+
+       // attempt to load existing core wallet
+       let wallet;
+       try {
+         wallet = await walletManager.core.loadWalletAsync(config.password);
+       } catch (err) {
+         if (err.message === 'NO_WALLET_FOUND') {
+           // create a new core wallet
+           wallet = await walletManager.core.createWalletAsync(config.wallet);
+         } else {
+           throw new Error(err.message);
+         }
+       }
+
+       this.wallet = (wallet as Wallet);
+       // --- Use vault-manager ---//
+       // Instantiate the Web3Builder
+       const web3Builder = new Web3Builder();
+
+       // Set web3
+       //  To avoid passing a static instance of the Web3 object around
+       //  this class implements `TransactionManager` and is passed
+       //  in to the `setSignerAndRpcConnection` to init Web3
+       this.web3 = web3Builder.setSignerAndRpcConnection(this, config.dataRpcUrl, new NonceTrackerSubprovider());
+       this.provider = this.web3.currentProvider;
+     }
+     
+     private _setInjectedWalletProvider() {
+       // TODO
+     }
+
      /**
       * Set the rpc providers
       */
      private _setProvider(wallet: string | Wallet, rpcUrl: string): void {
        if (wallet instanceof Object) {
-         this.wallet = (wallet as Wallet);
-         // --- Use vault-manager ---//
-         // Instantiate the Web3Builder
-         const web3Builder = new Web3Builder();
 
-         // Set web3
-         //  To avoid passing a static instance of the Web3 object around
-         //  this class implements `TransactionManager` and is passed
-         //  in to the `setSignerAndRpcConnection` to init Web3
-         this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl, new NonceTrackerSubprovider());
-         this.provider = this.web3.currentProvider;
        } else {
           // --- Use unlocked node --- //
           const providerEngine = new Web3ProviderEngine();

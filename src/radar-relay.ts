@@ -2,7 +2,8 @@
 import {ZeroEx, ZeroExConfig} from '0x.js';
 import {WalletManager} from 'vault-manager';
 import {EventEmitter} from 'events';
-import {Wallet, RadarRelayConfig} from './types';
+import {Wallet, RadarRelayConfig, LocalWalletConfig, InjectedWalletType,
+  RpcWalletConfig, InjectedWalletConfig, WalletType} from './types';
 import {RadarToken, RadarMarket} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
@@ -47,7 +48,7 @@ export class RadarRelay {
      */
     private loadPriorityList: InitPriorityItem[] = [
       {
-        event: 'ethereumNetworkUpdated',
+        event: 'ethereumInitialized',
         func: this.initEthereumNetworkIdAsync
       }, {
         event: 'ethereumNetworkIdInitialized',
@@ -70,46 +71,45 @@ export class RadarRelay {
         func: undefined
       } ];
 
-    constructor() {
-      this.events = new EventEmitter();
-      this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
-    }
-
-    public async initialize(config: RadarRelayConfig): Promise<string | boolean> {
+    constructor(config: RadarRelayConfig) {
       // set the api endpoint outside
       // of the init _lifecycle
       this._apiEndpoint = config.radarRelayEndpoint;
 
-      // setup the _lifecycle function bindings
-      this._lifecycle.setup(this);
+      // instantiate event handler
+      this.events = new EventEmitter();
 
-      // setup ethereum class
-      return await this.setEthereumAsync(config);
+      // setup the _lifecycle
+      this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
+      this._lifecycle.setup(this);
     }
 
-    // --- user configurable --- //
+    public async initialize(
+      config: LocalWalletConfig | RpcWalletConfig | InjectedWalletConfig
+    ): Promise<string | boolean> {
 
-    public async setEthereumAsync(config: RadarRelayConfig): Promise<string | boolean> {
+      // Determine wallet type
+      let type: WalletType;
 
-      // init wallet as unlocked rpc node
-      let wallet: any = config.rpcWallet;
+      // local
+      if ((config as LocalWalletConfig).wallet) {
+        type = WalletType.Local;
+      }
 
-      // if a password is passed in
-      // instantiate the WalletManager
-      if (config.wallet) {
-        const walletManager = new WalletManager();
+      // rpc
+      if ((config as RpcWalletConfig).walletRpcUrl) {
+        type = WalletType.Rpc;
+      }
 
-        // attempt to load existing core wallet
-        try {
-          wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
-        } catch (err) {
-          // create a new core wallet
-          wallet = await walletManager.core.createWalletAsync(config.wallet);
+      // injected
+      if ((config as InjectedWalletConfig).type) {
+        if ((config as InjectedWalletConfig).type === InjectedWalletType.Metmask) {
+          type = WalletType.Injected;
         }
       }
 
-      this._ethereum = new Ethereum(wallet, config.dataRpcUrl, config.defaultGasPrice);
-      return this.getCallback('ethereumNetworkUpdated', this._ethereum);
+      this._ethereum = new Ethereum(type, config);
+      return this.getCallback('ethereumInitialized', this._ethereum);
     }
 
     // --- not user configurable below this line --- //

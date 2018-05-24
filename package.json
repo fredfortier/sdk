@@ -1,7 +1,7 @@
 {
   "name": "radar-relay-sdk",
-  "version": "0.1.1",
-  "description": "A JavaScript library for interacting with Radar Relay",
+  "version": "0.2.0",
+  "description": "A node library for interacting with Radar Relay",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

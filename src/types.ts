@@ -2,6 +2,18 @@ import BigNumber from 'bignumber.js';
 
 export {RadarToken, RadarMarket} from 'radar-types';
 
+export interface RadarRelayConfig {
+  radarRelayEndpoint: string;
+}
+
+export interface EthereumConfig {
+  defaultGasPrice?: BigNumber;
+}
+
+export interface InjectedWalletConfig extends EthereumConfig {
+  type: InjectedWalletType;
+}
+
 export interface CoreWalletOptions {
   password: string;
   seedPhrase?: string;
@@ -9,11 +21,13 @@ export interface CoreWalletOptions {
   hdPathString?: string;
 }
 
-export interface RadarRelayConfig {
-  wallet?: CoreWalletOptions;
-  rpcWallet?: string;
-  radarRelayEndpoint?: string;
-  defaultGasPrice?: BigNumber;
+export interface LocalWalletConfig extends EthereumConfig {
+  wallet: CoreWalletOptions;
+  dataRpcUrl: string;
+}
+
+export interface RpcWalletConfig extends EthereumConfig {
+  walletRpcUrl: string;
   dataRpcUrl: string;
 }
 
@@ -66,9 +80,14 @@ export enum PayloadType {
 }
 
 export enum WalletType {
-  Core,
-  Ledger,
-  Rpc
+  Local,
+  Rpc,
+  Injected,
+  Ledger
+}
+
+export enum InjectedWalletType {
+  Metmask
 }
 
 export enum InfuraNetwork {
