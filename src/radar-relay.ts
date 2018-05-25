@@ -103,7 +103,7 @@ export class RadarRelay {
         try {
           wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
         } catch (err) {
-          if (err.message === 'NO_WALLET_FOUND') {
+          if (err.message === 'NO_WALLET_FOUND' || err.message.indexOf('no such file or directory') > 0) {
             // create a new core wallet
             wallet = await walletManager.core.createWalletAsync(config.wallet);
           } else {
