@@ -13,6 +13,7 @@ import {
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
+import Map = require('es6-map');
 
 // SDK Classes
 import {SDKInitLifeCycle, InitPriorityItem} from './sdk-init-lifecycle';
@@ -135,7 +136,7 @@ export class RadarRelay {
     }
 
     private initZeroEx(): Promise<string | boolean> {
-      this.zeroEx = new ZeroEx(this._ethereum.provider, {
+      this.zeroEx = new ZeroEx(this._ethereum.web3.currentProvider, {
         networkId: this._networkId
       });
       return this.getCallback('zeroExInitialized', this.zeroEx);

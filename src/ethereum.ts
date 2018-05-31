@@ -25,7 +25,6 @@ import {
 
      public wallet: Wallet;
      public walletType: WalletType;
-     public provider: Web3.Provider;
      public networkId: number;
      public web3: Web3;
 
@@ -117,33 +116,25 @@ import {
      private async _setLightWalletProvider(config: LightWalletConfig) {
        const walletManager = new WalletManager();
 
-       // attempt to load existing core wallet
+       // attempt to load existing light wallet
        let wallet;
        try {
          wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
        } catch (err) {
          if (err.message === 'NO_WALLET_FOUND') {
-           // create a new core wallet
+           // create a new light wallet
            wallet = await walletManager.core.createWalletAsync(config.wallet);
          } else {
            throw new Error(err.message);
          }
        }
-
        this.wallet = (wallet as Wallet);
 
-       // --- Use vault-manager ---//
        // Instantiate the Web3Builder
        const web3Builder = new Web3Builder();
-
-       // Set web3
-       //  To avoid passing a static instance of the Web3 object around
-       //  this class implements `TransactionManager` and is passed
-       //  in to the `setSignerAndRpcConnection` to init Web3
        this.web3 = web3Builder.createWeb3(new EthLightwalletSubprovider(
          wallet._signing, wallet._keystore, wallet._pwDerivedKey
        ), config.dataRpcUrl, true);
-       this.provider = this.web3.currentProvider;
      }
 
      /**
@@ -152,7 +143,10 @@ import {
       * @param {config} InjectedWalletConfig
       */
      private _setInjectedWalletProvider(config: InjectedWalletConfig) {
-       // TODO Metamask / Parity Signer
+        const web3Builder = new Web3Builder();
+        this.web3 = web3Builder.createWeb3(
+          new InjectedWeb3Subprovider(config.web3.currentProvider),
+          config.dataRpcUrl, true);
      }
 
      /**
@@ -176,8 +170,6 @@ import {
           // Init RPCProvider for Ethereum data
           providerEngine.addProvider(new RPCSubprovider({ rpcUrl: config.dataRpcUrl }));
           providerEngine.start();
-
-          this.provider = providerEngine;
      }
 
  }

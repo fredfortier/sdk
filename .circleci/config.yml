@@ -13,6 +13,9 @@ jobs:
       #     name: Ensure sonar-scanner installed
       #     command: sonar-scanner --help || sleep 2 && sonar-scanner --help || sleep 2 && sonar-scanner --help
       - run:
+          name: Install libusb
+          command: sudo apt install libusb-1.0-0-dev
+      - run:
           name: Install typescript
           command: 'sudo npm install -g typescript'
       - restore_cache:

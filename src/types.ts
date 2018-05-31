@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-
+import Web3 = require('web3');
 export {RadarToken, RadarMarket} from 'radar-types';
 
 export interface RadarRelayConfig {
@@ -12,6 +12,8 @@ export interface EthereumConfig {
 
 export interface InjectedWalletConfig extends EthereumConfig {
   type: InjectedWalletType;
+  web3: Web3;
+  dataRpcUrl: string;
 }
 
 export interface CoreWalletOptions {

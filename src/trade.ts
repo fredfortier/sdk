@@ -7,6 +7,7 @@ import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceip
 import {RadarToken, UserOrderType} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
+import Map = require('es6-map');
 
 export class Trade {
 
