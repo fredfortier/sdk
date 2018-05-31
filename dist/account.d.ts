@@ -3,6 +3,7 @@ import { Ethereum } from './ethereum';
 import { WalletType } from './types';
 import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
+import * as Map from 'es6-map';
 export declare class Account {
     address: string;
     private _wallet;

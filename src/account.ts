@@ -5,7 +5,7 @@ import {promisify} from 'es6-promisify';
 import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import Map = require('es6-map');
+import * as Map from 'es6-map';
 
 export class Account {
 

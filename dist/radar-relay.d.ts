@@ -1,6 +1,7 @@
 import { ZeroEx } from '0x.js';
 import { RadarToken } from 'radar-types';
 import { RadarRelayConfig, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
+import Map = require('es6-map');
 import { EventBus } from './event-emitter';
 import { Account } from './account';
 import { Market } from './market';

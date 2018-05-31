@@ -5,6 +5,7 @@ import { EventEmitter } from 'events';
 import { ZeroEx, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { RadarToken, UserOrderType } from 'radar-types';
 import BigNumber from 'bignumber.js';
+import Map = require('es6-map');
 export declare class Trade {
     private _endpoint;
     private _account;

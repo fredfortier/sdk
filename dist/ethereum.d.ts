@@ -7,7 +7,6 @@ import { Wallet, WalletType, LightWalletConfig, RpcWalletConfig, InjectedWalletC
 export declare class Ethereum {
     wallet: Wallet;
     walletType: WalletType;
-    provider: Web3.Provider;
     networkId: number;
     web3: Web3;
     private _events;

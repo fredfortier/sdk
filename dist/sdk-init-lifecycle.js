@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class SDKInitLifeCycle {
-    constructor(events, priorityList, timeout = 10000) {
+var SDKInitLifeCycle = /** @class */ (function () {
+    function SDKInitLifeCycle(events, priorityList, timeout) {
+        if (timeout === void 0) { timeout = 10000; }
         this.priority = {};
         this.priorityList = priorityList;
         this.events = events;
@@ -10,9 +11,9 @@ class SDKInitLifeCycle {
         // event handlers which maintains
         // the current loaded event priority
         this.last = (priorityList.length - 1);
-        for (const index in priorityList) {
+        for (var index in priorityList) {
             if (priorityList.hasOwnProperty(index)) {
-                const item = priorityList[index];
+                var item = priorityList[index];
                 this.priority[item.event] = index;
                 this.events.on(item.event, this.handleEvent.bind(this, item.event));
             }
@@ -23,49 +24,53 @@ class SDKInitLifeCycle {
     //
     // The scope is the class that the
     // functions belong to.
-    setup(scope) {
-        for (const item of this.priorityList) {
+    SDKInitLifeCycle.prototype.setup = function (scope) {
+        var _a;
+        for (var _i = 0, _b = this.priorityList; _i < _b.length; _i++) {
+            var item = _b[_i];
             if (item.func) {
                 if (item.args) {
-                    this.events.on(item.event, item.func.bind(scope, ...item.args));
+                    this.events.on(item.event, (_a = item.func).bind.apply(_a, [scope].concat(item.args)));
                 }
                 else {
                     this.events.on(item.event, item.func.bind(scope));
                 }
             }
         }
-    }
-    promise(event) {
+    };
+    SDKInitLifeCycle.prototype.promise = function (event) {
+        var _this = this;
         if (this.runInterval)
             return Promise.resolve(true);
         this.current = this.priority[event];
         this.startTime = new Date().getTime();
-        return new Promise((resolve, reject) => {
-            this.runInterval = setInterval(this.checkEventProgress.bind(this, resolve, reject), 100);
+        return new Promise(function (resolve, reject) {
+            _this.runInterval = setInterval(_this.checkEventProgress.bind(_this, resolve, reject), 100);
         });
-    }
-    checkEventProgress(resolve, reject) {
-        const now = new Date().getTime();
+    };
+    SDKInitLifeCycle.prototype.checkEventProgress = function (resolve, reject) {
+        var now = new Date().getTime();
         if (now - this.startTime >= this.timeout) {
             clearInterval(this.runInterval);
             this.runInterval = undefined;
-            return reject(`SDK init lifecycle timed out after ${this.timeout}ms`);
+            return reject("SDK init lifecycle timed out after " + this.timeout + "ms");
         }
         if (this.current >= this.last) {
             clearInterval(this.runInterval);
             this.runInterval = undefined;
             return resolve(true);
         }
-    }
-    handleEvent(event) {
-        const current = this.priority[event];
+    };
+    SDKInitLifeCycle.prototype.handleEvent = function (event) {
+        var current = this.priority[event];
         this.current = (current >= this.current) ? current : this.current;
-        const progressPerc = Math.floor((this.current / this.last) * 100);
+        var progressPerc = Math.floor((this.current / this.last) * 100);
         this.events.emit('loading', {
             progress: progressPerc || 0,
             elapsedTime: (new Date().getTime() - this.startTime),
             source: this.constructor.name + ':' + event
         });
-    }
-}
+    };
+    return SDKInitLifeCycle;
+}());
 exports.SDKInitLifeCycle = SDKInitLifeCycle;

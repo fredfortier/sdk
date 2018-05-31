@@ -4,7 +4,7 @@
       "target": "es5",
       "outDir": "dist",
       "declaration": true,
-      "typeRoots": ["node_modules/@types"]
+      "lib": [ "es2015" ]
     },
     "include": [
       "./node_modules/web3-typescript-typings/index.d.ts",
