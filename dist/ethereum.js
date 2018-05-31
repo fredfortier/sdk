@@ -69,9 +69,7 @@ class Ethereum {
      */
     getNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('getNetworkIdAsync');
             const networkId = yield es6_promisify_1.promisify(this.web3.version.getNetwork)();
-            console.log(networkId);
             this.networkId = parseInt(networkId, 10);
             return this.networkId;
         });
