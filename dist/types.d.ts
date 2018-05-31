@@ -9,7 +9,7 @@ export interface CoreWalletOptions {
 export interface RadarRelayConfig {
     wallet?: CoreWalletOptions;
     rpcWallet?: string;
-    radarRelayEndpoint?: string;
+    endpoint?: string;
     defaultGasPrice?: BigNumber;
     dataRpcUrl: string;
 }

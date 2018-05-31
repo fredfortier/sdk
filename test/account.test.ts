@@ -19,14 +19,15 @@ describe('RadarRelay.Account', () => {
     before(async () => {
       mockRequests();
 
-      rrsdk = new RadarRelay();
+      rrsdk = new RadarRelay({
+        endpoint: 'http://localhost:8080/v0'
+      });
       await rrsdk.initialize({
         wallet: {
           password: 'password',
           seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
         },
-        dataRpcUrl: 'http://localhost:8545',
-        radarRelayEndpoint: 'http://localhost:8080/v0'
+        dataRpcUrl: 'http://localhost:8545'
       });
 
       // set addr for later use

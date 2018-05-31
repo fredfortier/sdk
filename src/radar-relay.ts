@@ -1,10 +1,16 @@
 
 import {ZeroEx, ZeroExConfig} from '0x.js';
-import {WalletManager} from 'vault-manager';
 import {EventEmitter} from 'events';
-import {Wallet, RadarRelayConfig, LocalWalletConfig, InjectedWalletType,
-  RpcWalletConfig, InjectedWalletConfig, WalletType} from './types';
 import {RadarToken, RadarMarket} from 'radar-types';
+import {
+  Wallet,
+  RadarRelayConfig,
+  LightWalletConfig,
+  InjectedWalletType,
+  RpcWalletConfig,
+  InjectedWalletConfig,
+  WalletType
+} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -74,7 +80,7 @@ export class RadarRelay {
     constructor(config: RadarRelayConfig) {
       // set the api endpoint outside
       // of the init _lifecycle
-      this._apiEndpoint = config.radarRelayEndpoint;
+      this._apiEndpoint = config.endpoint;
 
       // instantiate event handler
       this.events = new EventEmitter();
@@ -85,14 +91,14 @@ export class RadarRelay {
     }
 
     public async initialize(
-      config: LocalWalletConfig | RpcWalletConfig | InjectedWalletConfig
+      config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig
     ): Promise<string | boolean> {
 
       // Determine wallet type
       let type: WalletType;
 
       // local
-      if ((config as LocalWalletConfig).wallet) {
+      if ((config as LightWalletConfig).wallet) {
         type = WalletType.Local;
       }
 

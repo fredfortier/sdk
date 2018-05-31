@@ -98,7 +98,7 @@ const rr = new RadarRelay();
 rr.initialize({
   password?: string; // set if using local wallet
   walletRpcUrl?: string; // set if using unlocked node
-  radarRelayEndpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
+  endpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
   defaultGasPrice?: BigNumber; // set a gas price to default to
   dataRpcUrl: string; // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
 }); 

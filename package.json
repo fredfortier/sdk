@@ -41,9 +41,10 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x-relay-types": "^0.3.0",
     "0x.js": "^0.33.6",
-    "@0xproject/subproviders": "^0.8.5",
+    "@radarrelay/subproviders": "^0.5.0",
+    "@radarrelay/wallet-manager": "^0.1.3",
+    "@radarrelay/web3-builder": "^0.1.1",
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",
     "mock-socket": "^7.1.0",
@@ -53,7 +54,6 @@
     "request-promise": "^4.2.2",
     "socket.io-client": "^2.0.4",
     "typescript": "^2.7.2",
-    "vault-manager": "^0.1.1",
     "web3": "0.20.0",
     "web3-provider-engine": "^14.0.5",
     "ws": "^5.1.1"

@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 export {RadarToken, RadarMarket} from 'radar-types';
 
 export interface RadarRelayConfig {
-  radarRelayEndpoint: string;
+  endpoint: string;
 }
 
 export interface EthereumConfig {
@@ -21,7 +21,7 @@ export interface CoreWalletOptions {
   hdPathString?: string;
 }
 
-export interface LocalWalletConfig extends EthereumConfig {
+export interface LightWalletConfig extends EthereumConfig {
   wallet: CoreWalletOptions;
   dataRpcUrl: string;
 }

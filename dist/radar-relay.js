@@ -64,7 +64,7 @@ class RadarRelay {
         return __awaiter(this, void 0, void 0, function* () {
             // set the api endpoint outside
             // of the init _lifecycle
-            this._apiEndpoint = config.radarRelayEndpoint;
+            this._apiEndpoint = config.endpoint;
             // setup the _lifecycle function bindings
             this._lifecycle.setup(this);
             // setup ethereum class

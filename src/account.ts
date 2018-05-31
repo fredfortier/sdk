@@ -27,7 +27,7 @@ export class Account {
   }
 
   get walletType() {
-    return this._wallet ? WalletType.Core : WalletType.Rpc;
+    return this._wallet ? WalletType.Local : WalletType.Rpc;
   }
 
   public async exportSeedPhraseAsync(password: string): Promise<string>  {
