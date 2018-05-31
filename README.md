@@ -92,15 +92,19 @@ Each init method must trigger an event on the `EventEmitter`, which indicates th
 ```javascript
 import RadarRelay from 'radar-relay-sdk';
 
-const rr = new RadarRelay();
+const rr = new RadarRelay({
+  endpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
+});
 
 // unlocked node RPC endpoint,  API endpoint
 rr.initialize({
-  password?: string; // set if using local wallet
+  wallet?: {
+    password: string; // set if using local wallet
+    seedPhrase?: string;
+  },
   walletRpcUrl?: string; // set if using unlocked node
-  endpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
-  defaultGasPrice?: BigNumber; // set a gas price to default to
   dataRpcUrl: string; // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
+  defaultGasPrice?: BigNumber; // set a gas price to default to
 }); 
 
 // initialize
@@ -116,7 +120,7 @@ rr.setEthereumAsync
 // anything that triggers state change (like changing the network, or a fill)
 // fires an event that you can listen to
 rr.events.on(
-  'ethereumNetworkUpdated | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
+  'ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
 )
 rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
 

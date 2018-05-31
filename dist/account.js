@@ -23,7 +23,7 @@ class Account {
         this.address = this._ethereum.defaultAccount;
     }
     get walletType() {
-        return this._wallet ? types_1.WalletType.Core : types_1.WalletType.Rpc;
+        return this._wallet ? types_1.WalletType.Local : types_1.WalletType.Rpc;
     }
     exportSeedPhraseAsync(password) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -11,7 +11,7 @@ export declare class Account {
     private _tokens;
     private _endpoint;
     constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: Map<string, RadarToken>);
-    readonly walletType: WalletType;
+    readonly walletType: WalletType.Local | WalletType.Rpc;
     exportSeedPhraseAsync(password: string): Promise<string>;
     exportAddressPrivateKeyAsync(password: string): Promise<string>;
     setAddressAsync(account: string | number): Promise<void>;
@@ -28,5 +28,5 @@ export declare class Account {
     setUnlimitedTokenAllowanceAsync(token: string, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
     getOrdersAsync(page?: number, perPage?: number): Promise<RadarSignedOrder[]>;
     getFillsAsync(page?: number, perPage?: number): Promise<RadarFill>;
-    private _getWETHTokenAddress();
+    private _getWETHTokenAddress;
 }

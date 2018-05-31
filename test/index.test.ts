@@ -23,7 +23,7 @@ describe('RadarRelay', () => {
       // console.log(data);
     });
 
-    let ethereumNetworkUpdated = false;
+    let ethereumInitialized = false;
     let accountInitialized = false;
     let ethereumNetworkIdInitialized = false;
     let zeroExInitialized = false;
@@ -31,8 +31,8 @@ describe('RadarRelay', () => {
     let marketsInitialized = false;
     let tradeInitialized = false;
 
-    rrsdk.events.on('ethereumNetworkUpdated', network => {
-      ethereumNetworkUpdated = true;
+    rrsdk.events.on('ethereumInitialized', network => {
+      ethereumInitialized = true;
     });
     rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
       ethereumNetworkIdInitialized = true;
@@ -54,7 +54,7 @@ describe('RadarRelay', () => {
     });
 
     beforeEach(() => {
-      ethereumNetworkUpdated = false;
+      ethereumInitialized = false;
       tokensInitialized = false;
       accountInitialized = false;
       ethereumNetworkIdInitialized = false;
@@ -74,7 +74,7 @@ describe('RadarRelay', () => {
       });
 
       expect(accountInitialized).to.be.true;
-      expect(ethereumNetworkUpdated).to.be.true;
+      expect(ethereumInitialized).to.be.true;
       expect(tokensInitialized).to.be.true;
       expect(accountInitialized).to.be.true;
       expect(zeroExInitialized).to.be.true;
@@ -99,7 +99,7 @@ describe('RadarRelay', () => {
       });
 
       expect(accountInitialized).to.be.true;
-      expect(ethereumNetworkUpdated).to.be.true;
+      expect(ethereumInitialized).to.be.true;
       expect(tokensInitialized).to.be.true;
       expect(accountInitialized).to.be.true;
       expect(zeroExInitialized).to.be.true;

@@ -86,7 +86,6 @@ describe('RadarRelay.Account', () => {
         wethBal.minus(new BigNumber('0.01')), true // await
       );
       expect(receipt.status).to.be.eq(1);
-      expect(receipt.logs.length).to.be.gt(0);
       const wethBalAfter = await rrsdk.account.getTokenBalanceAsync(wethAddr);
       expect(wethBalAfter.toString()).to.be.equal('0.01');
     });

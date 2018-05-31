@@ -13,6 +13,9 @@ export declare class Trade {
     private _tokens;
     constructor(zeroEx: ZeroEx, apiEndpoint: string, account: Account, events: EventEmitter, tokens: Map<string, RadarToken>);
     marketOrder(market: Market, type: UserOrderType, quantity: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
-    limitOrder(market: Market, type: UserOrderType, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<Order>;
+    limitOrder(market: Market, type: UserOrderType, // ask == sell, bid == buy
+    quantity: BigNumber, // base token quantity
+    price: BigNumber, // price (in quote)
+    expiration: BigNumber): Promise<Order>;
     cancelOrderAsync(order: SignedOrder, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
 }

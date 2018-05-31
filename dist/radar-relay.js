@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const _0x_js_1 = require("0x.js");
-const vault_manager_1 = require("vault-manager");
 const events_1 = require("events");
+const types_1 = require("./types");
 const bignumber_js_1 = require("bignumber.js");
 const request = require("request-promise");
 // SDK Classes
@@ -24,7 +24,7 @@ bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
  * RadarRelay
  */
 class RadarRelay {
-    constructor() {
+    constructor(config) {
         /**
          * The load priority list maintains the function call
          * priority for each init method in the RadarRelaySDK class.
@@ -34,7 +34,7 @@ class RadarRelay {
          */
         this.loadPriorityList = [
             {
-                event: 'ethereumNetworkUpdated',
+                event: 'ethereumInitialized',
                 func: this.initEthereumNetworkIdAsync
             }, {
                 event: 'ethereumNetworkIdInitialized',
@@ -57,40 +57,37 @@ class RadarRelay {
                 func: undefined
             }
         ];
+        // set the api endpoint outside
+        // of the init _lifecycle
+        this._apiEndpoint = config.endpoint;
+        // instantiate event handler
         this.events = new events_1.EventEmitter();
+        // instantiate ethereum class
+        this._ethereum = new ethereum_1.Ethereum();
+        // setup the _lifecycle
         this._lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
+        this._lifecycle.setup(this);
     }
     initialize(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            // set the api endpoint outside
-            // of the init _lifecycle
-            this._apiEndpoint = config.endpoint;
-            // setup the _lifecycle function bindings
-            this._lifecycle.setup(this);
-            // setup ethereum class
-            return yield this.setEthereumAsync(config);
-        });
-    }
-    // --- user configurable --- //
-    setEthereumAsync(config) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // init wallet as unlocked rpc node
-            let wallet = config.rpcWallet;
-            // if a password is passed in
-            // instantiate the WalletManager
+            // Determine wallet type
+            let type;
+            // local
             if (config.wallet) {
-                const walletManager = new vault_manager_1.WalletManager();
-                // attempt to load existing core wallet
-                try {
-                    wallet = yield walletManager.core.loadWalletAsync(config.wallet.password);
-                }
-                catch (err) {
-                    // create a new core wallet
-                    wallet = yield walletManager.core.createWalletAsync(config.wallet);
+                type = types_1.WalletType.Local;
+            }
+            // rpc
+            if (config.walletRpcUrl) {
+                type = types_1.WalletType.Rpc;
+            }
+            // injected
+            if (config.type) {
+                if (config.type === types_1.InjectedWalletType.Metmask) {
+                    type = types_1.WalletType.Injected;
                 }
             }
-            this._ethereum = new ethereum_1.Ethereum(wallet, config.dataRpcUrl, config.defaultGasPrice);
-            return this.getCallback('ethereumNetworkUpdated', this._ethereum);
+            yield this._ethereum.setProvider(type, config);
+            return this.getCallback('ethereumInitialized', this._ethereum);
         });
     }
     // --- not user configurable below this line --- //

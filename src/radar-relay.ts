@@ -85,6 +85,9 @@ export class RadarRelay {
       // instantiate event handler
       this.events = new EventEmitter();
 
+      // instantiate ethereum class
+      this._ethereum = new Ethereum();
+
       // setup the _lifecycle
       this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
       this._lifecycle.setup(this);
@@ -114,7 +117,7 @@ export class RadarRelay {
         }
       }
 
-      this._ethereum = new Ethereum(type, config);
+      await this._ethereum.setProvider(type, config);
       return this.getCallback('ethereumInitialized', this._ethereum);
     }
 

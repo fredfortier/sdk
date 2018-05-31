@@ -13,55 +13,37 @@ const RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 const Web3 = require("web3");
 const bignumber_js_1 = require("bignumber.js");
 const es6_promisify_1 = require("es6-promisify");
-const vault_manager_1 = require("vault-manager");
-const subproviders_1 = require("@0xproject/subproviders");
+const wallet_manager_1 = require("@radarrelay/wallet-manager");
+const web3_builder_1 = require("@radarrelay/web3-builder");
+const subproviders_1 = require("@radarrelay/subproviders");
+const types_1 = require("./types");
 /**
  * Ethereum
  */
 class Ethereum {
-    constructor(wallet, rpcUrl = '', gasPrice) {
-        if (!wallet)
-            throw new Error('Wallet RPC URL or class instance not set.');
-        if (!rpcUrl)
-            throw new Error('Data RPC URL not set.');
-        this._gasPrice = gasPrice;
-        this._setProvider(wallet, rpcUrl);
+    setProvider(type, config) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._config = config;
+            switch (type) {
+                case types_1.WalletType.Local:
+                    yield this._setLightWalletProvider(this._config);
+                    break;
+                case types_1.WalletType.Rpc:
+                    this._setRpcWalletProvider(this._config);
+                    break;
+                case types_1.WalletType.Injected:
+                    this._setInjectedWalletProvider(this._config);
+                    break;
+            }
+        });
     }
     get defaultAccount() {
         return this.web3.eth.defaultAccount;
     }
     /**
-     * Get accounts from the connected wallet
-     */
-    getAccounts() {
-        return this.wallet.getAccounts();
-    }
-    /**
-     * Entry method for signing a message
-     */
-    signMessageAsync(unsignedMsg) {
-        return this.wallet.signer.signPersonalMessageHashAsync(unsignedMsg.params.from, unsignedMsg.params.data);
-    }
-    /**
-     * Entry method for signing/sending a transaction
-     */
-    signTransactionAsync(unsignedTx) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // set default params if not defined
-            if (unsignedTx.params.gasPrice === undefined) {
-                unsignedTx.params.gasPrice = yield this._getDefaultGasPrice();
-            }
-            if (unsignedTx.params.gas === undefined) {
-                unsignedTx.params.gas = yield this._getGasLimit(unsignedTx);
-            }
-            if (unsignedTx.params.nonce === undefined) {
-                unsignedTx.params.nonce = yield this._getTxNonce(unsignedTx);
-            }
-            return this.wallet.signer.signTransactionAsync(unsignedTx.params);
-        });
-    }
-    /**
      * get the ether balance for an account
+     *
+     * @param {string} address
      */
     getEthBalanceAsync(address) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -71,6 +53,10 @@ class Ethereum {
     }
     /**
      * transfer ether to another account
+     *
+     * @param {string} from
+     * @param {string} to
+     * @param {BigNumber} value
      */
     transferEthAsync(from, to, value) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -83,7 +69,9 @@ class Ethereum {
      */
     getNetworkIdAsync() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('getNetworkIdAsync');
             const networkId = yield es6_promisify_1.promisify(this.web3.version.getNetwork)();
+            console.log(networkId);
             this.networkId = parseInt(networkId, 10);
             return this.networkId;
         });
@@ -91,6 +79,8 @@ class Ethereum {
     /**
      * set eth defaultAccount to a
      * new address index or address
+     *
+     * @param {number|string}  account  account index or address
      */
     setDefaultAccount(account) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -114,80 +104,66 @@ class Ethereum {
         });
     }
     /**
-     * Set the rpc providers
+     * Set the local LightWallet Providers
+     *
+     * @param {config} LightWalletConfig
      */
-    _setProvider(wallet, rpcUrl) {
-        if (wallet instanceof Object) {
+    _setLightWalletProvider(config) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const walletManager = new wallet_manager_1.WalletManager();
+            // attempt to load existing core wallet
+            let wallet;
+            try {
+                wallet = yield walletManager.core.loadWalletAsync(config.wallet.password);
+            }
+            catch (err) {
+                if (err.message === 'NO_WALLET_FOUND') {
+                    // create a new core wallet
+                    wallet = yield walletManager.core.createWalletAsync(config.wallet);
+                }
+                else {
+                    throw new Error(err.message);
+                }
+            }
             this.wallet = wallet;
             // --- Use vault-manager ---//
             // Instantiate the Web3Builder
-            const web3Builder = new vault_manager_1.Web3Builder();
+            const web3Builder = new web3_builder_1.Web3Builder();
             // Set web3
             //  To avoid passing a static instance of the Web3 object around
             //  this class implements `TransactionManager` and is passed
             //  in to the `setSignerAndRpcConnection` to init Web3
-            this.web3 = web3Builder.setSignerAndRpcConnection(this, rpcUrl, new subproviders_1.NonceTrackerSubprovider());
+            this.web3 = web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet._signing, wallet._keystore, wallet._pwDerivedKey), config.dataRpcUrl, true);
             this.provider = this.web3.currentProvider;
-        }
-        else {
-            // --- Use unlocked node --- //
-            const providerEngine = new Web3ProviderEngine();
-            // Add nonce subprovider tracker
-            // providerEngine.addProvider(new NonceTrackerSubprovider());
-            // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
-            const walletProvider = new Web3.providers.HttpProvider(wallet);
-            this.web3 = new Web3(walletProvider);
-            providerEngine.addProvider(new subproviders_1.InjectedWeb3Subprovider(walletProvider));
-            // Init RPCProvider for Ethereum data
-            providerEngine.addProvider(new RPCSubprovider({ rpcUrl }));
-            providerEngine.start();
-            this.provider = providerEngine;
-        }
-    }
-    /*
-     * Set the default gas price
-     */
-    _setDefaultGasPrice(gasPrice) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (gasPrice) {
-                const priceInWei = this.web3.toWei(gasPrice, 'gwei');
-                this._defaultGasPrice = `0x${priceInWei.toString(16)}`;
-            }
-            else {
-                const defaultGasPrice = yield es6_promisify_1.promisify(this.web3.eth.getGasPrice.bind(this))();
-                this._defaultGasPrice = `0x${defaultGasPrice.toString(16)}`;
-            }
         });
     }
-    /*
-     * Get default gas price
+    /**
+     * Set injected wallet provider
+     *
+     * @param {config} InjectedWalletConfig
      */
-    _getDefaultGasPrice() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this._defaultGasPrice) {
-                return this._defaultGasPrice;
-            }
-            yield this._setDefaultGasPrice(this._gasPrice);
-            return this._defaultGasPrice;
-        });
+    _setInjectedWalletProvider(config) {
+        // TODO Metamask / Parity Signer
     }
-    /*
-     * Get a tx gas limit estimate
+    /**
+     * Set the rpc wallet providers
+     * TODO use Web3Builder
+     *
+     * @param {config} RpcWalletConfig
      */
-    _getGasLimit(unsignedPayload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const gasLimit = yield es6_promisify_1.promisify(this.web3.eth.estimateGas.bind(this))(unsignedPayload.params);
-            return `0x${gasLimit.toString(16)}`;
-        });
-    }
-    /*
-     * Get a tx nonce
-     */
-    _getTxNonce(unsignedPayload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const nonce = yield es6_promisify_1.promisify(this.web3.eth.getTransactionCount.bind(this))(unsignedPayload.params.from, 'pending');
-            return `0x${nonce.toString(16)}`;
-        });
+    _setRpcWalletProvider(config) {
+        // --- Use unlocked node --- //
+        const providerEngine = new Web3ProviderEngine();
+        // Add nonce subprovider tracker
+        // providerEngine.addProvider(new NonceTrackerSubprovider());
+        // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
+        const walletProvider = new Web3.providers.HttpProvider(config.walletRpcUrl);
+        this.web3 = new Web3(walletProvider);
+        providerEngine.addProvider(new subproviders_1.InjectedWeb3Subprovider(walletProvider));
+        // Init RPCProvider for Ethereum data
+        providerEngine.addProvider(new RPCSubprovider({ rpcUrl: config.dataRpcUrl }));
+        providerEngine.start();
+        this.provider = providerEngine;
     }
 }
 exports.Ethereum = Ethereum;

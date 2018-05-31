@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
-import { RadarRelayConfig } from './types';
 import { RadarToken } from 'radar-types';
+import { RadarRelayConfig, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
 import { EventBus } from './event-emitter';
 import { Account } from './account';
 import { Market } from './market';
@@ -30,14 +30,13 @@ export declare class RadarRelay {
      * This list is configurable if additional init methods are necessary
      */
     private loadPriorityList;
-    constructor();
-    initialize(config: RadarRelayConfig): Promise<string | boolean>;
-    setEthereumAsync(config: RadarRelayConfig): Promise<string | boolean>;
-    private initAccountAsync(account);
-    private initEthereumNetworkIdAsync();
-    private initZeroEx();
-    private initTrade();
-    private initTokensAsync();
-    private initMarketsAsync();
-    private getCallback(event, data);
+    constructor(config: RadarRelayConfig);
+    initialize(config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig): Promise<string | boolean>;
+    private initAccountAsync;
+    private initEthereumNetworkIdAsync;
+    private initZeroEx;
+    private initTrade;
+    private initTokensAsync;
+    private initMarketsAsync;
+    private getCallback;
 }
