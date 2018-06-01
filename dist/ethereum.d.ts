@@ -35,7 +35,7 @@ export declare class Ethereum {
      * @param {string} to
      * @param {BigNumber} value
      */
-    transferEthAsync(from: string, to: string, value: BigNumber, opts: {
+    transferEthAsync(from: string, to: string, value: BigNumber, opts?: {
         gasPrice: BigNumber;
         gas: number;
     }): Promise<string>;
