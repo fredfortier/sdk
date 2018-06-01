@@ -19,14 +19,15 @@ describe('RadarRelay.Account', () => {
     before(async () => {
       mockRequests();
 
-      rrsdk = new RadarRelay();
+      rrsdk = new RadarRelay({
+        endpoint: 'http://localhost:8080/v0'
+      });
       await rrsdk.initialize({
         wallet: {
           password: 'password',
           seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
         },
-        dataRpcUrl: 'http://localhost:8545',
-        radarRelayEndpoint: 'http://localhost:8080/v0'
+        dataRpcUrl: 'http://localhost:8545'
       });
 
       // set addr for later use
@@ -85,7 +86,6 @@ describe('RadarRelay.Account', () => {
         wethBal.minus(new BigNumber('0.01')), true // await
       );
       expect(receipt.status).to.be.eq(1);
-      expect(receipt.logs.length).to.be.gt(0);
       const wethBalAfter = await rrsdk.account.getTokenBalanceAsync(wethAddr);
       expect(wethBalAfter.toString()).to.be.equal('0.01');
     });

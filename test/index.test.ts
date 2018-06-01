@@ -13,7 +13,9 @@ const expect = chai.expect;
 
 describe('RadarRelay', () => {
 
-    const rrsdk = new RadarRelay();
+    const rrsdk = new RadarRelay({
+      endpoint: 'http://localhost:8080/v0'
+    });
 
     mockRequests();
 
@@ -21,7 +23,7 @@ describe('RadarRelay', () => {
       // console.log(data);
     });
 
-    let ethereumNetworkUpdated = false;
+    let ethereumInitialized = false;
     let accountInitialized = false;
     let ethereumNetworkIdInitialized = false;
     let zeroExInitialized = false;
@@ -29,8 +31,8 @@ describe('RadarRelay', () => {
     let marketsInitialized = false;
     let tradeInitialized = false;
 
-    rrsdk.events.on('ethereumNetworkUpdated', network => {
-      ethereumNetworkUpdated = true;
+    rrsdk.events.on('ethereumInitialized', network => {
+      ethereumInitialized = true;
     });
     rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
       ethereumNetworkIdInitialized = true;
@@ -52,7 +54,7 @@ describe('RadarRelay', () => {
     });
 
     beforeEach(() => {
-      ethereumNetworkUpdated = false;
+      ethereumInitialized = false;
       tokensInitialized = false;
       accountInitialized = false;
       ethereumNetworkIdInitialized = false;
@@ -68,12 +70,11 @@ describe('RadarRelay', () => {
           password: 'password',
           seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
         },
-        dataRpcUrl: 'http://localhost:8545',
-        radarRelayEndpoint: 'http://localhost:8080/v0'
+        dataRpcUrl: 'http://localhost:8545'
       });
 
       expect(accountInitialized).to.be.true;
-      expect(ethereumNetworkUpdated).to.be.true;
+      expect(ethereumInitialized).to.be.true;
       expect(tokensInitialized).to.be.true;
       expect(accountInitialized).to.be.true;
       expect(zeroExInitialized).to.be.true;
@@ -92,13 +93,13 @@ describe('RadarRelay', () => {
     // TODO may not be necessary
     it('SDK reloads properly when using rpcWallet', async () => {
 
-      await rrsdk.setEthereumAsync({
-        rpcWallet: 'http://localhost:8545',
+      await rrsdk.initialize({
+        walletRpcUrl: 'http://localhost:8545',
         dataRpcUrl: 'http://localhost:8545'
       });
 
       expect(accountInitialized).to.be.true;
-      expect(ethereumNetworkUpdated).to.be.true;
+      expect(ethereumInitialized).to.be.true;
       expect(tokensInitialized).to.be.true;
       expect(accountInitialized).to.be.true;
       expect(zeroExInitialized).to.be.true;

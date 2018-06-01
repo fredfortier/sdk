@@ -23,7 +23,7 @@ export class SDKInitLifeCycle {
   private last: number;
   private startTime: number;
   private timeout: number;
-  private runInterval: number;
+  private runInterval: any;
 
   constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout: number = 10000) {
     this.priorityList = priorityList;

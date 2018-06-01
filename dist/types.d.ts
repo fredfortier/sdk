@@ -1,16 +1,29 @@
 import BigNumber from 'bignumber.js';
+import Web3 = require('web3');
 export { RadarToken, RadarMarket } from 'radar-types';
+export interface RadarRelayConfig {
+    endpoint: string;
+}
+export interface EthereumConfig {
+    defaultGasPrice?: BigNumber;
+}
+export interface InjectedWalletConfig extends EthereumConfig {
+    type: InjectedWalletType;
+    web3: Web3;
+    dataRpcUrl: string;
+}
 export interface CoreWalletOptions {
     password: string;
     seedPhrase?: string;
     salt?: string;
     hdPathString?: string;
 }
-export interface RadarRelayConfig {
-    wallet?: CoreWalletOptions;
-    rpcWallet?: string;
-    radarRelayEndpoint?: string;
-    defaultGasPrice?: BigNumber;
+export interface LightWalletConfig extends EthereumConfig {
+    wallet: CoreWalletOptions;
+    dataRpcUrl: string;
+}
+export interface RpcWalletConfig extends EthereumConfig {
+    walletRpcUrl: string;
     dataRpcUrl: string;
 }
 export interface PartialTxParams {
@@ -52,17 +65,21 @@ export interface TransactionManager {
 export declare enum PayloadType {
     Tx = 0,
     Msg = 1,
-    PersonalMsg = 2,
+    PersonalMsg = 2
 }
 export declare enum WalletType {
-    Core = 0,
-    Ledger = 1,
-    Rpc = 2,
+    Local = 0,
+    Rpc = 1,
+    Injected = 2,
+    Ledger = 3
+}
+export declare enum InjectedWalletType {
+    Metmask = 0
 }
 export declare enum InfuraNetwork {
     Mainnet = "mainnet",
     Kovan = "kovan",
     Rinkeby = "rinkeby",
-    Ropsten = "ropsten",
+    Ropsten = "ropsten"
 }
 export declare type RpcConnection = string | InfuraNetwork;

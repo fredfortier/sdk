@@ -5,6 +5,7 @@ import {promisify} from 'es6-promisify';
 import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
+import * as Map from 'es6-map';
 
 export class Account {
 
@@ -27,7 +28,7 @@ export class Account {
   }
 
   get walletType() {
-    return this._wallet ? WalletType.Core : WalletType.Rpc;
+    return this._wallet ? WalletType.Local : WalletType.Rpc;
   }
 
   public async exportSeedPhraseAsync(password: string): Promise<string>  {

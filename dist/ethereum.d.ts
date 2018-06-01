@@ -1,37 +1,30 @@
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
-import { TransactionManager, UnsignedPayload, Wallet } from './types';
+import { Wallet, WalletType, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
 /**
  * Ethereum
  */
-export declare class Ethereum implements TransactionManager {
+export declare class Ethereum {
     wallet: Wallet;
-    provider: Web3.Provider;
+    walletType: WalletType;
     networkId: number;
     web3: Web3;
     private _events;
-    private _gasPrice;
-    private _defaultGasPrice;
-    constructor(wallet: string | Wallet, rpcUrl?: string, gasPrice?: BigNumber);
+    private _config;
+    setProvider(type: WalletType, config: LightWalletConfig | InjectedWalletConfig | RpcWalletConfig): Promise<void>;
     readonly defaultAccount: string;
     /**
-     * Get accounts from the connected wallet
-     */
-    getAccounts(): string[];
-    /**
-     * Entry method for signing a message
-     */
-    signMessageAsync(unsignedMsg: UnsignedPayload): Promise<string>;
-    /**
-     * Entry method for signing/sending a transaction
-     */
-    signTransactionAsync(unsignedTx: UnsignedPayload): Promise<string>;
-    /**
      * get the ether balance for an account
+     *
+     * @param {string} address
      */
     getEthBalanceAsync(address: string): Promise<BigNumber>;
     /**
      * transfer ether to another account
+     *
+     * @param {string} from
+     * @param {string} to
+     * @param {BigNumber} value
      */
     transferEthAsync(from: string, to: string, value: BigNumber): Promise<string>;
     /**
@@ -41,14 +34,27 @@ export declare class Ethereum implements TransactionManager {
     /**
      * set eth defaultAccount to a
      * new address index or address
+     *
+     * @param {number|string}  account  account index or address
      */
     setDefaultAccount(account: number | string): Promise<void>;
     /**
-     * Set the rpc providers
+     * Set the local LightWallet Providers
+     *
+     * @param {config} LightWalletConfig
      */
-    private _setProvider(wallet, rpcUrl);
-    private _setDefaultGasPrice(gasPrice?);
-    private _getDefaultGasPrice();
-    private _getGasLimit(unsignedPayload);
-    private _getTxNonce(unsignedPayload);
+    private _setLightWalletProvider;
+    /**
+     * Set injected wallet provider
+     *
+     * @param {config} InjectedWalletConfig
+     */
+    private _setInjectedWalletProvider;
+    /**
+     * Set the rpc wallet providers
+     * TODO use Web3Builder
+     *
+     * @param {config} RpcWalletConfig
+     */
+    private _setRpcWalletProvider;
 }

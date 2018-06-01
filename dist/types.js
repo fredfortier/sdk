@@ -8,10 +8,15 @@ var PayloadType;
 })(PayloadType = exports.PayloadType || (exports.PayloadType = {}));
 var WalletType;
 (function (WalletType) {
-    WalletType[WalletType["Core"] = 0] = "Core";
-    WalletType[WalletType["Ledger"] = 1] = "Ledger";
-    WalletType[WalletType["Rpc"] = 2] = "Rpc";
+    WalletType[WalletType["Local"] = 0] = "Local";
+    WalletType[WalletType["Rpc"] = 1] = "Rpc";
+    WalletType[WalletType["Injected"] = 2] = "Injected";
+    WalletType[WalletType["Ledger"] = 3] = "Ledger";
 })(WalletType = exports.WalletType || (exports.WalletType = {}));
+var InjectedWalletType;
+(function (InjectedWalletType) {
+    InjectedWalletType[InjectedWalletType["Metmask"] = 0] = "Metmask";
+})(InjectedWalletType = exports.InjectedWalletType || (exports.InjectedWalletType = {}));
 var InfuraNetwork;
 (function (InfuraNetwork) {
     InfuraNetwork["Mainnet"] = "mainnet";

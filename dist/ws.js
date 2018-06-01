@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Ws {
-    constructor() {
+var Ws = /** @class */ (function () {
+    function Ws() {
         // TODO?
     }
-}
+    return Ws;
+}());
 exports.Ws = Ws;

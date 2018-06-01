@@ -7,13 +7,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const _0x_js_1 = require("0x.js");
-const types_1 = require("./types");
-const es6_promisify_1 = require("es6-promisify");
-const request = require("request-promise");
-class Account {
-    constructor(ethereum, zeroEx, apiEndpoint, tokens) {
+var _0x_js_1 = require("0x.js");
+var types_1 = require("./types");
+var es6_promisify_1 = require("es6-promisify");
+var request = require("request-promise");
+var Account = /** @class */ (function () {
+    function Account(ethereum, zeroEx, apiEndpoint, tokens) {
         // TODO tokens + decimal calculations and conversions
         this._endpoint = apiEndpoint;
         this._tokens = tokens;
@@ -22,126 +49,249 @@ class Account {
         this._wallet = this._ethereum.wallet || undefined;
         this.address = this._ethereum.defaultAccount;
     }
-    get walletType() {
-        return this._wallet ? types_1.WalletType.Core : types_1.WalletType.Rpc;
-    }
-    exportSeedPhraseAsync(password) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this._wallet.exportSeedPhraseAsync(password);
+    Object.defineProperty(Account.prototype, "walletType", {
+        get: function () {
+            return this._wallet ? types_1.WalletType.Local : types_1.WalletType.Rpc;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Account.prototype.exportSeedPhraseAsync = function (password) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._wallet.exportSeedPhraseAsync(password)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    exportAddressPrivateKeyAsync(password) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this._wallet.exportAccountPrivateKeyAsync(this.address, password);
+    };
+    Account.prototype.exportAddressPrivateKeyAsync = function (password) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._wallet.exportAccountPrivateKeyAsync(this.address, password)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    setAddressAsync(account) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this._ethereum.setDefaultAccount(account);
-            this.address = this._ethereum.defaultAccount;
+    };
+    Account.prototype.setAddressAsync = function (account) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(account)];
+                    case 1:
+                        _a.sent();
+                        this.address = this._ethereum.defaultAccount;
+                        return [2 /*return*/];
+                }
+            });
         });
-    }
-    addNewAddresses(num) {
+    };
+    Account.prototype.addNewAddresses = function (num) {
         this._wallet.addNewAccounts(num);
-    }
-    getAvailableAddressesAsync() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield es6_promisify_1.promisify(this._ethereum.web3.eth.getAccounts)();
+    };
+    Account.prototype.getAvailableAddressesAsync = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, es6_promisify_1.promisify(this._ethereum.web3.eth.getAccounts)()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    getEthBalanceAsync() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const balance = yield this._ethereum.getEthBalanceAsync(this.address);
-            return _0x_js_1.ZeroEx.toUnitAmount(balance, 18);
+    };
+    Account.prototype.getEthBalanceAsync = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var balance;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ethereum.getEthBalanceAsync(this.address)];
+                    case 1:
+                        balance = _a.sent();
+                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, 18)];
+                }
+            });
         });
-    }
-    transferEthAsync(to, amount, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this._ethereum.transferEthAsync(this.address, to, amount);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.transferEthAsync = function (to, amount, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ethereum.transferEthAsync(this.address, to, amount)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    wrapEthAsync(amount, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // TODO get addr from tokens array
-            const txHash = yield this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.wrapEthAsync = function (amount, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    unwrapEthAsync(amount, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.unwrapEthAsync = function (amount, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    getTokenBalanceAsync(token) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const balance = yield this._zeroEx.token.getBalanceAsync(token, this.address);
-            return _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(token).decimals);
+    };
+    Account.prototype.getTokenBalanceAsync = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var balance;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._zeroEx.token.getBalanceAsync(token, this.address)];
+                    case 1:
+                        balance = _a.sent();
+                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(token).decimals)];
+                }
+            });
         });
-    }
-    transferTokenAsync(token, to, amount, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-            const txHash = yield this._zeroEx.token.transferAsync(token, this.address, to, amt);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.transferTokenAsync = function (token, to, amount, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var amt, txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
+                        return [4 /*yield*/, this._zeroEx.token.transferAsync(token, this.address, to, amt)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    getTokenAllowanceAsync(token) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const baseUnitallowance = yield this._zeroEx.token.getProxyAllowanceAsync(token, this.address);
-            return _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(token).decimals);
+    };
+    Account.prototype.getTokenAllowanceAsync = function (token) {
+        return __awaiter(this, void 0, void 0, function () {
+            var baseUnitallowance;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._zeroEx.token.getProxyAllowanceAsync(token, this.address)];
+                    case 1:
+                        baseUnitallowance = _a.sent();
+                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(token).decimals)];
+                }
+            });
         });
-    }
-    setTokenAllowanceAsync(token, amount, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-            const txHash = yield this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.setTokenAllowanceAsync = function (token, amount, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var amt, txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
+                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    setUnlimitedTokenAllowanceAsync(token, awaitTransactionMined = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const txHash = yield this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
-            if (!awaitTransactionMined) {
-                return txHash;
-            }
-            return yield this._zeroEx.awaitTransactionMinedAsync(txHash);
+    };
+    Account.prototype.setUnlimitedTokenAllowanceAsync = function (token, awaitTransactionMined) {
+        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var txHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address)];
+                    case 1:
+                        txHash = _a.sent();
+                        if (!awaitTransactionMined) {
+                            return [2 /*return*/, txHash];
+                        }
+                        return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    }
-    getOrdersAsync(page = 1, perPage = 100) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/orders`));
+    };
+    Account.prototype.getOrdersAsync = function (page, perPage) {
+        if (page === void 0) { page = 1; }
+        if (perPage === void 0) { perPage = 100; }
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _b = (_a = JSON).parse;
+                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/orders")];
+                    case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+                }
+            });
         });
-    }
-    getFillsAsync(page = 1, perPage = 100) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return JSON.parse(yield request.get(`${this._endpoint}/accounts/${this.address}/fills`));
+    };
+    Account.prototype.getFillsAsync = function (page, perPage) {
+        if (page === void 0) { page = 1; }
+        if (perPage === void 0) { perPage = 100; }
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _b = (_a = JSON).parse;
+                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/fills")];
+                    case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+                }
+            });
         });
-    }
-    _getWETHTokenAddress() {
-        let token;
-        this._tokens.forEach(t => {
+    };
+    Account.prototype._getWETHTokenAddress = function () {
+        var token;
+        this._tokens.forEach(function (t) {
             if (t.symbol === 'WETH') {
                 token = t;
             }
         });
         return token.address;
-    }
-}
+    };
+    return Account;
+}());
 exports.Account = Account;

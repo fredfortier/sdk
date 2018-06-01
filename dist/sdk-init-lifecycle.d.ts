@@ -17,6 +17,6 @@ export declare class SDKInitLifeCycle {
     constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout?: number);
     setup(scope: any): void;
     promise(event: string): Promise<boolean | string>;
-    private checkEventProgress(resolve, reject);
-    private handleEvent(event);
+    private checkEventProgress;
+    private handleEvent;
 }

@@ -1,11 +1,19 @@
 
 import {ZeroEx, ZeroExConfig} from '0x.js';
-import {WalletManager} from 'vault-manager';
 import {EventEmitter} from 'events';
-import {Wallet, RadarRelayConfig} from './types';
 import {RadarToken, RadarMarket} from 'radar-types';
+import {
+  Wallet,
+  RadarRelayConfig,
+  LightWalletConfig,
+  InjectedWalletType,
+  RpcWalletConfig,
+  InjectedWalletConfig,
+  WalletType
+} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
+import Map = require('es6-map');
 
 // SDK Classes
 import {SDKInitLifeCycle, InitPriorityItem} from './sdk-init-lifecycle';
@@ -47,7 +55,7 @@ export class RadarRelay {
      */
     private loadPriorityList: InitPriorityItem[] = [
       {
-        event: 'ethereumNetworkUpdated',
+        event: 'ethereumInitialized',
         func: this.initEthereumNetworkIdAsync
       }, {
         event: 'ethereumNetworkIdInitialized',
@@ -70,50 +78,46 @@ export class RadarRelay {
         func: undefined
       } ];
 
-    constructor() {
-      this.events = new EventEmitter();
-      this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
-    }
-
-    public async initialize(config: RadarRelayConfig): Promise<string | boolean> {
+    constructor(config: RadarRelayConfig) {
       // set the api endpoint outside
       // of the init _lifecycle
-      this._apiEndpoint = config.radarRelayEndpoint;
+      this._apiEndpoint = config.endpoint;
 
-      // setup the _lifecycle function bindings
+      // instantiate event handler
+      this.events = new EventEmitter();
+
+      // instantiate ethereum class
+      this._ethereum = new Ethereum();
+
+      // setup the _lifecycle
+      this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList);
       this._lifecycle.setup(this);
-
-      // setup ethereum class
-      return await this.setEthereumAsync(config);
     }
 
-    // --- user configurable --- //
+    public async initialize(
+      config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig
+    ): Promise<string | boolean> {
 
-    public async setEthereumAsync(config: RadarRelayConfig): Promise<string | boolean> {
+      // Determine wallet type
+      let type: WalletType;
 
-      // init wallet as unlocked rpc node
-      let wallet: any = config.rpcWallet;
-
-      // if a password is passed in
-      // instantiate the WalletManager
-      if (config.wallet) {
-        const walletManager = new WalletManager();
-
-        // attempt to load existing core wallet
-        try {
-          wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
-        } catch (err) {
-          if (err.message === 'NO_WALLET_FOUND' || err.message.indexOf('no such file or directory') > 0) {
-            // create a new core wallet
-            wallet = await walletManager.core.createWalletAsync(config.wallet);
-          } else {
-            throw new Error(err.message);
-          }
-        }
+      // local
+      if ((config as LightWalletConfig).wallet) {
+        type = WalletType.Local;
       }
 
-      this._ethereum = new Ethereum(wallet, config.dataRpcUrl, config.defaultGasPrice);
-      return this.getCallback('ethereumNetworkUpdated', this._ethereum);
+      // rpc
+      if ((config as RpcWalletConfig).walletRpcUrl) {
+        type = WalletType.Rpc;
+      }
+
+      // injected
+      if ((config as InjectedWalletConfig).web3) {
+        type = WalletType.Injected;
+      }
+
+      await this._ethereum.setProvider(type, config);
+      return this.getCallback('ethereumInitialized', this._ethereum);
     }
 
     // --- not user configurable below this line --- //
@@ -130,7 +134,7 @@ export class RadarRelay {
     }
 
     private initZeroEx(): Promise<string | boolean> {
-      this.zeroEx = new ZeroEx(this._ethereum.provider, {
+      this.zeroEx = new ZeroEx(this._ethereum.web3.currentProvider, {
         networkId: this._networkId
       });
       return this.getCallback('zeroExInitialized', this.zeroEx);
@@ -174,5 +178,4 @@ export class RadarRelay {
       this.events.emit(event, data);
       return callback;
     }
-
 }

@@ -7,6 +7,7 @@ import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceip
 import {RadarToken, UserOrderType} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
+import Map = require('es6-map');
 
 export class Trade {
 
@@ -91,7 +92,7 @@ export class Trade {
       order.maker = this._account.address;
 
       // sign order
-      const prefix = (this._account.walletType === WalletType.Core);
+      const prefix = (this._account.walletType === WalletType.Local);
       const orderHash = ZeroEx.getOrderHashHex(order);
       const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
       (order as SignedOrder).ecSignature = ecSignature;

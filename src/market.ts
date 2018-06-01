@@ -55,6 +55,8 @@ export class Market {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
   }
 
+  // TODO subscribe to ws
+
   // marketOrder
   public async marketOrderAsync(
     type: UserOrderType,
