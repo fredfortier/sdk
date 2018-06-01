@@ -190,18 +190,18 @@ var Ethereum = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        walletManager = new wallet_manager_1.WalletManager();
+                        walletManager = new wallet_manager_1.LightWalletManager();
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 7]);
-                        return [4 /*yield*/, walletManager.core.loadWalletAsync(config.wallet.password)];
+                        return [4 /*yield*/, walletManager.loadWalletAsync(config.wallet.password)];
                     case 2:
                         wallet = _a.sent();
                         return [3 /*break*/, 7];
                     case 3:
                         err_1 = _a.sent();
                         if (!(err_1.message === 'NO_WALLET_FOUND')) return [3 /*break*/, 5];
-                        return [4 /*yield*/, walletManager.core.createWalletAsync(config.wallet)];
+                        return [4 /*yield*/, walletManager.createWalletAsync(config.wallet)];
                     case 4:
                         // create a new light wallet
                         wallet = _a.sent();

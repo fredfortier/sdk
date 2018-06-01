@@ -112,10 +112,8 @@ export class RadarRelay {
       }
 
       // injected
-      if ((config as InjectedWalletConfig).type) {
-        if ((config as InjectedWalletConfig).type === InjectedWalletType.Metmask) {
-          type = WalletType.Injected;
-        }
+      if ((config as InjectedWalletConfig).web3) {
+        type = WalletType.Injected;
       }
 
       await this._ethereum.setProvider(type, config);
@@ -180,5 +178,4 @@ export class RadarRelay {
       this.events.emit(event, data);
       return callback;
     }
-
 }

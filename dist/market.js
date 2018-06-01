@@ -108,6 +108,7 @@ var Market = /** @class */ (function () {
             });
         });
     };
+    // TODO subscribe to ws
     // marketOrder
     Market.prototype.marketOrderAsync = function (type, amount, awaitTransactionMined) {
         if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }

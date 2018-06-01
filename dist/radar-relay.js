@@ -111,10 +111,8 @@ var RadarRelay = /** @class */ (function () {
                             type = types_1.WalletType.Rpc;
                         }
                         // injected
-                        if (config.type) {
-                            if (config.type === types_1.InjectedWalletType.Metmask) {
-                                type = types_1.WalletType.Injected;
-                            }
+                        if (config.web3) {
+                            type = types_1.WalletType.Injected;
                         }
                         return [4 /*yield*/, this._ethereum.setProvider(type, config)];
                     case 1:

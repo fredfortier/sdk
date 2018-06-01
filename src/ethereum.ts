@@ -4,7 +4,7 @@ import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import {EventEmitter} from 'events';
 import {promisify} from 'es6-promisify';
-import {WalletManager} from '@radarrelay/wallet-manager';
+import {LightWalletManager} from '@radarrelay/wallet-manager';
 import {Web3Builder} from '@radarrelay/web3-builder';
 import {EthLightwalletSubprovider, InjectedWeb3Subprovider} from '@radarrelay/subproviders';
 import {
@@ -114,16 +114,16 @@ import {
       * @param {config} LightWalletConfig
       */
      private async _setLightWalletProvider(config: LightWalletConfig) {
-       const walletManager = new WalletManager();
+       const walletManager = new LightWalletManager();
 
        // attempt to load existing light wallet
        let wallet;
        try {
-         wallet = await walletManager.core.loadWalletAsync(config.wallet.password);
+         wallet = await walletManager.loadWalletAsync(config.wallet.password);
        } catch (err) {
          if (err.message === 'NO_WALLET_FOUND') {
            // create a new light wallet
-           wallet = await walletManager.core.createWalletAsync(config.wallet);
+           wallet = await walletManager.createWalletAsync(config.wallet);
          } else {
            throw new Error(err.message);
          }
@@ -133,7 +133,7 @@ import {
        // Instantiate the Web3Builder
        const web3Builder = new Web3Builder();
        this.web3 = web3Builder.createWeb3(new EthLightwalletSubprovider(
-         wallet._signing, wallet._keystore, wallet._pwDerivedKey
+         wallet.signing, wallet.keystore, wallet.pwDerivedKey
        ), config.dataRpcUrl, true);
      }
 
