@@ -19,5 +19,5 @@ export declare class Trade {
     quantity: BigNumber, // base token quantity
     price: BigNumber, // price (in quote)
     expiration: BigNumber): Promise<Order>;
-    cancelOrderAsync(order: SignedOrder, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
+    cancelOrderAsync(order: SignedOrder, opts?: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
 }

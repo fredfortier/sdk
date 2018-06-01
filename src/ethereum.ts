@@ -81,7 +81,7 @@ import {
       * @param {BigNumber} value
       */
      public async transferEthAsync(
-       from: string, to: string, value: BigNumber, opts: {gasPrice: BigNumber, gas: number}
+       from: string, to: string, value: BigNumber, opts?: {gasPrice: BigNumber, gas: number}
      ): Promise<string> {
        const params: Web3.TxData = { from, to, value: this.web3.toWei(value, 'ether') };
        if (opts.gasPrice) {

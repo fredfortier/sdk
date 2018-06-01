@@ -117,7 +117,7 @@ export class Trade {
     // cancel a signed order
     // TODO cancel partial?
     public async cancelOrderAsync(
-      order: SignedOrder, opts: Opts
+      order: SignedOrder, opts?: Opts
     ): Promise<TransactionReceiptWithDecodedLogs | string> {
       const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
       this._events.emit('transactionPending', txHash);
