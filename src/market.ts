@@ -1,7 +1,8 @@
-import {SignedOrder, TransactionReceiptWithDecodedLogs, Order} from '0x.js';
+import {SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts} from '0x.js';
 import {Trade} from './trade';
 import {RadarBook, RadarFill, RadarSignedOrder, RadarCandle,
   RadarTicker, UserOrderType, RadarMarket} from 'radar-types';
+import {Opts} from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -61,9 +62,9 @@ export class Market {
   public async marketOrderAsync(
     type: UserOrderType,
     amount: BigNumber,
-    awaitTransactionMined: boolean = false
+    opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    return await this._trade.marketOrder(this, type, amount, awaitTransactionMined);
+    return await this._trade.marketOrder(this, type, amount, opts);
   }
 
   // limitOrder
@@ -79,9 +80,9 @@ export class Market {
   // cancelOrder
   public async cancelOrderAsync(
     order: SignedOrder,
-    awaitTransactionMined: boolean = false
+    opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    return await this._trade.cancelOrderAsync(order, awaitTransactionMined);
+    return await this._trade.cancelOrderAsync(order, opts);
   }
 
 }

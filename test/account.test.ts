@@ -62,7 +62,7 @@ describe('RadarRelay.Account', () => {
 
     it('transferEthAsync', async () => {
       const receipt = await rrsdk.account.transferEthAsync(
-        addresses[1], new BigNumber('0.01'), true
+        addresses[1], new BigNumber('0.01'), {awaitTransactionMined: true}
       );
       expect(receipt.status).to.be.eq(1);
       await rrsdk.account.setAddressAsync(addresses[1]);
@@ -72,7 +72,7 @@ describe('RadarRelay.Account', () => {
 
     it('wrapEthAsync', async () => {
       const receipt = await rrsdk.account.wrapEthAsync(
-        new BigNumber('0.02'), true // await
+        new BigNumber('0.02'), {awaitTransactionMined: true} // await
       );
       expect(receipt.status).to.be.eq(1);
       const wethBal = await rrsdk.account.getTokenBalanceAsync(wethAddr);
@@ -80,10 +80,13 @@ describe('RadarRelay.Account', () => {
     });
 
     // TODO running into out of gas on testrpc
-    it.skip('unwrapEthAsync', async () => {
+    it('unwrapEthAsync', async () => {
       const wethBal = await rrsdk.account.getTokenBalanceAsync(wethAddr);
       const receipt = await rrsdk.account.unwrapEthAsync(
-        wethBal.minus(new BigNumber('0.01')), true // await
+        wethBal.minus(new BigNumber('0.01')), {
+          awaitTransactionMined: true,
+          transactionOpts: {gasLimit: 4000000} // TODO required on testrpc?
+        }
       );
       expect(receipt.status).to.be.eq(1);
       const wethBalAfter = await rrsdk.account.getTokenBalanceAsync(wethAddr);
@@ -97,11 +100,11 @@ describe('RadarRelay.Account', () => {
 
     it('setUnlimitedTokenAllowanceAsync', async () => {
       const wethReceipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-        wethAddr, true
+        wethAddr, {awaitTransactionMined: true}
       );
       expect(wethReceipt.status).to.be.eq(1);
       const zrxReceipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-        zrxAddr, true
+        zrxAddr, {awaitTransactionMined: true}
       );
       expect(zrxReceipt.status).to.be.eq(1);
     });
@@ -117,8 +120,10 @@ describe('RadarRelay.Account', () => {
       const hash = await rrsdk.account.transferTokenAsync(
         wethAddr,
         addresses[1],
-        new BigNumber('0.01'),
-        true // await
+        new BigNumber('0.01'), {
+          awaitTransactionMined: true,
+          transactionOpts: {gasLimit: 4000000} // TODO required on testrpc?
+        }
       );
 
       await rrsdk.account.setAddressAsync(addresses[1]);

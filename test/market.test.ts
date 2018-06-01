@@ -38,8 +38,8 @@ describe('RadarRelay.Market', () => {
     wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
 
     // set allowance
-    await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, true);
-    await rrsdk.account.setUnlimitedTokenAllowanceAsync(zrxAddr, true);
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, {awaitTransactionMined: true});
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(zrxAddr, {awaitTransactionMined: true});
   });
 
   it('getBookAsync', async () => {
@@ -83,17 +83,17 @@ describe('RadarRelay.Market', () => {
 
   it('marketOrderAsync', async () => {
     await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-      wethAddr, true
+      wethAddr, {awaitTransactionMined: true}
     );
     const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync('BUY',
-      new BigNumber(0.001), true // awaitTxMined
+      new BigNumber(0.001), {awaitTransactionMined: true} // awaitTxMined
     );
     expect(receipt.status).to.be.eq(1);
   });
 
   it('cancelOrderAsync', async () => {
       const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(
-        signedOrder, true // awaitTxMined
+        signedOrder, {awaitTransactionMined: true} // awaitTxMined
       );
       expect(receipt.status).to.be.eq(1);
       await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder)

@@ -1,6 +1,6 @@
 import {ZeroEx, TransactionReceiptWithDecodedLogs} from '0x.js';
 import {Ethereum} from './ethereum';
-import {Wallet, WalletType} from './types';
+import {Wallet, WalletType, Opts} from './types';
 import {promisify} from 'es6-promisify';
 import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
@@ -58,34 +58,38 @@ export class Account {
   }
 
   public async transferEthAsync(
-    to: string, amount: BigNumber, awaitTransactionMined: boolean = false
+    to: string, amount: BigNumber, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    const txHash = await this._ethereum.transferEthAsync(this.address, to, amount);
-    if (!awaitTransactionMined) {
+    const txOpts = {
+      gasPrice: opts.transactionOpts ? opts.transactionOpts.gasPrice : undefined,
+      gas: opts.transactionOpts ? opts.transactionOpts.gasLimit : undefined
+    };
+    const txHash = await this._ethereum.transferEthAsync(this.address, to, amount, txOpts);
+    if (!opts.awaitTransactionMined) {
       return txHash;
     }
     return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async wrapEthAsync(
-    amount: BigNumber, awaitTransactionMined: boolean = false
+    amount: BigNumber, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     // TODO get addr from tokens array
     const txHash = await this._zeroEx.etherToken.depositAsync(
-      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts
     );
-    if (!awaitTransactionMined) {
+    if (!opts.awaitTransactionMined) {
       return txHash;
     }
     return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async unwrapEthAsync(
-    amount: BigNumber, awaitTransactionMined: boolean = false
+    amount: BigNumber, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
-      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address);
-      if (!awaitTransactionMined) {
+      this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts);
+      if (!opts.awaitTransactionMined) {
         return txHash;
       }
       return await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -97,11 +101,11 @@ export class Account {
   }
 
   public async transferTokenAsync(
-    token: string, to: string, amount: BigNumber, awaitTransactionMined: boolean = false
+    token: string, to: string, amount: BigNumber, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-    const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amt);
-    if (!awaitTransactionMined) {
+    const txHash = await this._zeroEx.token.transferAsync(token, this.address, to, amt, opts.transactionOpts);
+    if (!opts.awaitTransactionMined) {
       return txHash;
     }
     return await this._zeroEx.awaitTransactionMinedAsync(txHash);
@@ -113,21 +117,21 @@ export class Account {
   }
 
   public async setTokenAllowanceAsync(
-    token: string, amount: BigNumber, awaitTransactionMined: boolean = false
+    token: string, amount: BigNumber, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-    const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt);
-    if (!awaitTransactionMined) {
+    const txHash = await this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt, opts.transactionOpts);
+    if (!opts.awaitTransactionMined) {
       return txHash;
     }
     return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   public async setUnlimitedTokenAllowanceAsync(
-    token: string, awaitTransactionMined: boolean = false
+    token: string, opts: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address);
-    if (!awaitTransactionMined) {
+    const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address, opts.transactionOpts);
+    if (!opts.awaitTransactionMined) {
       return txHash;
     }
     return await this._zeroEx.awaitTransactionMinedAsync(txHash);
