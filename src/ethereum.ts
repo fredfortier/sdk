@@ -31,6 +31,12 @@ import {
      private _events: EventEmitter;
      private _config: LightWalletConfig | InjectedWalletConfig | RpcWalletConfig;
 
+     /**
+      * Set the provider
+      *
+      * @param {WalletType}  type  type of wallet
+      * @param {LightWalletConfig|InjectedWalletConfig|RpcWalletConfig}  config  wallet config params
+      */
      public async setProvider(
        type: WalletType,
        config: LightWalletConfig | InjectedWalletConfig | RpcWalletConfig
@@ -50,6 +56,9 @@ import {
          }
      }
 
+     /**
+      * Default account getter
+      */
      public get defaultAccount(): string {
        return this.web3.eth.defaultAccount;
      }
@@ -71,8 +80,16 @@ import {
       * @param {string} to
       * @param {BigNumber} value
       */
-     public async transferEthAsync(from: string, to: string, value: BigNumber): Promise<string> {
-       const params = { from, to, value: this.web3.toWei(value, 'ether') };
+     public async transferEthAsync(
+       from: string, to: string, value: BigNumber, opts: {gasPrice: BigNumber, gas: number}
+     ): Promise<string> {
+       const params: Web3.TxData = { from, to, value: this.web3.toWei(value, 'ether') };
+       if (opts.gasPrice) {
+         params.gasPrice = opts.gasPrice;
+       }
+       if (opts.gas) {
+         params.gas = opts.gas;
+       }
        return await promisify(cb => this.web3.eth.sendTransaction(params, cb))();
      }
 

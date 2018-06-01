@@ -2,7 +2,7 @@ import {Ethereum} from './ethereum';
 import {Market} from './market';
 import {Account} from './account';
 import {EventEmitter} from 'events';
-import {WalletType} from './types';
+import {WalletType, Opts} from './types';
 import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs} from '0x.js';
 import {RadarToken, UserOrderType} from 'radar-types';
 import BigNumber from 'bignumber.js';
@@ -34,7 +34,7 @@ export class Trade {
       market: Market,
       type: UserOrderType,
       quantity: BigNumber,
-      awaitTransactionMined: boolean = false
+      opts?: Opts
     ): Promise<TransactionReceiptWithDecodedLogs | string> {
 
       const marketResponse = await request.post({
@@ -55,11 +55,12 @@ export class Trade {
         marketResponse.orders,
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
         true,
-        this._account.address);
+        this._account.address,
+        opts.transactionOpts);
 
       this._events.emit('transactionPending', txHash);
 
-      if (!awaitTransactionMined) {
+      if (!opts.awaitTransactionMined) {
         return txHash;
       }
 
@@ -116,12 +117,12 @@ export class Trade {
     // cancel a signed order
     // TODO cancel partial?
     public async cancelOrderAsync(
-      order: SignedOrder, awaitTransactionMined: boolean = false
+      order: SignedOrder, opts: Opts
     ): Promise<TransactionReceiptWithDecodedLogs | string> {
-      const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount);
+      const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
       this._events.emit('transactionPending', txHash);
 
-      if (!awaitTransactionMined) {
+      if (!opts.awaitTransactionMined) {
         return txHash;
       }
 

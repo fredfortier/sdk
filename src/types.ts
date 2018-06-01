@@ -1,3 +1,4 @@
+import {TransactionOpts} from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 export {RadarToken, RadarMarket} from 'radar-types';
@@ -42,6 +43,11 @@ export interface PartialTxParams {
   value?: string;
   data?: string;
   chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
+}
+
+export interface Opts {
+  transactionOpts: TransactionOpts;
+  awaitTransactionMined?: boolean;
 }
 
 export interface MsgParams {
