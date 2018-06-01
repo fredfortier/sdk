@@ -1,8 +1,137 @@
+---
+path: "/radar-relay-sdk"
+version: "0.2.1"
+---
+
 # Radar Relay SDK
 
 The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
 
 [![CircleCI](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta)
+
+## SDK Usage
+
+### Setup
+`~ npm install @radarrelay/sdk`
+
+```javascript
+import RadarRelay from '@radarrelay/sdk';
+
+const rr = new RadarRelay({
+  endpoint: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com/v0
+  websocketEndpoint: string // endpoint for radar relay's websockers e.g. wss://ws.radarrelay.com
+});
+```
+
+### Initialize
+
+Initializing sets the desired Ethereum configuration. 
+
+**dataRpcUrl**
+
+Sets the desired RPC connection to use to obtain Ethereum state and to broadcast signed transactions to.
+
+**wallet**
+
+If a `wallet` object is passed, the SDK will initialize by loading an existing local LightWallet (serialized wallet) keystore or create a new one.
+
+**walletRpcUrl**
+
+If a `walletRpcUrl` is passed the SDK will attempt to load using an unlocked RPC node as the wallet / signer.
+
+
+```javascript
+// unlocked node RPC endpoint,  API endpoint
+rr.initialize({
+  // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
+  dataRpcUrl: string; 
+  
+  // LightWallet configuration
+  wallet?: {
+    password: string; // set if using local wallet
+    seedPhrase?: string;
+  },
+  
+  // set if using unlocked node
+  walletRpcUrl?: string; 
+  
+  // set a gas price to default to
+  // gasPrice and gasLimit may also be 
+  // passed to most SDK methods.
+  defaultGasPrice?: BigNumber; 
+}); 
+```
+
+### Events
+Anything that triggers state changes (like changing the network, or a fill)
+fires an event that you can listen to via the `events` object.
+
+```javascript
+
+rr.events.on(
+  'ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
+)
+rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
+```
+
+### Account
+Obtain account information for the current loaded wallet
+
+```javascript
+// wallet methods
+rr.account.exportSeedPhraseAsync
+rr.account.exportAddressPrivateKeyAsync
+
+// account information
+rr.account.getAvailableAddressesAsync
+rr.account.setAddressAsync
+rr.account.getEthBalanceAsync
+rr.account.getTokenBalanceAsync
+rr.account.getTokenAllowanceAsync
+rr.account.setTokenAllowanceAsync
+rr.account.getFillsAsync
+rr.account.getOrdersAsync
+
+// ETH / token utilities
+rr.account.transferEthAsync
+rr.account.wrapEthAsync
+rr.account.unwrapEthAsync
+rr.account.transferTokenAsync
+```
+### Markets
+Markets are marketId mapped Market classes with all 
+the same methods and the following instance vars:
+
+```javascript
+rr.markets.get('ZRX-WETH') 
+{
+  id: string;
+  baseTokenAddress: string;
+  quoteTokenAddress: string;
+  baseTokenDecimals: BigNumber;
+  quoteTokenDecimals: BigNumber;
+  minOrderSize: BigNumber;
+  maxOrderSize: BigNumber;
+  quoteIncrement: BigNumber;
+  displayName: string;
+}
+```
+
+Markets expose the following methods.
+
+```javascript
+// market class methods
+rr.markets.get('ZRX-WETH').limitOrderAsync
+rr.markets.get('REP-WETH').marketOrderAsync
+rr.markets.get('REP-WETH').cancelOrderAsync
+rr.markets.get('ZRX-WETH').getFillsAsync
+rr.markets.get('ZRX-WETH').getCandlesAsync
+rr.markets.get('ZRX-WETH').getTickerAsync
+rr.markets.get('ZRX-WETH').getOrderBookAsync
+
+// Subscriptions
+rr.markets.get('ZRX-WETH').subscribe(RadarSubscribeRequest, handlerFunction)
+```
 
 ## Setting up an Ethereum Node
 
@@ -23,6 +152,10 @@ parity --jsonrpc-hosts=all \
        --base-path /path/for/ethereum_node_data
 ```
 
+### Unlocked Parity Node
+
+_NOTE: this is potentially dangerous, use at your own risk. Should be done on a computer free of malware and a strict firewall_
+
 **Create a trading Account**
 
 ```
@@ -41,8 +174,6 @@ password = ["/home/{account}/.parity-account-pass"] (password saved in plain tex
 ```
 
 **Run Parity with Unlocked Account**
-
-__NOTE: this is dangerous, use at your own risk. Should be done on a computer free of malware and a strict firewall__
 
 ```
 parity --jsonrpc-hosts=all \
@@ -72,99 +203,11 @@ Define an array that consists of:
 
    1. `event`, which when triggered will then call the defined
    2. `func` the function that is called when this event is triggered (ideally the next in priority)
-   3. `priority` an integer that defines the priority of this method.
 
-Once the `currentPriority` has hit 0, the promise will resolve. If an error occurs along the lifecycle, the timeout will occur after 10s and reject the promise.
+Once all events have fired the promise will resolve. If an error occurs along the lifecycle, the timeout will occur after 10s and reject the promise.
 
 Each init method must trigger an event on the `EventEmitter`, which indicates the method is done as well as return the `SDKInitLifeCycle.promise()`
-
 
 ### Life Cycle
 
 ![](https://docs.google.com/drawings/d/e/2PACX-1vS-ZE8iqFN6qm9iY_pqtJfElw2iwR-THeM1MuUYCH4H_9uAMAOv1ogEt72f0SuEZFB6tnfd4hm7NGuo/pub?w=929&h=580)
-
-
-
-## SDK Usage
-
-`~ npm install radar-relay-sdk`
-
-```javascript
-import RadarRelay from 'radar-relay-sdk';
-
-const rr = new RadarRelay({
-  endpoint?: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com
-});
-
-// unlocked node RPC endpoint,  API endpoint
-rr.initialize({
-  wallet?: {
-    password: string; // set if using local wallet
-    seedPhrase?: string;
-  },
-  walletRpcUrl?: string; // set if using unlocked node
-  dataRpcUrl: string; // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
-  defaultGasPrice?: BigNumber; // set a gas price to default to
-}); 
-
-// initialize
-// ----------
-// called automatically on initialize
-// but can be called at any point
-// each will trigger an event (see events below)
-rr.initialize
-rr.setEthereumAsync
-
-// events
-// ------
-// anything that triggers state change (like changing the network, or a fill)
-// fires an event that you can listen to
-rr.events.on(
-  'ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
-)
-rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
-
-// account data
-// -------------
-rr.account.getAvailableAddressesAsync
-rr.account.setAddressAsync
-rr.account.getEthBalanceAsync
-rr.account.transferEthAsync
-rr.account.wrapEthAsync
-rr.account.unwrapEthAsync
-rr.account.getTokenBalanceAsync
-rr.account.getTokenAllowanceAsync
-rr.account.setTokenAllowanceAsync
-rr.account.getFillsAsync
-rr.account.getOrdersAsync
-
-// markets
-// -------
-// markets are marketId mapped Market classes with all 
-// the same methods and the following instance vars:
-rr.markets.get('ZRX-WETH') 
-{
-  id: string;
-  baseTokenAddress: string;
-  quoteTokenAddress: string;
-  baseTokenDecimals: BigNumber;
-  quoteTokenDecimals: BigNumber;
-  minOrderSize: BigNumber;
-  maxOrderSize: BigNumber;
-  quoteIncrement: BigNumber;
-  displayName: string;
-}
-
-// market class methods
-rr.markets.get('ZRX-WETH').limitOrderAsync
-rr.markets.get('REP-WETH').marketOrderAsync
-rr.markets.get('REP-WETH').cancelOrderAsync
-rr.markets.get('ZRX-WETH').getFillsAsync
-rr.markets.get('ZRX-WETH').getCandlesAsync
-rr.markets.get('ZRX-WETH').getTickerAsync
-rr.markets.get('ZRX-WETH').getOrderBookAsync
-
-// [WIP] Websockets 
-// -----------------
-rr.ws.subscribe('ZRX-WETH', 'baseTokenAddress:quoteTokenAddress') // book state changes (new, remove, fills)
-```
