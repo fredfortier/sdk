@@ -11,7 +11,16 @@ export declare class Ethereum {
     web3: Web3;
     private _events;
     private _config;
+    /**
+     * Set the provider
+     *
+     * @param {WalletType}  type  type of wallet
+     * @param {LightWalletConfig|InjectedWalletConfig|RpcWalletConfig}  config  wallet config params
+     */
     setProvider(type: WalletType, config: LightWalletConfig | InjectedWalletConfig | RpcWalletConfig): Promise<void>;
+    /**
+     * Default account getter
+     */
     readonly defaultAccount: string;
     /**
      * get the ether balance for an account
@@ -26,7 +35,10 @@ export declare class Ethereum {
      * @param {string} to
      * @param {BigNumber} value
      */
-    transferEthAsync(from: string, to: string, value: BigNumber): Promise<string>;
+    transferEthAsync(from: string, to: string, value: BigNumber, opts: {
+        gasPrice: BigNumber;
+        gas: number;
+    }): Promise<string>;
     /**
      * get the RPC Connections networkId
      */

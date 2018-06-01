@@ -22,12 +22,11 @@ import {Ethereum} from './ethereum';
 import {Account} from './account';
 import {Market} from './market';
 import {Trade} from './trade';
-import {Ws} from './ws';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 /**
- * RadarRelay
+ * RadarRelay main SDK singleton
  */
 export class RadarRelay {
 
@@ -35,12 +34,12 @@ export class RadarRelay {
     public account: Account;
     public tokens: Map<string, RadarToken>;
     public markets: Map<string, Market>;
-    public ws: Ws;
     public zeroEx: ZeroEx;
 
     private _trade: Trade;
     private _ethereum: Ethereum;
     private _apiEndpoint: string;
+    private _wsEndpoint: string;
     private _networkId: number;
     private _prevApiEndpoint: string;
     private _markets: RadarMarket[];
@@ -78,10 +77,16 @@ export class RadarRelay {
         func: undefined
       } ];
 
+    /**
+     * SDK instance
+     *
+     * @param {RadarRelayConfig}  config  sdk config
+     */
     constructor(config: RadarRelayConfig) {
-      // set the api endpoint outside
+      // set the api/ws endpoint outside
       // of the init _lifecycle
       this._apiEndpoint = config.endpoint;
+      this._wsEndpoint = config.websocketEndpoint;
 
       // instantiate event handler
       this.events = new EventEmitter();
@@ -94,6 +99,11 @@ export class RadarRelay {
       this._lifecycle.setup(this);
     }
 
+    /**
+     * Initialize the SDK
+     *
+     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     */
     public async initialize(
       config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig
     ): Promise<string | boolean> {
@@ -167,7 +177,9 @@ export class RadarRelay {
         this._prevApiEndpoint = this._apiEndpoint;
         this.markets = new Map();
         this._markets.map(market => {
-          this.markets.set(market.id, new Market(market, this._apiEndpoint, this._trade));
+          this.markets.set(market.id, new Market(
+            market, this._apiEndpoint, this._wsEndpoint, this._trade
+          ));
         });
 
         return this.getCallback('marketsInitialized', this.markets);

@@ -47,8 +47,7 @@ var Trade = /** @class */ (function () {
         this._events = events;
         this._tokens = tokens;
     }
-    Trade.prototype.marketOrder = function (market, type, quantity, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Trade.prototype.marketOrder = function (market, type, quantity, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var marketResponse, txHash, receipt;
             return __generator(this, function (_a) {
@@ -67,11 +66,11 @@ var Trade = /** @class */ (function () {
                             marketResponse.orders[i].makerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount);
                             marketResponse.orders[i].expirationUnixTimestampSec = new bignumber_js_1.default(order.expirationUnixTimestampSec);
                         });
-                        return [4 /*yield*/, this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address)];
+                        return [4 /*yield*/, this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
                     case 2:
                         txHash = _a.sent();
                         this._events.emit('transactionPending', txHash);
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -131,17 +130,16 @@ var Trade = /** @class */ (function () {
     // TODO fill individual order
     // cancel a signed order
     // TODO cancel partial?
-    Trade.prototype.cancelOrderAsync = function (order, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Trade.prototype.cancelOrderAsync = function (order, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash, receipt;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount)];
+                    case 0: return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         this._events.emit('transactionPending', txHash);
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];

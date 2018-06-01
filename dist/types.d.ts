@@ -1,8 +1,10 @@
+import { TransactionOpts } from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 export { RadarToken, RadarMarket } from 'radar-types';
 export interface RadarRelayConfig {
     endpoint: string;
+    websocketEndpoint: string;
 }
 export interface EthereumConfig {
     defaultGasPrice?: BigNumber;
@@ -35,6 +37,10 @@ export interface PartialTxParams {
     value?: string;
     data?: string;
     chainId: number;
+}
+export interface Opts {
+    transactionOpts: TransactionOpts;
+    awaitTransactionMined?: boolean;
 }
 export interface MsgParams {
     from: string;

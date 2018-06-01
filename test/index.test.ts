@@ -14,7 +14,8 @@ const expect = chai.expect;
 describe('RadarRelay', () => {
 
     const rrsdk = new RadarRelay({
-      endpoint: 'http://localhost:8080/v0'
+      endpoint: 'http://localhost:8080/v0',
+      websocketEndpoint: 'ws://ws.radarrelay.com'
     });
 
     mockRequests();

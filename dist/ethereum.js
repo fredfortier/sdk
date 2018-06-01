@@ -50,6 +50,12 @@ var types_1 = require("./types");
 var Ethereum = /** @class */ (function () {
     function Ethereum() {
     }
+    /**
+     * Set the provider
+     *
+     * @param {WalletType}  type  type of wallet
+     * @param {LightWalletConfig|InjectedWalletConfig|RpcWalletConfig}  config  wallet config params
+     */
     Ethereum.prototype.setProvider = function (type, config) {
         return __awaiter(this, void 0, void 0, function () {
             var _a;
@@ -80,6 +86,9 @@ var Ethereum = /** @class */ (function () {
         });
     };
     Object.defineProperty(Ethereum.prototype, "defaultAccount", {
+        /**
+         * Default account getter
+         */
         get: function () {
             return this.web3.eth.defaultAccount;
         },
@@ -112,7 +121,7 @@ var Ethereum = /** @class */ (function () {
      * @param {string} to
      * @param {BigNumber} value
      */
-    Ethereum.prototype.transferEthAsync = function (from, to, value) {
+    Ethereum.prototype.transferEthAsync = function (from, to, value, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var params;
             var _this = this;
@@ -120,6 +129,12 @@ var Ethereum = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         params = { from: from, to: to, value: this.web3.toWei(value, 'ether') };
+                        if (opts.gasPrice) {
+                            params.gasPrice = opts.gasPrice;
+                        }
+                        if (opts.gas) {
+                            params.gas = opts.gas;
+                        }
                         return [4 /*yield*/, es6_promisify_1.promisify(function (cb) { return _this.web3.eth.sendTransaction(params, cb); })()];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
@@ -211,7 +226,7 @@ var Ethereum = /** @class */ (function () {
                     case 7:
                         this.wallet = wallet;
                         web3Builder = new web3_builder_1.Web3Builder();
-                        this.web3 = web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet._signing, wallet._keystore, wallet._pwDerivedKey), config.dataRpcUrl, true);
+                        this.web3 = web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet.signing, wallet.keystore, wallet.pwDerivedKey), config.dataRpcUrl, true);
                         return [2 /*return*/];
                 }
             });

@@ -5,20 +5,19 @@ import Map = require('es6-map');
 import { EventBus } from './event-emitter';
 import { Account } from './account';
 import { Market } from './market';
-import { Ws } from './ws';
 /**
- * RadarRelay
+ * RadarRelay main SDK singleton
  */
 export declare class RadarRelay {
     events: EventBus;
     account: Account;
     tokens: Map<string, RadarToken>;
     markets: Map<string, Market>;
-    ws: Ws;
     zeroEx: ZeroEx;
     private _trade;
     private _ethereum;
     private _apiEndpoint;
+    private _wsEndpoint;
     private _networkId;
     private _prevApiEndpoint;
     private _markets;
@@ -31,7 +30,17 @@ export declare class RadarRelay {
      * This list is configurable if additional init methods are necessary
      */
     private loadPriorityList;
+    /**
+     * SDK instance
+     *
+     * @param {RadarRelayConfig}  config  sdk config
+     */
     constructor(config: RadarRelayConfig);
+    /**
+     * Initialize the SDK
+     *
+     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     */
     initialize(config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig): Promise<string | boolean>;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;

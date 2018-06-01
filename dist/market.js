@@ -35,12 +35,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var websocket_client_1 = require("./websocket-client");
+var radar_types_1 = require("radar-types");
 var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
 var Market = /** @class */ (function () {
-    function Market(params, apiEndpoint, trade) {
+    function Market(params, apiEndpoint, wsEndpoint, trade) {
+        // setup config
         this._endpoint = apiEndpoint;
+        this._wsEndpoint = wsEndpoint;
         this._trade = trade;
+        this._wsClient = new websocket_client_1.WebsocketClient(wsEndpoint);
+        // Setup instance vars
         this.id = params.id;
         this.baseTokenAddress = params.baseTokenAddress;
         this.quoteTokenAddress = params.quoteTokenAddress;
@@ -51,8 +57,9 @@ var Market = /** @class */ (function () {
         this.quoteIncrement = new bignumber_js_1.default(params.quoteIncrement);
         this.displayName = params.displayName;
     }
-    // getBook
-    // TODO managed books?
+    /*
+     * Get book for this market
+     */
     Market.prototype.getBookAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, _b;
@@ -66,7 +73,9 @@ var Market = /** @class */ (function () {
             });
         });
     };
-    // getFills
+    /*
+     * Get fills for this market
+     */
     Market.prototype.getFillsAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, _b;
@@ -80,7 +89,9 @@ var Market = /** @class */ (function () {
             });
         });
     };
-    // getCandles
+    /*
+     * Get candles for this market
+     */
     Market.prototype.getCandlesAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, _b;
@@ -94,7 +105,9 @@ var Market = /** @class */ (function () {
             });
         });
     };
-    // getTicker
+    /*
+     * Get this markets ticker
+     */
     Market.prototype.getTickerAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, _b;
@@ -108,20 +121,58 @@ var Market = /** @class */ (function () {
             });
         });
     };
-    // TODO subscribe to ws
-    // marketOrder
-    Market.prototype.marketOrderAsync = function (type, amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    /**
+     * subscribe to a socket topic for this market
+     *
+     * @param {string}                 topic  market topic
+     * @param {WebsocketRequestTopic}  topic
+     */
+    Market.prototype.subscribe = function (topic, handleFunc) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._trade.marketOrder(this, type, amount, awaitTransactionMined)];
+                    case 0:
+                        if (!!this._wsClient.connected) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this._wsClient.connect(this._wsEndpoint)];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        this._wsClient.subscribe({
+                            type: radar_types_1.WebsocketRequestType.SUBSCRIBE,
+                            topic: topic,
+                            market: this.id
+                        }, handleFunc);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Execute a market order
+     *
+     * @param {UserOrderType} type   Order type of BUY|SELL
+     * @param {BigNumber}     amount Amount in base token
+     * @param {Opts}          opts   Optional transaction options
+     */
+    Market.prototype.marketOrderAsync = function (type, amount, opts) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._trade.marketOrder(this, type, amount, opts)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    // limitOrder
+    /**
+     * Place a limit order
+     *
+     * @param {UserOrderType} type       Order type of BUY|SELL
+     * @param {BigNumber}     quantity   Amount in base token
+     * @param {BigNumber}     price      Price in quote
+     * @param {BigNumber}     expiration Order expiration time in seconds
+     */
     Market.prototype.limitOrderAsync = function (type, quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -132,13 +183,17 @@ var Market = /** @class */ (function () {
             });
         });
     };
-    // cancelOrder
-    Market.prototype.cancelOrderAsync = function (order, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    /**
+     * Cancel an order
+     *
+     * @param {SignedOrder}  order SignedOrder to cancel
+     * @param {Opts}         opts  Optional transaction options
+     */
+    Market.prototype.cancelOrderAsync = function (order, opts) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._trade.cancelOrderAsync(order, awaitTransactionMined)];
+                    case 0: return [4 /*yield*/, this._trade.cancelOrderAsync(order, opts)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });

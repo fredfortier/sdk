@@ -115,16 +115,20 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.transferEthAsync = function (to, amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.transferEthAsync = function (to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
-            var txHash;
+            var txOpts, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ethereum.transferEthAsync(this.address, to, amount)];
+                    case 0:
+                        txOpts = {
+                            gasPrice: opts.transactionOpts ? opts.transactionOpts.gasPrice : undefined,
+                            gas: opts.transactionOpts ? opts.transactionOpts.gasLimit : undefined
+                        };
+                        return [4 /*yield*/, this._ethereum.transferEthAsync(this.address, to, amount, txOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -133,16 +137,15 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.wrapEthAsync = function (amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.wrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -151,16 +154,15 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.unwrapEthAsync = function (amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.unwrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -182,18 +184,17 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.transferTokenAsync = function (token, to, amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.transferTokenAsync = function (token, to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.transferAsync(token, this.address, to, amt)];
+                        return [4 /*yield*/, this._zeroEx.token.transferAsync(token, this.address, to, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -215,18 +216,17 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.setTokenAllowanceAsync = function (token, amount, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.setTokenAllowanceAsync = function (token, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt)];
+                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
@@ -235,16 +235,15 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype.setUnlimitedTokenAllowanceAsync = function (token, awaitTransactionMined) {
-        if (awaitTransactionMined === void 0) { awaitTransactionMined = false; }
+    Account.prototype.setUnlimitedTokenAllowanceAsync = function (token, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        if (!awaitTransactionMined) {
+                        if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];

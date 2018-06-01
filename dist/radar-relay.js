@@ -49,9 +49,14 @@ var market_1 = require("./market");
 var trade_1 = require("./trade");
 bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
- * RadarRelay
+ * RadarRelay main SDK singleton
  */
 var RadarRelay = /** @class */ (function () {
+    /**
+     * SDK instance
+     *
+     * @param {RadarRelayConfig}  config  sdk config
+     */
     function RadarRelay(config) {
         /**
          * The load priority list maintains the function call
@@ -85,9 +90,10 @@ var RadarRelay = /** @class */ (function () {
                 func: undefined
             }
         ];
-        // set the api endpoint outside
+        // set the api/ws endpoint outside
         // of the init _lifecycle
         this._apiEndpoint = config.endpoint;
+        this._wsEndpoint = config.websocketEndpoint;
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
@@ -96,6 +102,11 @@ var RadarRelay = /** @class */ (function () {
         this._lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
         this._lifecycle.setup(this);
     }
+    /**
+     * Initialize the SDK
+     *
+     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     */
     RadarRelay.prototype.initialize = function (config) {
         return __awaiter(this, void 0, void 0, function () {
             var type;
@@ -204,7 +215,7 @@ var RadarRelay = /** @class */ (function () {
                         this._prevApiEndpoint = this._apiEndpoint;
                         this.markets = new Map();
                         this._markets.map(function (market) {
-                            _this.markets.set(market.id, new market_1.Market(market, _this._apiEndpoint, _this._trade));
+                            _this.markets.set(market.id, new market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
                         });
                         return [2 /*return*/, this.getCallback('marketsInitialized', this.markets)];
                 }

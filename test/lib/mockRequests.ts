@@ -1,6 +1,6 @@
 import * as nock from 'nock';
 import { Server } from 'mock-socket';
-import {WebsocketEvent, RadarEvent, RadarNewOrder, RadarSignedOrder} from 'radar-types';
+import {WebsocketEvent, WebsocketAction, RadarEvent, RadarNewOrder, RadarSignedOrder} from 'radar-types';
 import BigNumber from 'bignumber.js';
 
 let mockServer;
@@ -120,7 +120,7 @@ export function mockRequests() {
           order: order as RadarSignedOrder
         };
         const ev: WebsocketEvent = {
-          action: 'NEW',
+          action: WebsocketAction.NEW,
           event : newOrder
         };
         mockServer.send(JSON.stringify(ev));
