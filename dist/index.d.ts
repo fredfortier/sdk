@@ -5,4 +5,4 @@ export { Ethereum } from './ethereum';
 export { Account } from './account';
 export { Market } from './market';
 export { Trade } from './trade';
-export { Ws } from './ws';
+export { WebsocketClient } from './websocket-client';

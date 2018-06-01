@@ -20,7 +20,8 @@ describe('RadarRelay.Account', () => {
       mockRequests();
 
       rrsdk = new RadarRelay({
-        endpoint: 'http://localhost:8080/v0'
+        endpoint: 'http://localhost:8080/v0',
+        websocketEndpoint: 'ws://ws.radarrelay.com'
       });
       await rrsdk.initialize({
         wallet: {

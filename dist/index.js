@@ -12,5 +12,5 @@ var market_1 = require("./market");
 exports.Market = market_1.Market;
 var trade_1 = require("./trade");
 exports.Trade = trade_1.Trade;
-var ws_1 = require("./ws");
-exports.Ws = ws_1.Ws;
+var websocket_client_1 = require("./websocket-client");
+exports.WebsocketClient = websocket_client_1.WebsocketClient;

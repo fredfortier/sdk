@@ -1,8 +1,18 @@
 import {SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts} from '0x.js';
 import {Trade} from './trade';
-import {RadarBook, RadarFill, RadarSignedOrder, RadarCandle,
-  RadarTicker, UserOrderType, RadarMarket} from 'radar-types';
+import {WebsocketClient} from './websocket-client';
 import {Opts} from './types';
+import {
+  RadarBook,
+  RadarFill,
+  RadarSignedOrder,
+  RadarCandle,
+  RadarTicker,
+  UserOrderType,
+  RadarMarket,
+  WebsocketRequestTopic,
+  WebsocketRequestType
+} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -18,12 +28,18 @@ export class Market {
   public displayName: string;
 
   private _endpoint: string;
+  private _wsEndpoint: string;
   private _trade: Trade;
+  private _wsClient: any;
 
-  constructor(params: RadarMarket, apiEndpoint: string, trade: Trade) {
+  constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade) {
+      // setup config
       this._endpoint = apiEndpoint;
+      this._wsEndpoint = wsEndpoint;
       this._trade = trade;
+      this._wsClient = new WebsocketClient(wsEndpoint);
 
+      // Setup instance vars
       this.id = params.id;
       this.baseTokenAddress = params.baseTokenAddress;
       this.quoteTokenAddress = params.quoteTokenAddress;
@@ -35,30 +51,58 @@ export class Market {
       this.displayName = params.displayName;
   }
 
-  // getBook
-  // TODO managed books?
+  /*
+   * Get book for this market
+   */
   public async getBookAsync(): Promise<RadarBook> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/book`));
   }
 
-  // getFills
+  /*
+   * Get fills for this market
+   */
   public async getFillsAsync(): Promise<RadarFill[]> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/fills`));
   }
 
-  // getCandles
+  /*
+   * Get candles for this market
+   */
   public async getCandlesAsync(): Promise<RadarCandle[]> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/candles`));
   }
 
-  // getTicker
+  /*
+   * Get this markets ticker
+   */
   public async getTickerAsync(): Promise<RadarTicker> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
   }
 
-  // TODO subscribe to ws
+  /**
+   * subscribe to a socket topic for this market
+   *
+   * @param {string}                 topic  market topic
+   * @param {WebsocketRequestTopic}  topic
+   */
+  public async subscribe(topic: WebsocketRequestTopic, handleFunc: () => {}) {
+    if (!this._wsClient.connected) {
+      await this._wsClient.connect(this._wsEndpoint);
+    }
+    this._wsClient.subscribe({
+       type: WebsocketRequestType.SUBSCRIBE,
+       topic,
+       market: this.id
+     }, handleFunc);
+  }
 
-  // marketOrder
+  /**
+   * Execute a market order
+   *
+   * @param {UserOrderType} type   Order type of BUY|SELL
+   * @param {BigNumber}     amount Amount in base token
+   * @param {Opts}          opts   Optional transaction options
+   */
   public async marketOrderAsync(
     type: UserOrderType,
     amount: BigNumber,
@@ -67,7 +111,14 @@ export class Market {
     return await this._trade.marketOrder(this, type, amount, opts);
   }
 
-  // limitOrder
+  /**
+   * Place a limit order
+   *
+   * @param {UserOrderType} type       Order type of BUY|SELL
+   * @param {BigNumber}     quantity   Amount in base token
+   * @param {BigNumber}     price      Price in quote
+   * @param {BigNumber}     expiration Order expiration time in seconds
+   */
   public async limitOrderAsync(
     type: UserOrderType,
     quantity: BigNumber,
@@ -77,7 +128,12 @@ export class Market {
     return await this._trade.limitOrder(this, type, quantity, price, expiration);
   }
 
-  // cancelOrder
+  /**
+   * Cancel an order
+   *
+   * @param {SignedOrder}  order SignedOrder to cancel
+   * @param {Opts}         opts  Optional transaction options
+   */
   public async cancelOrderAsync(
     order: SignedOrder,
     opts?: Opts

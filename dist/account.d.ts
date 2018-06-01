@@ -1,6 +1,6 @@
 import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { Ethereum } from './ethereum';
-import { WalletType } from './types';
+import { WalletType, Opts } from './types';
 import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
 import * as Map from 'es6-map';
@@ -19,14 +19,14 @@ export declare class Account {
     addNewAddresses(num: number): void;
     getAvailableAddressesAsync(): Promise<string[]>;
     getEthBalanceAsync(): Promise<BigNumber>;
-    transferEthAsync(to: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
-    wrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
-    unwrapEthAsync(amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    transferEthAsync(to: string, amount: BigNumber, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
+    wrapEthAsync(amount: BigNumber, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
+    unwrapEthAsync(amount: BigNumber, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
     getTokenBalanceAsync(token: string): Promise<BigNumber>;
-    transferTokenAsync(token: string, to: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    transferTokenAsync(token: string, to: string, amount: BigNumber, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
     getTokenAllowanceAsync(token: string): Promise<BigNumber>;
-    setTokenAllowanceAsync(token: string, amount: BigNumber, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
-    setUnlimitedTokenAllowanceAsync(token: string, awaitTransactionMined?: boolean): Promise<TransactionReceiptWithDecodedLogs | string>;
+    setTokenAllowanceAsync(token: string, amount: BigNumber, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
+    setUnlimitedTokenAllowanceAsync(token: string, opts: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
     getOrdersAsync(page?: number, perPage?: number): Promise<RadarSignedOrder[]>;
     getFillsAsync(page?: number, perPage?: number): Promise<RadarFill>;
     private _getWETHTokenAddress;
