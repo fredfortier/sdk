@@ -1,5 +1,5 @@
 {
-  "name": "radar-relay-sdk",
+  "name": "@radarrelay/sdk",
   "version": "0.2.1",
   "description": "A node library for interacting with Radar Relay",
   "main": "dist/index.js",
