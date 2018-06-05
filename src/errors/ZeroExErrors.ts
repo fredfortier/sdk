@@ -1,4 +1,4 @@
-export enum ContractWrappersError {
+enum ContractWrappersError {
   ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
   ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
   EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
@@ -16,18 +16,18 @@ export enum ContractWrappersError {
   SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
 }
 
-export enum OrderError {
+enum OrderError {
   InvalidSignature = 'INVALID_SIGNATURE',
 }
 
-export enum BlockchainCallErrs {
+enum BlockchainCallErrs {
   ContractDoesNotExist = 'CONTRACT_DOES_NOT_EXIST',
   UserHasNoAssociatedAddresses = 'USER_HAS_NO_ASSOCIATED_ADDRESSES',
   UnhandledError = 'UNHANDLED_ERROR',
   TokenAddressIsInvalid = 'TOKEN_ADDRESS_IS_INVALID',
 }
 
-export enum ExchangeContractErrs {
+enum ExchangeContractErrs {
   OrderFillExpired = 'ORDER_FILL_EXPIRED',
   OrderCancelExpired = 'ORDER_CANCEL_EXPIRED',
   OrderCancelAmountZero = 'ORDER_CANCEL_AMOUNT_ZERO',
@@ -51,3 +51,46 @@ export enum ExchangeContractErrs {
   BatchOrdersMustHaveSameExchangeAddress = 'BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS',
   BatchOrdersMustHaveAtLeastOneItem = 'BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM',
 }
+
+// Human Readable Çontract Wrapper Errors
+export const contractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+  [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
+  [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
+  [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
+      'TokenTransferProxy contract does not exist',
+  [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
+  [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
+  [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
+  [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
+  [OrderError.InvalidSignature]: 'Order signature is not valid',
+  [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+  [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+  [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
+};
+
+// Human Readable Exchange Çontract Errors
+export const exchangeContractErrorToHumanReadableError: { [error: string]: string } = {
+  [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
+  [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
+  [ExchangeContractErrs.OrderCancelAmountZero]: 'Order cancel amount can\'t be 0',
+  [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]: 'This order has already been completely filled or cancelled',
+  [ExchangeContractErrs.OrderFillAmountZero]: 'Order fill amount can\'t be 0',
+  [ExchangeContractErrs.OrderRemainingFillAmountZero]: 'This order has already been completely filled or cancelled',
+  [ExchangeContractErrs.OrderFillRoundingError]:
+    'Rounding error will occur when filling this order. Please try filling a different amount.',
+  [ExchangeContractErrs.InsufficientTakerBalance]: 'Taker no longer has a sufficient balance to complete this order',
+  [ExchangeContractErrs.InsufficientTakerAllowance]:
+    'Taker no longer has a sufficient allowance to complete this order',
+  [ExchangeContractErrs.InsufficientMakerBalance]:
+    'Maker no longer has a sufficient balance to complete this order',
+  [ExchangeContractErrs.InsufficientMakerAllowance]:
+    'Maker no longer has a sufficient allowance to complete this order',
+  [ExchangeContractErrs.InsufficientTakerFeeBalance]: 'Taker no longer has a sufficient balance to pay fees',
+  [ExchangeContractErrs.InsufficientTakerFeeAllowance]:
+    'Taker no longer has a sufficient allowance to pay fees',
+  [ExchangeContractErrs.InsufficientMakerFeeBalance]: 'Maker no longer has a sufficient balance to pay fees',
+  [ExchangeContractErrs.InsufficientMakerFeeAllowance]:
+    'Maker no longer has a sufficient allowance to pay fees',
+  [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]: `This order can only be filled by the specified taker`,
+  [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
+};
