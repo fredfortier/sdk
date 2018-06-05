@@ -30,19 +30,19 @@ export declare class WebsocketClient {
     /**
      * Default connection handler
      *
-     * @param {any} conn
+     * @param {Event} conn
      */
     private _connectHandler;
     /**
      * default close handler
      *
-     * @param {string} closed
+     * @param {CloseEvent} closed
      */
     private _closeHandler;
     /**
      * default error handler
      *
-     * @param {string} err
+     * @param {Event} err
      */
     private _errorHandler;
     /**

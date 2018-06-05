@@ -106,7 +106,7 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * Default connection handler
      *
-     * @param {any} conn
+     * @param {Event} conn
      */
     WebsocketClient.prototype._connectHandler = function (conn) {
         this.connected = true;
@@ -117,7 +117,7 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * default close handler
      *
-     * @param {string} closed
+     * @param {CloseEvent} closed
      */
     WebsocketClient.prototype._closeHandler = function (closed) {
         this.connected = false;
@@ -129,7 +129,7 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * default error handler
      *
-     * @param {string} err
+     * @param {Event} err
      */
     WebsocketClient.prototype._errorHandler = function (err) {
         this.connected = false;

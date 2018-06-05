@@ -65,7 +65,7 @@ export class WebsocketClient {
   /**
    * Default connection handler
    *
-   * @param {any} conn
+   * @param {Event} conn
    */
   private _connectHandler(conn: Event) {
     this.connected = true;
@@ -77,7 +77,7 @@ export class WebsocketClient {
   /**
    * default close handler
    *
-   * @param {string} closed
+   * @param {CloseEvent} closed
    */
   private _closeHandler(closed: CloseEvent) {
     this.connected = false;
@@ -90,7 +90,7 @@ export class WebsocketClient {
   /**
    * default error handler
    *
-   * @param {string} err
+   * @param {Event} err
    */
   private _errorHandler(err: Event) {
     this.connected = false;
