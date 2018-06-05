@@ -3,7 +3,7 @@ import { Ethereum } from './ethereum';
 import { WalletType, Opts } from './types';
 import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
-import * as Map from 'es6-map';
+import { TSMap } from 'typescript-map';
 export declare class Account {
     address: string;
     private _wallet;
@@ -11,7 +11,7 @@ export declare class Account {
     private _zeroEx;
     private _tokens;
     private _endpoint;
-    constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: Map<string, RadarToken>);
+    constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: TSMap<string, RadarToken>);
     readonly walletType: WalletType.Local | WalletType.Rpc;
     exportSeedPhraseAsync(password: string): Promise<string>;
     exportAddressPrivateKeyAsync(password: string): Promise<string>;

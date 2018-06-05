@@ -7,7 +7,7 @@ import {ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceip
 import {RadarToken, UserOrderType} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import Map = require('es6-map');
+import {TSMap} from 'typescript-map';
 
 export class Trade {
 
@@ -15,14 +15,14 @@ export class Trade {
     private _account: Account;
     private _zeroEx: ZeroEx;
     private _events: EventEmitter;
-    private _tokens: Map<string, RadarToken>;
+    private _tokens: TSMap<string, RadarToken>;
 
     constructor(
       zeroEx: ZeroEx,
       apiEndpoint: string,
       account: Account,
       events: EventEmitter,
-      tokens: Map<string, RadarToken>) {
+      tokens: TSMap<string, RadarToken>) {
         this._zeroEx = zeroEx;
         this._endpoint = apiEndpoint;
         this._account = account;

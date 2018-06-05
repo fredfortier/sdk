@@ -13,7 +13,7 @@ import {
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import Map = require('es6-map');
+import {TSMap} from 'typescript-map';
 
 // SDK Classes
 import {SDKInitLifeCycle, InitPriorityItem} from './sdk-init-lifecycle';
@@ -32,8 +32,8 @@ export class RadarRelay {
 
     public events: EventBus;
     public account: Account;
-    public tokens: Map<string, RadarToken>;
-    public markets: Map<string, Market>;
+    public tokens: TSMap<string, RadarToken>;
+    public markets: TSMap<string, Market>;
     public zeroEx: ZeroEx;
 
     private _trade: Trade;
@@ -159,7 +159,7 @@ export class RadarRelay {
       // only fetch if not already fetched
       if (this._prevApiEndpoint !== this._apiEndpoint) {
         const tokens = JSON.parse(await request.get(`${this._apiEndpoint}/tokens`));
-        this.tokens = new Map();
+        this.tokens = new TSMap();
         tokens.map(token => {
           this.tokens.set(token.address, token);
         });
@@ -175,7 +175,7 @@ export class RadarRelay {
         }
         // TODO probably not the best place for this
         this._prevApiEndpoint = this._apiEndpoint;
-        this.markets = new Map();
+        this.markets = new TSMap();
         this._markets.map(market => {
           this.markets.set(market.id, new Market(
             market, this._apiEndpoint, this._wsEndpoint, this._trade

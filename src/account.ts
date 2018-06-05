@@ -5,7 +5,7 @@ import {promisify} from 'es6-promisify';
 import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import * as Map from 'es6-map';
+import {TSMap} from 'typescript-map';
 
 export class Account {
 
@@ -14,10 +14,10 @@ export class Account {
   private _wallet: Wallet;
   private _ethereum: Ethereum;
   private _zeroEx: ZeroEx;
-  private _tokens: Map<string, RadarToken>;
+  private _tokens: TSMap<string, RadarToken>;
   private _endpoint: string;
 
-  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: Map<string, RadarToken>) {
+  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: TSMap<string, RadarToken>) {
     // TODO tokens + decimal calculations and conversions
     this._endpoint = apiEndpoint;
     this._tokens = tokens;
