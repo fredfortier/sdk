@@ -6,7 +6,6 @@ import { RadarSubscribeRequest, RadarUnsubscribeRequest } from 'radar-types';
 export declare class WebsocketClient {
     connected: boolean;
     private _client;
-    private _connection;
     private _connectPromise;
     private _subscribePromise;
     private _wsEndpoint;
@@ -35,12 +34,6 @@ export declare class WebsocketClient {
      */
     private _connectHandler;
     /**
-     * Default failed conn handler
-     *
-     * @param {string} err
-     */
-    private _failedConnectHandler;
-    /**
      * default close handler
      *
      * @param {string} closed
@@ -56,7 +49,11 @@ export declare class WebsocketClient {
      * Handle a message passing it to
      * the active subscription if it exists
      *
-     * @param {string} message
+     * @param {MessageEvent} message
      */
     private _messageHandler;
+    /**
+     * Detect if the WebSocket client is connected
+     */
+    private _clientIsConnected;
 }
