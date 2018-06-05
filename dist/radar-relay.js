@@ -40,7 +40,7 @@ var events_1 = require("events");
 var types_1 = require("./types");
 var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
-var Map = require("es6-map");
+var typescript_map_1 = require("typescript-map");
 // SDK Classes
 var sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");
 var ethereum_1 = require("./ethereum");
@@ -184,7 +184,7 @@ var RadarRelay = /** @class */ (function () {
                         return [4 /*yield*/, request.get(this._apiEndpoint + "/tokens")];
                     case 1:
                         tokens = _b.apply(_a, [_c.sent()]);
-                        this.tokens = new Map();
+                        this.tokens = new typescript_map_1.TSMap();
                         tokens.map(function (token) {
                             _this.tokens.set(token.address, token);
                         });
@@ -213,7 +213,7 @@ var RadarRelay = /** @class */ (function () {
                     case 2:
                         // TODO probably not the best place for this
                         this._prevApiEndpoint = this._apiEndpoint;
-                        this.markets = new Map();
+                        this.markets = new typescript_map_1.TSMap();
                         this._markets.map(function (market) {
                             _this.markets.set(market.id, new market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
                         });
