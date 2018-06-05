@@ -1,7 +1,7 @@
 import { ZeroEx } from '0x.js';
 import { RadarToken } from 'radar-types';
 import { RadarRelayConfig, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
-import Map = require('es6-map');
+import { TSMap } from 'typescript-map';
 import { EventBus } from './event-emitter';
 import { Account } from './account';
 import { Market } from './market';
@@ -11,8 +11,8 @@ import { Market } from './market';
 export declare class RadarRelay {
     events: EventBus;
     account: Account;
-    tokens: Map<string, RadarToken>;
-    markets: Map<string, Market>;
+    tokens: TSMap<string, RadarToken>;
+    markets: TSMap<string, Market>;
     zeroEx: ZeroEx;
     private _trade;
     private _ethereum;
