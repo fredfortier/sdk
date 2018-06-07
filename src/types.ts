@@ -6,6 +6,7 @@ export {RadarToken, RadarMarket} from 'radar-types';
 export interface RadarRelayConfig {
   endpoint: string;
   websocketEndpoint: string;
+  sdkInitializationTimeout?: number;
 }
 
 export interface EthereumConfig {

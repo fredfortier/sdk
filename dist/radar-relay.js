@@ -99,7 +99,7 @@ var RadarRelay = /** @class */ (function () {
         // instantiate ethereum class
         this._ethereum = new ethereum_1.Ethereum();
         // setup the _lifecycle
-        this._lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList);
+        this._lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeout);
         this._lifecycle.setup(this);
     }
     /**
