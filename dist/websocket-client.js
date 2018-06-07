@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var radar_types_1 = require("radar-types");
 var websocket_1 = require("websocket");
 /**
  * Websocket client helper class
@@ -47,36 +48,33 @@ var WebsocketClient = /** @class */ (function () {
         this._wsEndpoint = wsEndpoint;
     }
     /**
-     * subscribe method
+     * Event listener for global connection events
      */
-    WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this._clientIsConnected)
-                    throw new Error('WEBSOCKET_DISCONNECTED');
-                this._curSubID = this._curSubID + 1;
-                subscribeRequest.requestId = this._curSubID;
-                this._client.send(JSON.stringify(subscribeRequest));
-                this._subscriptions[this._curSubID] = subscriptionHandler;
-                return [2 /*return*/];
-            });
-        });
+    WebsocketClient.prototype.on = function (event, handlerFunction) {
+        // TODO
     };
     /**
-     * Unsubscribe method
-     * TODO handle subscription request ids
+     * Create a Radar subscription
      *
-     * @param {RadarUnsubscribeRequest}  unsubscribeRequest
+     * @param {RadarSubscribeRequest}  subscribeRequest
+     * @param {function}               subscriptionHandler
      */
-    WebsocketClient.prototype.unsubscribe = function (unsubscribeRequest) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this._clientIsConnected)
-                    return [2 /*return*/, true];
-                this._client.send(JSON.stringify(unsubscribeRequest));
-                return [2 /*return*/];
-            });
-        });
+    WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
+        var _this = this;
+        if (!this._clientIsConnected)
+            throw new Error('WEBSOCKET_DISCONNECTED');
+        this._curSubID = this._curSubID + 1;
+        subscribeRequest.requestId = this._curSubID;
+        this._client.send(JSON.stringify(subscribeRequest));
+        this._subscriptions[this._curSubID] = {
+            subscriptionHandler: subscriptionHandler,
+            unsubscribe: function () {
+                // Send unsubscribe for this subscribe request
+                subscribeRequest.type = radar_types_1.WebsocketRequestType.UNSUBSCRIBE;
+                return _this._client.send(JSON.stringify(subscribeRequest));
+            }
+        };
+        return this._subscriptions[this._curSubID];
     };
     /**
      * Connect method
@@ -146,14 +144,13 @@ var WebsocketClient = /** @class */ (function () {
      * @param {MessageEvent} message
      */
     WebsocketClient.prototype._messageHandler = function (message) {
-        // TODO multiple subscriptions
         if (this._subscriptions) {
-            if (message.data === 'string') {
+            if (typeof (message.data) === 'string') {
                 var parsed = void 0;
                 try {
                     parsed = JSON.parse(message.data);
                     if (parsed.requestId && this._subscriptions[parsed.requestId]) {
-                        this._subscriptions[parsed.requestId](parsed);
+                        this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
                     }
                 }
                 catch (err) {

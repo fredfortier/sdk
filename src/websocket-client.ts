@@ -1,4 +1,4 @@
-import {RadarSubscribeRequest, RadarUnsubscribeRequest} from 'radar-types';
+import {RadarSubscribeRequest, RadarUnsubscribeRequest, WebsocketRequestType} from 'radar-types';
 import {w3cwebsocket} from 'websocket';
 
 /**
@@ -20,25 +20,33 @@ export class WebsocketClient {
   }
 
   /**
-   * subscribe method
+   * Event listener for global connection events
    */
-  public async subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
+  public on(event: 'connect' | 'error' | 'disconnect' | 'message', handlerFunction) {
+    // TODO
+  }
+
+  /**
+   * Create a Radar subscription
+   *
+   * @param {RadarSubscribeRequest}  subscribeRequest
+   * @param {function}               subscriptionHandler
+   */
+  public subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
     if (!this._clientIsConnected) throw new Error('WEBSOCKET_DISCONNECTED');
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
     this._client.send(JSON.stringify(subscribeRequest));
-    this._subscriptions[this._curSubID] = subscriptionHandler;
-  }
+    this._subscriptions[this._curSubID] = {
+      subscriptionHandler,
+      unsubscribe: () => {
+        // Send unsubscribe for this subscribe request
+        (subscribeRequest as any).type = WebsocketRequestType.UNSUBSCRIBE;
+        return this._client.send(JSON.stringify(subscribeRequest));
+      }
+    };
 
-  /**
-   * Unsubscribe method
-   * TODO handle subscription request ids
-   *
-   * @param {RadarUnsubscribeRequest}  unsubscribeRequest
-   */
-  public async unsubscribe(unsubscribeRequest: RadarUnsubscribeRequest) {
-    if (!this._clientIsConnected) return true;
-    this._client.send(JSON.stringify(unsubscribeRequest));
+    return this._subscriptions[this._curSubID];
   }
 
   /**
@@ -108,14 +116,14 @@ export class WebsocketClient {
    * @param {MessageEvent} message
    */
   private _messageHandler(message: MessageEvent) {
-      // TODO multiple subscriptions
+
       if (this._subscriptions) {
-        if (message.data === 'string') {
+        if (typeof(message.data) === 'string') {
           let parsed;
           try {
             parsed = JSON.parse(message.data);
             if (parsed.requestId && this._subscriptions[parsed.requestId]) {
-              this._subscriptions[parsed.requestId](parsed);
+              this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
             }
           } catch (err) {
             console.log(err);

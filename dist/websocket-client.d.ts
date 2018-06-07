@@ -1,4 +1,4 @@
-import { RadarSubscribeRequest, RadarUnsubscribeRequest } from 'radar-types';
+import { RadarSubscribeRequest } from 'radar-types';
 /**
  * Websocket client helper class
  * for websocket connection handling
@@ -13,16 +13,16 @@ export declare class WebsocketClient {
     private _curSubID;
     constructor(wsEndpoint: string);
     /**
-     * subscribe method
+     * Event listener for global connection events
      */
-    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: any): Promise<void>;
+    on(event: 'connect' | 'error' | 'disconnect' | 'message', handlerFunction: any): void;
     /**
-     * Unsubscribe method
-     * TODO handle subscription request ids
+     * Create a Radar subscription
      *
-     * @param {RadarUnsubscribeRequest}  unsubscribeRequest
+     * @param {RadarSubscribeRequest}  subscribeRequest
+     * @param {function}               subscriptionHandler
      */
-    unsubscribe(unsubscribeRequest: RadarUnsubscribeRequest): Promise<boolean>;
+    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: any): any;
     /**
      * Connect method
      */
