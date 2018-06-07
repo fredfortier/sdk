@@ -37,13 +37,13 @@ rr.initialize(LightWalletConfig|InjectedWalletConfig|RpcWalletConfig);
 
 
 ```javascript 
-export interface EthereumConfig {
+interface EthereumConfig {
   defaultGasPrice?: BigNumber;
 }
 ```
 
 ```javascript 
-export interface CoreWalletOptions {
+interface CoreWalletOptions {
   password: string;
   seedPhrase?: string;
   salt?: string;
@@ -52,14 +52,14 @@ export interface CoreWalletOptions {
 ```
 
 ```javascript 
-export interface LightWalletConfig extends EthereumConfig {
+interface LightWalletConfig extends EthereumConfig {
   wallet: CoreWalletOptions; // Wallet options for a local HD wallet
   dataRpcUrl: string;  // the rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
 
 ```javascript 
-export interface InjectedWalletConfig extends EthereumConfig {
+interface InjectedWalletConfig extends EthereumConfig {
   type: InjectedWalletType;
   web3: Web3; // Injected web3 object
   dataRpcUrl: string; // the rpc connection used to broadcast transactions and retreive Ethereum chain state
@@ -67,7 +67,7 @@ export interface InjectedWalletConfig extends EthereumConfig {
 ```
 
 ```javascript 
-export interface RpcWalletConfig extends EthereumConfig {
+interface RpcWalletConfig extends EthereumConfig {
   walletRpcUrl: string; // The RPC connection to an unlocked node
   dataRpcUrl: string; // The rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
@@ -82,9 +82,18 @@ fires an event that you can listen to via the `events` object.
 ```javascript
 
 rr.events.on(
-  'loading | ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
+  'loading'
+  'ethereumInitialize'
+  'ethereumNetworkIdInitialized' 
+  'zeroExInitialized'
+  'tokensInitialized'
+  'accountInitialized'
+  'tradeInitialized'
+  'marketsInitialized'
+  'transactionPending'
+  'transactionMined'
 )
-rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
+rr.events.emit('see_above' | 'or emit anything', with, some, data)
 ```
 
 ### Account
