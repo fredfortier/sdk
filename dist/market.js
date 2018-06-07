@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var websocket_client_1 = require("./websocket-client");
 var radar_types_1 = require("radar-types");
+var ErrorFormatter_1 = require("./errors/ErrorFormatter");
 var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
 var Market = /** @class */ (function () {
@@ -155,10 +156,18 @@ var Market = /** @class */ (function () {
      */
     Market.prototype.marketOrderAsync = function (type, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
+            var err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._trade.marketOrder(this, type, amount, opts)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._trade.marketOrder(this, type, amount, opts)];
                     case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        err_1 = _a.sent();
+                        ErrorFormatter_1.ErrorFormatter.formatRadarError(err_1);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -173,10 +182,18 @@ var Market = /** @class */ (function () {
      */
     Market.prototype.limitOrderAsync = function (type, quantity, price, expiration) {
         return __awaiter(this, void 0, void 0, function () {
+            var err_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._trade.limitOrder(this, type, quantity, price, expiration)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._trade.limitOrder(this, type, quantity, price, expiration)];
                     case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        err_2 = _a.sent();
+                        ErrorFormatter_1.ErrorFormatter.formatRadarError(err_2);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -189,10 +206,18 @@ var Market = /** @class */ (function () {
      */
     Market.prototype.cancelOrderAsync = function (order, opts) {
         return __awaiter(this, void 0, void 0, function () {
+            var err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._trade.cancelOrderAsync(order, opts)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._trade.cancelOrderAsync(order, opts)];
                     case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        err_3 = _a.sent();
+                        ErrorFormatter_1.ErrorFormatter.formatRadarError(err_3);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
