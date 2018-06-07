@@ -9,10 +9,13 @@ The Radar Relay SDK is a software development kit that simplifies the interactio
 
 [![CircleCI](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta)
 
-## SDK Usage
+## SDK Reference
+For a full SDK reference see: [docs.radarrelay.com/sdk-reference](https://docs.radarrelay.com/sdk-reference).
+
+## Usage
 
 ### Setup
-`~ npm install @radarrelay/sdk`
+`~ npm install @radarrelay/sdk` or `~ yarn add @radarrelay/sdk`
 
 ```javascript
 import RadarRelay from '@radarrelay/sdk';
@@ -24,43 +27,53 @@ const rr = new RadarRelay({
 ```
 
 ### Initialize
-
-Initializing sets the desired Ethereum configuration. 
-
-**dataRpcUrl**
-
-Sets the desired RPC connection to use to obtain Ethereum state and to broadcast signed transactions to.
-
-**wallet**
-
-If a `wallet` object is passed, the SDK will initialize by loading an existing local LightWallet (serialized wallet) keystore or create a new one.
-
-**walletRpcUrl**
-
-If a `walletRpcUrl` is passed the SDK will attempt to load using an unlocked RPC node as the wallet / signer.
-
+Initializing sets the desired Ethereum wallet configuration. The SDK can be initialized with three different wallet types: `LightWallet`, `InjectedWallet`, and an `RpcWallet`. See the below types for more information.
 
 ```javascript
-// unlocked node RPC endpoint,  API endpoint
-rr.initialize({
-  // required Ethereum RPC node url e.g. https://mainnet.infura.io/{your-api-key}
-  dataRpcUrl: string; 
-  
-  // LightWallet configuration
-  wallet?: {
-    password: string; // set if using local wallet
-    seedPhrase?: string;
-  },
-  
-  // set if using unlocked node
-  walletRpcUrl?: string; 
-  
-  // set a gas price to default to
-  // gasPrice and gasLimit may also be 
-  // passed to most SDK methods.
-  defaultGasPrice?: BigNumber; 
-}); 
+rr.initialize(LightWalletConfig|InjectedWalletConfig|RpcWalletConfig); 
 ```
+
+#### Wallet Configuration Types
+
+
+```javascript 
+export interface EthereumConfig {
+  defaultGasPrice?: BigNumber;
+}
+```
+
+```javascript 
+export interface CoreWalletOptions {
+  password: string;
+  seedPhrase?: string;
+  salt?: string;
+  hdPathString?: string;
+}
+```
+
+```javascript 
+export interface LightWalletConfig extends EthereumConfig {
+  wallet: CoreWalletOptions; // Wallet options for a local HD wallet
+  dataRpcUrl: string;  // the rpc connection used to broadcast transactions and retreive Ethereum chain state
+}
+```
+
+```javascript 
+export interface InjectedWalletConfig extends EthereumConfig {
+  type: InjectedWalletType;
+  web3: Web3; // Injected web3 object
+  dataRpcUrl: string; // the rpc connection used to broadcast transactions and retreive Ethereum chain state
+}
+```
+
+```javascript 
+export interface RpcWalletConfig extends EthereumConfig {
+  walletRpcUrl: string; // The RPC connection to an unlocked node
+  dataRpcUrl: string; // The rpc connection used to broadcast transactions and retreive Ethereum chain state
+}
+```
+
+
 
 ### Events
 Anything that triggers state changes (like changing the network, or a fill)
@@ -69,7 +82,7 @@ fires an event that you can listen to via the `events` object.
 ```javascript
 
 rr.events.on(
-  'ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
+  'loading | ethereumInitialized | ethereumNetworkIdInitialized | zeroExInitialized | tokensInitialized | accountInitialized | tradeInitialized | marketsInitialized | transactionPending | transactionMined'
 )
 rr.events.emit('see_above' | 'or you can emit anything', with, some, data)
 ```
@@ -85,17 +98,17 @@ rr.account.exportAddressPrivateKeyAsync
 // account information
 rr.account.getAvailableAddressesAsync
 rr.account.setAddressAsync
-rr.account.getEthBalanceAsync
-rr.account.getTokenBalanceAsync
-rr.account.getTokenAllowanceAsync
-rr.account.setTokenAllowanceAsync
 rr.account.getFillsAsync
 rr.account.getOrdersAsync
 
 // ETH / token utilities
+rr.account.getEthBalanceAsync
 rr.account.transferEthAsync
 rr.account.wrapEthAsync
 rr.account.unwrapEthAsync
+rr.account.getTokenBalanceAsync
+rr.account.getTokenAllowanceAsync
+rr.account.setTokenAllowanceAsync
 rr.account.transferTokenAsync
 ```
 ### Markets
@@ -117,7 +130,7 @@ rr.markets.get('ZRX-WETH')
 }
 ```
 
-Markets expose the following methods.
+Markets expose the following methods:
 
 ```javascript
 // market class methods
@@ -130,7 +143,12 @@ rr.markets.get('ZRX-WETH').getTickerAsync
 rr.markets.get('ZRX-WETH').getOrderBookAsync
 
 // Subscriptions
-rr.markets.get('ZRX-WETH').subscribe(RadarSubscribeRequest, handlerFunction)
+// NOTE: CANDLE and TICKER topics are not yet supported.
+const subscription = rr.markets.get('ZRX-WETH').subscribe(WebsocketRequestTopic.BOOK, handlerFunction);
+
+// Unsubscribe to a previously created subscription
+subscription.unsubscribe();
+
 ```
 
 ## Setting up an Ethereum Node

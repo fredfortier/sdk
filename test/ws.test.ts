@@ -32,18 +32,18 @@ describe('RadarRelay.Ws', () => {
     });
   });
 
-  it('fires event on order create', async () => {
+  it.skip('fires event on order create', async () => {
 
     await new Promise(async (resolve, reject) => {
-      const sock = new WebSocket('ws://ws.radarrelay.com');
-      const zrxWethMarket = rrsdk.markets.get('ZRX-WETH');
 
-      // `${zrxWethMarket.quoteTokenAddress}:${zrxWethMarket.baseTokenAddress}`
-      // TODO validate order?
-      sock.onmessage = ev => {
-        expect(ev.data);
-        resolve();
-      };
+      // TODO overwrite socket with mock-socket
+      const zrxWethMarket = rrsdk.markets.get('ZRX-WETH');
+      const subscription = await zrxWethMarket.subscribe('BOOK', mssg => {
+        console.log(mssg);
+        if (mssg.action === 'NEW') {
+          resolve();
+        }
+      });
 
       order = await zrxWethMarket.limitOrderAsync('BUY',
         new BigNumber(String(Math.random() * 10)),

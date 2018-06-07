@@ -1,4 +1,4 @@
-import {RadarSubscribeRequest, RadarUnsubscribeRequest} from 'radar-types';
+import {RadarSubscribeRequest, RadarUnsubscribeRequest, WebsocketRequestType} from 'radar-types';
 import WebSocket = require('websocket');
 
 /**
@@ -25,25 +25,36 @@ export class WebsocketClient {
   }
 
   /**
-   * subscribe method
+   * Event listeners for all socket events
+   *
+   * @param {string}    event
+   * @param {function}  handlerFunction
    */
-  public async subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
+  public on(event: 'connect' | 'error' | 'disconnect' | 'message', handlerFunction) {
+    // TODO
+  }
+
+  /**
+   * Create a Radar subscription
+   *
+   * @param {RadarSubscribeRequest}  subscribeRequest
+   * @param {function}               subscriptionHandler
+   */
+  public subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
     if (!this._connection) throw new Error('WEBSOCKET_DISCONNECTED');
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
     this._connection.send(JSON.stringify(subscribeRequest));
-    this._subscriptions[this._curSubID] = subscriptionHandler;
-  }
+    this._subscriptions[this._curSubID] = {
+      subscriptionHandler,
+      unsubscribe: () => {
+        // Send unsubscribe for this subscribe request
+        (subscribeRequest as any).type = WebsocketRequestType.UNSUBSCRIBE;
+        return this._connection.send(JSON.stringify(subscribeRequest));
+      }
+    };
 
-  /**
-   * Unsubscribe method
-   * TODO handle subscription request ids
-   *
-   * @param {RadarUnsubscribeRequest}  unsubscribeRequest
-   */
-  public async unsubscribe(unsubscribeRequest: RadarUnsubscribeRequest) {
-    if (!this._connection) return true;
-    this._connection.send(JSON.stringify(unsubscribeRequest));
+    return this._subscriptions[this._curSubID];
   }
 
   /**
@@ -122,7 +133,7 @@ export class WebsocketClient {
           try {
             parsed = JSON.parse(message.utf8Data);
             if (parsed.requestId && this._subscriptions[parsed.requestId]) {
-              this._subscriptions[parsed.requestId](parsed);
+              this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
             }
           } catch (err) {
             console.log(err);

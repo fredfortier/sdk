@@ -104,11 +104,11 @@ export function mockRequests() {
                     takerTokenAmount: new BigNumber(10).pow(14) });
 
   nock('http://localhost:8080')
-      .get('/v0/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/fills')
+      .get('/v0/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/fills?page=1&per_page=100')
       .reply(200, [{}]);
 
   nock('http://localhost:8080')
-      .get('/v0/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/orders')
+      .get('/v0/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/orders?page=1&per_page=100')
       .reply(200, [{}]);
 
   nock('http://localhost:8080')
