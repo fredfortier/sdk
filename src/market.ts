@@ -5,7 +5,6 @@ import {Opts} from './types';
 import {
   RadarBook,
   RadarFill,
-  RadarSignedOrder,
   RadarCandle,
   RadarTicker,
   UserOrderType,
@@ -13,6 +12,7 @@ import {
   WebsocketRequestTopic,
   WebsocketRequestType
 } from 'radar-types';
+import {ErrorFormatter} from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -108,7 +108,11 @@ export class Market {
     amount: BigNumber,
     opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    return await this._trade.marketOrder(this, type, amount, opts);
+    try {
+      return await this._trade.marketOrder(this, type, amount, opts);
+    } catch (err) {
+      ErrorFormatter.formatRadarError(err);
+    }
   }
 
   /**
@@ -125,7 +129,11 @@ export class Market {
     price: BigNumber,
     expiration: BigNumber
   ): Promise<Order> {
-    return await this._trade.limitOrder(this, type, quantity, price, expiration);
+    try {
+      return await this._trade.limitOrder(this, type, quantity, price, expiration);
+    } catch (err) {
+      ErrorFormatter.formatRadarError(err);
+    }
   }
 
   /**
@@ -138,7 +146,11 @@ export class Market {
     order: SignedOrder,
     opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
-    return await this._trade.cancelOrderAsync(order, opts);
+    try {
+      return await this._trade.cancelOrderAsync(order, opts);
+    } catch (err) {
+      ErrorFormatter.formatRadarError(err);
+    }
   }
 
 }
