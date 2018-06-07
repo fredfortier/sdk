@@ -11,7 +11,7 @@ import { WebSocket } from 'mock-socket';
 
 const expect = chai.expect;
 
-describe('RadarRelay.Ws', () => {
+describe.skip('RadarRelay.Ws', () => {
 
   let rrsdk;
   let order;
@@ -21,7 +21,7 @@ describe('RadarRelay.Ws', () => {
 
     rrsdk = new RadarRelay({
       endpoint: 'https://api-beta.rrdev.io/v0',
-      websocketEndpoint: 'https://ws-beta.rrdev.io/ws'
+      websocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
     });
     await rrsdk.initialize({
       wallet: {
@@ -45,12 +45,12 @@ describe('RadarRelay.Ws', () => {
     // });
   });
 
-  it.skip('fires event on order create', async () => {
+ // TODO need to overwrite socket with mock-socket 
+  it('fires event on order create', async () => {
 
     await new Promise(async (resolve, reject) => {
 
       const zrxWethMarket = rrsdk.markets.get('ZRX-WETH');
-      // TODO overwrite socket with mock-socket
 
       const subscription = await zrxWethMarket.subscribe('BOOK', mssg => {
         console.log(mssg);
