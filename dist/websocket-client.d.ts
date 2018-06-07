@@ -1,4 +1,4 @@
-import { RadarSubscribeRequest, RadarUnsubscribeRequest } from 'radar-types';
+import { RadarSubscribeRequest } from 'radar-types';
 /**
  * Websocket client helper class
  * for websocket connection handling
@@ -6,7 +6,6 @@ import { RadarSubscribeRequest, RadarUnsubscribeRequest } from 'radar-types';
 export declare class WebsocketClient {
     connected: boolean;
     private _client;
-    private _connection;
     private _connectPromise;
     private _subscribePromise;
     private _wsEndpoint;
@@ -14,16 +13,16 @@ export declare class WebsocketClient {
     private _curSubID;
     constructor(wsEndpoint: string);
     /**
-     * subscribe method
+     * Event listener for global connection events
      */
-    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: any): Promise<void>;
+    on(event: 'connect' | 'error' | 'disconnect' | 'message', handlerFunction: any): void;
     /**
-     * Unsubscribe method
-     * TODO handle subscription request ids
+     * Create a Radar subscription
      *
-     * @param {RadarUnsubscribeRequest}  unsubscribeRequest
+     * @param {RadarSubscribeRequest}  subscribeRequest
+     * @param {function}               subscriptionHandler
      */
-    unsubscribe(unsubscribeRequest: RadarUnsubscribeRequest): Promise<boolean>;
+    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: any): any;
     /**
      * Connect method
      */
@@ -31,32 +30,30 @@ export declare class WebsocketClient {
     /**
      * Default connection handler
      *
-     * @param {any} conn
+     * @param {Event} conn
      */
     private _connectHandler;
     /**
-     * Default failed conn handler
-     *
-     * @param {string} err
-     */
-    private _failedConnectHandler;
-    /**
      * default close handler
      *
-     * @param {string} closed
+     * @param {CloseEvent} closed
      */
     private _closeHandler;
     /**
      * default error handler
      *
-     * @param {string} err
+     * @param {Event} err
      */
     private _errorHandler;
     /**
      * Handle a message passing it to
      * the active subscription if it exists
      *
-     * @param {string} message
+     * @param {MessageEvent} message
      */
     private _messageHandler;
+    /**
+     * Detect if the WebSocket client is connected
+     */
+    private _clientIsConnected;
 }

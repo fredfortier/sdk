@@ -56,31 +56,55 @@ var Account = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Export an account wallet seed phrase.
+     * NOTE: This method is only available if using a LightWallet
+     *
+     * @param {string} password
+     */
     Account.prototype.exportSeedPhraseAsync = function (password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._wallet.exportSeedPhraseAsync(password)];
+                    case 0:
+                        if (!this._wallet)
+                            return [2 /*return*/, ''];
+                        return [4 /*yield*/, this._wallet.exportSeedPhraseAsync(password)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
+    /**
+     * Export a wallet address private key
+     * NOTE: This method is only available if using a LightWallet
+     *
+     * @param {string} password
+     */
     Account.prototype.exportAddressPrivateKeyAsync = function (password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._wallet.exportAccountPrivateKeyAsync(this.address, password)];
+                    case 0:
+                        if (!this._wallet)
+                            return [2 /*return*/, ''];
+                        return [4 /*yield*/, this._wallet.exportAccountPrivateKeyAsync(this.address, password)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    Account.prototype.setAddressAsync = function (account) {
+    /**
+     * Set the current address in use
+     * NOTE: This method is only available if using a LightWallet
+     *
+     * @param {string|number} address or address index
+     */
+    Account.prototype.setAddressAsync = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(account)];
+                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(address)];
                     case 1:
                         _a.sent();
                         this.address = this._ethereum.defaultAccount;
@@ -89,9 +113,18 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Add new addresses for this account
+     * NOTE: This method is only available if using a LightWallet
+     *
+     * @param {number}  num  amount of addresses to create
+     */
     Account.prototype.addNewAddresses = function (num) {
         this._wallet.addNewAccounts(num);
     };
+    /**
+     * Get available addresses for this account
+     */
     Account.prototype.getAvailableAddressesAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -102,6 +135,9 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Get ETH balance for the current selected address
+     */
     Account.prototype.getEthBalanceAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var balance;
@@ -115,6 +151,13 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Transfer ETH to another address
+     *
+     * @param {string}     to     address to transfer to
+     * @param {BigNumber}  amount amount of eth to transfer
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.transferEthAsync = function (to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txOpts, txHash;
@@ -137,6 +180,12 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Wrap ETH to convert it to WETH
+     *
+     * @param {BigNumber}  amount amount of eth to wrap
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.wrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
@@ -154,6 +203,12 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Unwrap WETH to convert it to ETH
+     *
+     * @param {BigNumber}  amount amount of WETH to unwrap
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.unwrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
@@ -171,6 +226,11 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Get balance of a token for the current selected address
+     *
+     * @param {string}  token  token address
+     */
     Account.prototype.getTokenBalanceAsync = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             var balance;
@@ -184,6 +244,14 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Transfer tokens to another address
+     *
+     * @param {string}     token  token address
+     * @param {string}     to     address to transfer to
+     * @param {BigNumber}  amount amount of token to transfer
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.transferTokenAsync = function (token, to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
@@ -203,6 +271,11 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Transfer tokens to another address
+     *
+     * @param {string}     token  token address
+     */
     Account.prototype.getTokenAllowanceAsync = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             var baseUnitallowance;
@@ -216,6 +289,13 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Set a token allowance
+     *
+     * @param {string}     token  token address
+     * @param {BigNumber}  amount allowance amount
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.setTokenAllowanceAsync = function (token, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
@@ -235,6 +315,12 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Set unlimited token allowance
+     *
+     * @param {string}     token  token address
+     * @param {Opts}       opts   optional transaction options
+     */
     Account.prototype.setUnlimitedTokenAllowanceAsync = function (token, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
@@ -252,6 +338,12 @@ var Account = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Get orders for the selected address that have been placed on Radar
+     *
+     * @param {number} page
+     * @param {number} perPage
+     */
     Account.prototype.getOrdersAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }
         if (perPage === void 0) { perPage = 100; }
@@ -261,12 +353,18 @@ var Account = /** @class */ (function () {
                 switch (_c.label) {
                     case 0:
                         _b = (_a = JSON).parse;
-                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/orders")];
+                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/orders?page=" + page + "&per_page=" + perPage)];
                     case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
                 }
             });
         });
     };
+    /**
+     * Get fills for the selected address that have been executed on Radar
+     *
+     * @param {number} page
+     * @param {number} perPage
+     */
     Account.prototype.getFillsAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }
         if (perPage === void 0) { perPage = 100; }
@@ -276,7 +374,7 @@ var Account = /** @class */ (function () {
                 switch (_c.label) {
                     case 0:
                         _b = (_a = JSON).parse;
-                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/fills")];
+                        return [4 /*yield*/, request.get(this._endpoint + "/accounts/" + this.address + "/fills?page=" + page + "&per_page=" + perPage)];
                     case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
                 }
             });

@@ -1,5 +1,5 @@
 import {RadarSubscribeRequest, RadarUnsubscribeRequest, WebsocketRequestType} from 'radar-types';
-import WebSocket = require('websocket');
+import {w3cwebsocket} from 'websocket';
 
 /**
  * Websocket client helper class
@@ -8,8 +8,7 @@ import WebSocket = require('websocket');
 export class WebsocketClient {
 
   public connected: boolean;
-  private _client;
-  private _connection;
+  private _client: w3cwebsocket;
   private _connectPromise;
   private _subscribePromise;
   private _wsEndpoint: string;
@@ -17,18 +16,11 @@ export class WebsocketClient {
   private _curSubID: number = 0;
 
   constructor(wsEndpoint: string) {
-    // Setup websocket client
     this._wsEndpoint = wsEndpoint;
-    this._client = new WebSocket.client();
-    this._client.on('connect', this._connectHandler.bind(this));
-    this._client.on('connectFailed', this._failedConnectHandler.bind(this));
   }
 
   /**
-   * Event listeners for all socket events
-   *
-   * @param {string}    event
-   * @param {function}  handlerFunction
+   * Event listener for global connection events
    */
   public on(event: 'connect' | 'error' | 'disconnect' | 'message', handlerFunction) {
     // TODO
@@ -41,16 +33,16 @@ export class WebsocketClient {
    * @param {function}               subscriptionHandler
    */
   public subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
-    if (!this._connection) throw new Error('WEBSOCKET_DISCONNECTED');
+    if (!this._clientIsConnected) throw new Error('WEBSOCKET_DISCONNECTED');
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
-    this._connection.send(JSON.stringify(subscribeRequest));
+    this._client.send(JSON.stringify(subscribeRequest));
     this._subscriptions[this._curSubID] = {
       subscriptionHandler,
       unsubscribe: () => {
         // Send unsubscribe for this subscribe request
         (subscribeRequest as any).type = WebsocketRequestType.UNSUBSCRIBE;
-        return this._connection.send(JSON.stringify(subscribeRequest));
+        return this._client.send(JSON.stringify(subscribeRequest));
       }
     };
 
@@ -62,7 +54,16 @@ export class WebsocketClient {
    */
   public async connect() {
     return new Promise((resolve, reject) => {
-      this._client.connect(this._wsEndpoint);
+      try {
+        this._client = new w3cwebsocket(this._wsEndpoint);
+        this._client.onopen = this._connectHandler.bind(this);
+        this._client.onerror = this._errorHandler.bind(this);
+        this._client.onclose = this._closeHandler.bind(this);
+        this._client.onmessage = this._messageHandler.bind(this);
+      } catch (err) {
+        reject(err);
+      }
+
       this._connectPromise = {
         resolve, reject
       };
@@ -72,13 +73,9 @@ export class WebsocketClient {
   /**
    * Default connection handler
    *
-   * @param {any} conn
+   * @param {Event} conn
    */
-  private _connectHandler(conn) {
-    this._connection = conn;
-    this._connection.on('close', this._closeHandler.bind(this));
-    this._connection.on('error', this._errorHandler.bind(this));
-    this._connection.on('message', this._messageHandler.bind(this));
+  private _connectHandler(conn: Event) {
     this.connected = true;
     if (this._connectPromise) {
       this._connectPromise.resolve(conn);
@@ -86,24 +83,13 @@ export class WebsocketClient {
   }
 
   /**
-   * Default failed conn handler
-   *
-   * @param {string} err
-   */
-  private _failedConnectHandler(err) {
-    this.connected = false;
-    if (this._connectPromise) {
-      this._connectPromise.reject(err);
-    }
-  }
-
-  /**
    * default close handler
    *
-   * @param {string} closed
+   * @param {CloseEvent} closed
    */
-  private _closeHandler(closed) {
+  private _closeHandler(closed: CloseEvent) {
     this.connected = false;
+    this._client = undefined;
     this._connectPromise = undefined;
     this._subscriptions = {};
     console.log('closed', closed);
@@ -112,10 +98,14 @@ export class WebsocketClient {
   /**
    * default error handler
    *
-   * @param {string} err
+   * @param {Event} err
    */
-  private _errorHandler(err) {
+  private _errorHandler(err: Event) {
     this.connected = false;
+    if (this._connectPromise) {
+      this._client = undefined;
+      this._connectPromise.reject(err);
+    }
     console.log('err', err);
   }
 
@@ -123,15 +113,15 @@ export class WebsocketClient {
    * Handle a message passing it to
    * the active subscription if it exists
    *
-   * @param {string} message
+   * @param {MessageEvent} message
    */
-  private _messageHandler(message) {
-      // TODO multiple subscriptions
+  private _messageHandler(message: MessageEvent) {
+
       if (this._subscriptions) {
-        if (message.type === 'utf8') {
+        if (typeof(message.data) === 'string') {
           let parsed;
           try {
-            parsed = JSON.parse(message.utf8Data);
+            parsed = JSON.parse(message.data);
             if (parsed.requestId && this._subscriptions[parsed.requestId]) {
               this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
             }
@@ -144,4 +134,10 @@ export class WebsocketClient {
     }
   }
 
+  /**
+   * Detect if the WebSocket client is connected
+   */
+  private _clientIsConnected() {
+    return this._client && (this._client.readyState === this._client.OPEN);
+  }
 }

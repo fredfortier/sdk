@@ -35,7 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var WebSocket = require("websocket");
+var radar_types_1 = require("radar-types");
+var websocket_1 = require("websocket");
 /**
  * Websocket client helper class
  * for websocket connection handling
@@ -44,43 +45,36 @@ var WebsocketClient = /** @class */ (function () {
     function WebsocketClient(wsEndpoint) {
         this._subscriptions = {};
         this._curSubID = 0;
-        // Setup websocket client
         this._wsEndpoint = wsEndpoint;
-        this._client = new WebSocket.client();
-        this._client.on('connect', this._connectHandler.bind(this));
-        this._client.on('connectFailed', this._failedConnectHandler.bind(this));
     }
     /**
-     * subscribe method
+     * Event listener for global connection events
      */
-    WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this._connection)
-                    throw new Error('WEBSOCKET_DISCONNECTED');
-                this._curSubID = this._curSubID + 1;
-                subscribeRequest.requestId = this._curSubID;
-                this._connection.send(JSON.stringify(subscribeRequest));
-                this._subscriptions[this._curSubID] = subscriptionHandler;
-                return [2 /*return*/];
-            });
-        });
+    WebsocketClient.prototype.on = function (event, handlerFunction) {
+        // TODO
     };
     /**
-     * Unsubscribe method
-     * TODO handle subscription request ids
+     * Create a Radar subscription
      *
-     * @param {RadarUnsubscribeRequest}  unsubscribeRequest
+     * @param {RadarSubscribeRequest}  subscribeRequest
+     * @param {function}               subscriptionHandler
      */
-    WebsocketClient.prototype.unsubscribe = function (unsubscribeRequest) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                if (!this._connection)
-                    return [2 /*return*/, true];
-                this._connection.send(JSON.stringify(unsubscribeRequest));
-                return [2 /*return*/];
-            });
-        });
+    WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
+        var _this = this;
+        if (!this._clientIsConnected)
+            throw new Error('WEBSOCKET_DISCONNECTED');
+        this._curSubID = this._curSubID + 1;
+        subscribeRequest.requestId = this._curSubID;
+        this._client.send(JSON.stringify(subscribeRequest));
+        this._subscriptions[this._curSubID] = {
+            subscriptionHandler: subscriptionHandler,
+            unsubscribe: function () {
+                // Send unsubscribe for this subscribe request
+                subscribeRequest.type = radar_types_1.WebsocketRequestType.UNSUBSCRIBE;
+                return _this._client.send(JSON.stringify(subscribeRequest));
+            }
+        };
+        return this._subscriptions[this._curSubID];
     };
     /**
      * Connect method
@@ -90,7 +84,16 @@ var WebsocketClient = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this._client.connect(_this._wsEndpoint);
+                        try {
+                            _this._client = new websocket_1.w3cwebsocket(_this._wsEndpoint);
+                            _this._client.onopen = _this._connectHandler.bind(_this);
+                            _this._client.onerror = _this._errorHandler.bind(_this);
+                            _this._client.onclose = _this._closeHandler.bind(_this);
+                            _this._client.onmessage = _this._messageHandler.bind(_this);
+                        }
+                        catch (err) {
+                            reject(err);
+                        }
                         _this._connectPromise = {
                             resolve: resolve, reject: reject
                         };
@@ -101,36 +104,22 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * Default connection handler
      *
-     * @param {any} conn
+     * @param {Event} conn
      */
     WebsocketClient.prototype._connectHandler = function (conn) {
-        this._connection = conn;
-        this._connection.on('close', this._closeHandler.bind(this));
-        this._connection.on('error', this._errorHandler.bind(this));
-        this._connection.on('message', this._messageHandler.bind(this));
         this.connected = true;
         if (this._connectPromise) {
             this._connectPromise.resolve(conn);
         }
     };
     /**
-     * Default failed conn handler
-     *
-     * @param {string} err
-     */
-    WebsocketClient.prototype._failedConnectHandler = function (err) {
-        this.connected = false;
-        if (this._connectPromise) {
-            this._connectPromise.reject(err);
-        }
-    };
-    /**
      * default close handler
      *
-     * @param {string} closed
+     * @param {CloseEvent} closed
      */
     WebsocketClient.prototype._closeHandler = function (closed) {
         this.connected = false;
+        this._client = undefined;
         this._connectPromise = undefined;
         this._subscriptions = {};
         console.log('closed', closed);
@@ -138,27 +127,30 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * default error handler
      *
-     * @param {string} err
+     * @param {Event} err
      */
     WebsocketClient.prototype._errorHandler = function (err) {
         this.connected = false;
+        if (this._connectPromise) {
+            this._client = undefined;
+            this._connectPromise.reject(err);
+        }
         console.log('err', err);
     };
     /**
      * Handle a message passing it to
      * the active subscription if it exists
      *
-     * @param {string} message
+     * @param {MessageEvent} message
      */
     WebsocketClient.prototype._messageHandler = function (message) {
-        // TODO multiple subscriptions
         if (this._subscriptions) {
-            if (message.type === 'utf8') {
+            if (typeof (message.data) === 'string') {
                 var parsed = void 0;
                 try {
-                    parsed = JSON.parse(message.utf8Data);
+                    parsed = JSON.parse(message.data);
                     if (parsed.requestId && this._subscriptions[parsed.requestId]) {
-                        this._subscriptions[parsed.requestId](parsed);
+                        this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
                     }
                 }
                 catch (err) {
@@ -169,6 +161,12 @@ var WebsocketClient = /** @class */ (function () {
                 console.log(message);
             }
         }
+    };
+    /**
+     * Detect if the WebSocket client is connected
+     */
+    WebsocketClient.prototype._clientIsConnected = function () {
+        return this._client && (this._client.readyState === this._client.OPEN);
     };
     return WebsocketClient;
 }());

@@ -137,13 +137,11 @@ var Market = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         _a.label = 2;
-                    case 2:
-                        this._wsClient.subscribe({
+                    case 2: return [2 /*return*/, this._wsClient.subscribe({
                             type: radar_types_1.WebsocketRequestType.SUBSCRIBE,
                             topic: topic,
                             market: this.id
-                        }, handleFunc);
-                        return [2 /*return*/];
+                        }, handleFunc)];
                 }
             });
         });

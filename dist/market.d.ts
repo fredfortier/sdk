@@ -28,7 +28,7 @@ export declare class Market {
      * @param {string}                 topic  market topic
      * @param {WebsocketRequestTopic}  topic
      */
-    subscribe(topic: WebsocketRequestTopic, handleFunc: () => {}): Promise<void>;
+    subscribe(topic: WebsocketRequestTopic, handleFunc: () => {}): Promise<{}>;
     /**
      * Execute a market order
      *
