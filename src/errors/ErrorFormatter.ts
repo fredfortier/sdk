@@ -1,6 +1,8 @@
 import { RadarError } from './RadarError';
-import { contractWrappersErrorToHumanReadableError,
-  exchangeContractErrorToHumanReadableError } from './ZeroExErrors';
+import {
+  contractWrappersErrorToHumanReadableError,
+  exchangeContractErrorToHumanReadableError
+} from './ZeroExErrors';
 
 export const ErrorFormatter = {
   formatRadarError(error: Error) {
@@ -11,6 +13,6 @@ export const ErrorFormatter = {
     if (radarErrorMessage) {
       throw new RadarError(radarErrorMessage);
     }
-   throw error;
+    throw error;
   }
 };

@@ -1,7 +1,7 @@
-import {SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts} from '0x.js';
-import {Trade} from './trade';
-import {WebsocketClient} from './websocket-client';
-import {Opts} from './types';
+import { SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts } from '0x.js';
+import { Trade } from './trade';
+import { WebsocketClient } from './websocket-client';
+import { Opts } from './types';
 import {
   RadarBook,
   RadarFill,
@@ -12,7 +12,7 @@ import {
   WebsocketRequestTopic,
   WebsocketRequestType
 } from 'radar-types';
-import {ErrorFormatter} from './errors/ErrorFormatter';
+import { ErrorFormatter } from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 
@@ -33,22 +33,22 @@ export class Market {
   private _wsClient: any;
 
   constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade) {
-      // setup config
-      this._endpoint = apiEndpoint;
-      this._wsEndpoint = wsEndpoint;
-      this._trade = trade;
-      this._wsClient = new WebsocketClient(wsEndpoint);
+    // setup config
+    this._endpoint = apiEndpoint;
+    this._wsEndpoint = wsEndpoint;
+    this._trade = trade;
+    this._wsClient = new WebsocketClient(wsEndpoint);
 
-      // Setup instance vars
-      this.id = params.id;
-      this.baseTokenAddress = params.baseTokenAddress;
-      this.quoteTokenAddress = params.quoteTokenAddress;
-      this.baseTokenDecimals = new BigNumber(params.baseTokenDecimals);
-      this.quoteTokenDecimals = new BigNumber(params.quoteTokenDecimals);
-      this.minOrderSize = new BigNumber(params.minOrderSize);
-      this.maxOrderSize = new BigNumber(params.maxOrderSize);
-      this.quoteIncrement = new BigNumber(params.quoteIncrement);
-      this.displayName = params.displayName;
+    // Setup instance vars
+    this.id = params.id;
+    this.baseTokenAddress = params.baseTokenAddress;
+    this.quoteTokenAddress = params.quoteTokenAddress;
+    this.baseTokenDecimals = new BigNumber(params.baseTokenDecimals);
+    this.quoteTokenDecimals = new BigNumber(params.quoteTokenDecimals);
+    this.minOrderSize = new BigNumber(params.minOrderSize);
+    this.maxOrderSize = new BigNumber(params.maxOrderSize);
+    this.quoteIncrement = new BigNumber(params.quoteIncrement);
+    this.displayName = params.displayName;
   }
 
   /*
@@ -90,10 +90,10 @@ export class Market {
       await this._wsClient.connect(this._wsEndpoint);
     }
     return this._wsClient.subscribe({
-       type: WebsocketRequestType.SUBSCRIBE,
-       topic,
-       market: this.id
-     }, handleFunc);
+      type: WebsocketRequestType.SUBSCRIBE,
+      topic,
+      market: this.id
+    }, handleFunc);
   }
 
   /**

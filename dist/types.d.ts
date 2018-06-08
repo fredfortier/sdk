@@ -12,8 +12,8 @@ export interface EthereumConfig {
 }
 export interface InjectedWalletConfig extends EthereumConfig {
     type: InjectedWalletType;
-    web3: Web3;
-    dataRpcUrl: string;
+    web3?: Web3;
+    dataRpcUrl?: string;
 }
 export interface CoreWalletOptions {
     password: string;

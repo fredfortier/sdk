@@ -1,11 +1,11 @@
-import {ZeroEx, TransactionReceiptWithDecodedLogs} from '0x.js';
-import {Ethereum} from './ethereum';
-import {Wallet, WalletType, Opts} from './types';
-import {promisify} from 'es6-promisify';
-import {RadarSignedOrder, RadarFill, RadarToken} from 'radar-types';
+import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
+import { Ethereum } from './ethereum';
+import { Wallet, WalletType, Opts } from './types';
+import { promisify } from 'es6-promisify';
+import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import {TSMap} from 'typescript-map';
+import { TSMap } from 'typescript-map';
 
 export class Account {
 
@@ -37,7 +37,7 @@ export class Account {
    *
    * @param {string} password
    */
-  public async exportSeedPhraseAsync(password: string): Promise<string>  {
+  public async exportSeedPhraseAsync(password: string): Promise<string> {
     if (!this._wallet) return '';
     return await this._wallet.exportSeedPhraseAsync(password);
   }
@@ -48,7 +48,7 @@ export class Account {
    *
    * @param {string} password
    */
-  public async exportAddressPrivateKeyAsync(password: string): Promise<string>  {
+  public async exportAddressPrivateKeyAsync(password: string): Promise<string> {
     if (!this._wallet) return '';
     return await this._wallet.exportAccountPrivateKeyAsync(this.address, password);
   }
@@ -140,10 +140,10 @@ export class Account {
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
     const txHash = await this._zeroEx.etherToken.withdrawAsync(
       this._getWETHTokenAddress(), ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts);
-      if (!opts.awaitTransactionMined) {
-        return txHash;
-      }
-      return await this._zeroEx.awaitTransactionMinedAsync(txHash);
+    if (!opts.awaitTransactionMined) {
+      return txHash;
+    }
+    return await this._zeroEx.awaitTransactionMinedAsync(txHash);
   }
 
   /**

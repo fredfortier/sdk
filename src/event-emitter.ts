@@ -1,4 +1,4 @@
 
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 
-export class EventBus extends EventEmitter {}
+export class EventBus extends EventEmitter { }

@@ -1,7 +1,7 @@
-import {TransactionOpts} from '0x.js';
+import { TransactionOpts } from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
-export {RadarToken, RadarMarket} from 'radar-types';
+export { RadarToken, RadarMarket } from 'radar-types';
 
 export interface RadarRelayConfig {
   endpoint: string;
@@ -15,8 +15,8 @@ export interface EthereumConfig {
 
 export interface InjectedWalletConfig extends EthereumConfig {
   type: InjectedWalletType;
-  web3: Web3;
-  dataRpcUrl: string;
+  web3?: Web3;
+  dataRpcUrl?: string;
 }
 
 export interface CoreWalletOptions {

@@ -238,8 +238,16 @@ var Ethereum = /** @class */ (function () {
      * @param {config} InjectedWalletConfig
      */
     Ethereum.prototype._setInjectedWalletProvider = function (config) {
-        var web3Builder = new web3_builder_1.Web3Builder();
-        this.web3 = web3Builder.createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);
+        if (!config.web3) {
+            // Default to window.web3
+            config.web3 = window.web3;
+        }
+        if (!config.dataRpcUrl) {
+            this.web3 = config.web3;
+        }
+        else {
+            this.web3 = new web3_builder_1.Web3Builder().createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);
+        }
     };
     /**
      * Set the rpc wallet providers

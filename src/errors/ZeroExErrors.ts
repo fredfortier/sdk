@@ -57,7 +57,7 @@ export const contractWrappersErrorToHumanReadableError: { [error: string]: strin
   [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
   [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
   [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
-      'TokenTransferProxy contract does not exist',
+    'TokenTransferProxy contract does not exist',
   [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
   [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
   [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',

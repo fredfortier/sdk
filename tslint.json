@@ -5,7 +5,7 @@
     "rules": {
       "no-console": false,
       "no-shadowed-variable": false,
-      "trailing-comma": "never",
+      "trailing-comma": false,
       "align": false,
       "curly": [true, "ignore-same-line"],
       "no-namespace": false,

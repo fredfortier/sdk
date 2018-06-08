@@ -1,5 +1,5 @@
 
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 
 export interface InitPriorityItem {
   // the event that is triggered
@@ -60,7 +60,7 @@ export class SDKInitLifeCycle {
     }
   }
 
-  public promise(event: string): Promise<boolean | string>  {
+  public promise(event: string): Promise<boolean | string> {
     if (this.runInterval) return Promise.resolve(true);
 
     this.current = this.priority[event];
