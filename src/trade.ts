@@ -1,10 +1,8 @@
-import { Ethereum } from './ethereum';
-import { Market } from './market';
-import { Account } from './account';
+import { Market } from './Market';
 import { EventEmitter } from 'events';
-import { WalletType, Opts } from './types';
-import { ZeroEx, ZeroExConfig, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
-import { RadarToken, UserOrderType } from 'radar-types';
+import { WalletType, Opts, Account } from './types';
+import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
+import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
@@ -93,7 +91,7 @@ export class Trade {
     order.maker = this._account.address;
 
     // sign order
-    const prefix = (this._account.walletType === WalletType.Local);
+    const prefix = (this._account.type === WalletType.Local);
     const orderHash = ZeroEx.getOrderHashHex(order);
     const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
     (order as SignedOrder).ecSignature = ecSignature;

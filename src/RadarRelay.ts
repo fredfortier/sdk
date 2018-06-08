@@ -1,25 +1,29 @@
 
 import { ZeroEx } from '0x.js';
 import { EventEmitter } from 'events';
-import { RadarToken, RadarMarket } from 'radar-types';
+import { RadarToken, RadarMarket } from '@radarrelay/types';
 import {
   RadarRelayConfig,
   LightWalletConfig,
   RpcWalletConfig,
   InjectedWalletConfig,
-  WalletType
+  WalletType,
+  WalletConfig,
+  Account
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
 
 // SDK Classes
-import { SDKInitLifeCycle, InitPriorityItem } from './sdk-init-lifecycle';
-import { EventBus } from './event-emitter';
-import { Ethereum } from './ethereum';
-import { Account } from './account';
-import { Market } from './market';
-import { Trade } from './trade';
+import { SDKInitLifeCycle, InitPriorityItem } from './SDKInitLifeCycle';
+import { EventBus } from './EventEmitter';
+import { Ethereum } from './Ethereum';
+import { Market } from './Market';
+import { Trade } from './Trade';
+import { LocalAccount } from './accounts/LocalAccount';
+import { RpcAccount } from './accounts/RpcAccount';
+import { InjectedAccount } from './accounts/InjectedAccount';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
@@ -28,6 +32,7 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
  */
 export class RadarRelay {
 
+  public activeWalletType: WalletType;
   public events: EventBus;
   public account: Account;
   public tokens: TSMap<string, RadarToken>;
@@ -103,28 +108,24 @@ export class RadarRelay {
    * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
    */
   public async initialize(
-    config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig
+    config: WalletConfig
   ): Promise<string | boolean> {
-
-    // Determine wallet type
-    let type: WalletType;
-
     // local
     if ((config as LightWalletConfig).wallet) {
-      type = WalletType.Local;
+      this.activeWalletType = WalletType.Local;
     }
 
     // rpc
-    if ((config as RpcWalletConfig).walletRpcUrl) {
-      type = WalletType.Rpc;
+    if ((config as RpcWalletConfig).rpcUrl) {
+      this.activeWalletType = WalletType.Rpc;
     }
 
     // injected
     if ((config as InjectedWalletConfig).type !== undefined) {
-      type = WalletType.Injected;
+      this.activeWalletType = WalletType.Injected;
     }
 
-    await this._ethereum.setProvider(type, config);
+    await this._ethereum.setProvider(this.activeWalletType, config);
     return this.getCallback('ethereumInitialized', this._ethereum);
   }
 
@@ -132,7 +133,18 @@ export class RadarRelay {
 
   private async initAccountAsync(account: string | number): Promise<string | boolean> {
     await this._ethereum.setDefaultAccount(account);
-    this.account = new Account(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+
+    switch (this.activeWalletType) {
+      case WalletType.Local:
+        this.account = new LocalAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+        break;
+      case WalletType.Rpc:
+        this.account = new RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+        break;
+      case WalletType.Injected:
+        this.account = new InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+        break;
+    }
     return this.getCallback('accountInitialized', this.account);
   }
 

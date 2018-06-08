@@ -1,7 +1,10 @@
 import { TransactionOpts } from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
-export { RadarToken, RadarMarket } from 'radar-types';
+import { LocalAccount } from './accounts/LocalAccount';
+import { RpcAccount } from './accounts/RpcAccount';
+import { InjectedAccount } from './accounts/InjectedAccount';
+export { RadarToken, RadarMarket } from '@radarrelay/types';
 
 export interface RadarRelayConfig {
   endpoint: string;
@@ -32,8 +35,7 @@ export interface LightWalletConfig extends EthereumConfig {
 }
 
 export interface RpcWalletConfig extends EthereumConfig {
-  walletRpcUrl: string;
-  dataRpcUrl: string;
+  rpcUrl: string;
 }
 
 export interface PartialTxParams {
@@ -107,4 +109,8 @@ export enum InfuraNetwork {
   Ropsten = 'ropsten',
 }
 
-export declare type RpcConnection = string | InfuraNetwork;
+export type RpcConnection = string | InfuraNetwork;
+
+export type Account = LocalAccount | RpcAccount | InjectedAccount;
+
+export type WalletConfig = LightWalletConfig | RpcWalletConfig | InjectedWalletConfig;

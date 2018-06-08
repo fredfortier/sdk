@@ -42,10 +42,13 @@ var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
 var typescript_map_1 = require("typescript-map");
 // SDK Classes
-var sdk_init_lifecycle_1 = require("./sdk-init-lifecycle");
-var ethereum_1 = require("./ethereum");
-var market_1 = require("./market");
-var trade_1 = require("./trade");
+var SDKInitLifeCycle_1 = require("./SDKInitLifeCycle");
+var Ethereum_1 = require("./Ethereum");
+var Market_1 = require("./Market");
+var Trade_1 = require("./Trade");
+var LocalAccount_1 = require("./accounts/LocalAccount");
+var RpcAccount_1 = require("./accounts/RpcAccount");
+var InjectedAccount_1 = require("./accounts/InjectedAccount");
 bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
  * RadarRelay main SDK singleton
@@ -96,9 +99,9 @@ var RadarRelay = /** @class */ (function () {
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
-        this._ethereum = new ethereum_1.Ethereum();
+        this._ethereum = new Ethereum_1.Ethereum();
         // setup the _lifecycle
-        this._lifecycle = new sdk_init_lifecycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeout);
+        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeout);
         this._lifecycle.setup(this);
     }
     /**
@@ -108,23 +111,22 @@ var RadarRelay = /** @class */ (function () {
      */
     RadarRelay.prototype.initialize = function (config) {
         return __awaiter(this, void 0, void 0, function () {
-            var type;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         // local
                         if (config.wallet) {
-                            type = types_1.WalletType.Local;
+                            this.activeWalletType = types_1.WalletType.Local;
                         }
                         // rpc
-                        if (config.walletRpcUrl) {
-                            type = types_1.WalletType.Rpc;
+                        if (config.rpcUrl) {
+                            this.activeWalletType = types_1.WalletType.Rpc;
                         }
                         // injected
                         if (config.type !== undefined) {
-                            type = types_1.WalletType.Injected;
+                            this.activeWalletType = types_1.WalletType.Injected;
                         }
-                        return [4 /*yield*/, this._ethereum.setProvider(type, config)];
+                        return [4 /*yield*/, this._ethereum.setProvider(this.activeWalletType, config)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, this.getCallback('ethereumInitialized', this._ethereum)];
@@ -140,7 +142,17 @@ var RadarRelay = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(account)];
                     case 1:
                         _a.sent();
-                        this.account = new Account(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+                        switch (this.activeWalletType) {
+                            case types_1.WalletType.Local:
+                                this.account = new LocalAccount_1.LocalAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+                                break;
+                            case types_1.WalletType.Rpc:
+                                this.account = new RpcAccount_1.RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+                                break;
+                            case types_1.WalletType.Injected:
+                                this.account = new InjectedAccount_1.InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+                                break;
+                        }
                         return [2 /*return*/, this.getCallback('accountInitialized', this.account)];
                 }
             });
@@ -168,7 +180,7 @@ var RadarRelay = /** @class */ (function () {
         return this.getCallback('zeroExInitialized', this.zeroEx);
     };
     RadarRelay.prototype.initTrade = function () {
-        this._trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+        this._trade = new Trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
         return this.getCallback('tradeInitialized', this._trade);
     };
     RadarRelay.prototype.initTokensAsync = function () {
@@ -214,7 +226,7 @@ var RadarRelay = /** @class */ (function () {
                         this._prevApiEndpoint = this._apiEndpoint;
                         this.markets = new typescript_map_1.TSMap();
                         this._markets.map(function (market) {
-                            _this.markets.set(market.id, new market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
+                            _this.markets.set(market.id, new Market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
                         });
                         return [2 /*return*/, this.getCallback('marketsInitialized', this.markets)];
                 }

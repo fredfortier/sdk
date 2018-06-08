@@ -1,7 +1,7 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
-import { Trade } from './trade';
+import { Trade } from './Trade';
 import { Opts } from './types';
-import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from 'radar-types';
+import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 export declare class Market {
     id: string;

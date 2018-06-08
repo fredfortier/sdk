@@ -1,10 +1,9 @@
 /// <reference types="node" />
-import { Market } from './market';
-import { Account } from './account';
+import { Market } from './Market';
 import { EventEmitter } from 'events';
-import { Opts } from './types';
+import { Opts, Account } from './types';
 import { ZeroEx, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
-import { RadarToken, UserOrderType } from 'radar-types';
+import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import { TSMap } from 'typescript-map';
 export declare class Trade {

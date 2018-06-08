@@ -1,77 +1,25 @@
+import { Ethereum } from '..';
+import { promisify } from 'util';
 import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
-import { Ethereum } from './ethereum';
-import { Wallet, WalletType, Opts } from './types';
-import { promisify } from 'es6-promisify';
-import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
 import BigNumber from 'bignumber.js';
-import request = require('request-promise');
+import { Opts } from '../types';
+import * as request from 'request-promise';
+import { RadarFill, RadarSignedOrder, RadarToken } from '@radarrelay/types';
 import { TSMap } from 'typescript-map';
 
-export class Account {
-
+export class BaseAccount {
   public address: string;
-
-  private _wallet: Wallet;
-  private _ethereum: Ethereum;
+  protected _ethereum: Ethereum;
   private _zeroEx: ZeroEx;
-  private _tokens: TSMap<string, RadarToken>;
   private _endpoint: string;
+  private _tokens: TSMap<string, RadarToken>;
 
-  constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: TSMap<string, RadarToken>) {
-    // TODO tokens + decimal calculations and conversions
-    this._endpoint = apiEndpoint;
-    this._tokens = tokens;
+  constructor(ethereum: Ethereum, zeroEx: ZeroEx, endpoint: string, tokens: TSMap<string, RadarToken>) {
     this._ethereum = ethereum;
     this._zeroEx = zeroEx;
-    this._wallet = this._ethereum.wallet || undefined;
+    this._endpoint = endpoint;
+    this._tokens = tokens;
     this.address = this._ethereum.defaultAccount;
-  }
-
-  get walletType() {
-    return this._wallet ? WalletType.Local : WalletType.Rpc;
-  }
-
-  /**
-   * Export an account wallet seed phrase.
-   * NOTE: This method is only available if using a LightWallet
-   *
-   * @param {string} password
-   */
-  public async exportSeedPhraseAsync(password: string): Promise<string> {
-    if (!this._wallet) return '';
-    return await this._wallet.exportSeedPhraseAsync(password);
-  }
-
-  /**
-   * Export a wallet address private key
-   * NOTE: This method is only available if using a LightWallet
-   *
-   * @param {string} password
-   */
-  public async exportAddressPrivateKeyAsync(password: string): Promise<string> {
-    if (!this._wallet) return '';
-    return await this._wallet.exportAccountPrivateKeyAsync(this.address, password);
-  }
-
-  /**
-   * Set the current address in use
-   * NOTE: This method is only available if using a LightWallet
-   *
-   * @param {string|number} address or address index
-   */
-  public async setAddressAsync(address: string | number) {
-    await this._ethereum.setDefaultAccount(address);
-    this.address = this._ethereum.defaultAccount;
-  }
-
-  /**
-   * Add new addresses for this account
-   * NOTE: This method is only available if using a LightWallet
-   *
-   * @param {number}  num  amount of addresses to create
-   */
-  public addNewAddresses(num: number): void {
-    this._wallet.addNewAccounts(num);
   }
 
   /**

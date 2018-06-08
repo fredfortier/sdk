@@ -1,6 +1,6 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts } from '0x.js';
-import { Trade } from './trade';
-import { WebsocketClient } from './websocket-client';
+import { Trade } from './Trade';
+import { WebsocketClient } from './WebsocketClient';
 import { Opts } from './types';
 import {
   RadarBook,
@@ -11,7 +11,7 @@ import {
   RadarMarket,
   WebsocketRequestTopic,
   WebsocketRequestType
-} from 'radar-types';
+} from '@radarrelay/types';
 import { ErrorFormatter } from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');

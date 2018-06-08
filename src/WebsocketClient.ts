@@ -1,4 +1,4 @@
-import { RadarSubscribeRequest, RadarUnsubscribeRequest, WebsocketRequestType } from 'radar-types';
+import { RadarSubscribeRequest, WebsocketRequestType } from '@radarrelay/types';
 import { w3cwebsocket } from 'websocket';
 
 /**

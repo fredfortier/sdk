@@ -8,6 +8,7 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {RadarRelay} from '../src/index';
 import {mockRequests} from './lib/mockRequests';
+import { LocalAccount } from '../src/accounts/LocalAccount';
 
 const expect = chai.expect;
 
@@ -85,7 +86,7 @@ describe('RadarRelay', () => {
 
     it('SDK reloads properly when an account address is changed', async () => {
       const addresses = await rrsdk.account.getAvailableAddressesAsync();
-      await rrsdk.account.setAddressAsync(addresses[1]);
+      await (rrsdk.account as LocalAccount).setAddressAsync(addresses[1]);
       expect(rrsdk.account.address).to.be.eq(addresses[1]);
       // check nested dependency (NOTE: private vars)
       expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
@@ -95,8 +96,7 @@ describe('RadarRelay', () => {
     it('SDK reloads properly when using rpcWallet', async () => {
 
       await rrsdk.initialize({
-        walletRpcUrl: 'http://localhost:8545',
-        dataRpcUrl: 'http://localhost:8545'
+        rpcUrl: 'http://localhost:8545'
       });
 
       expect(accountInitialized).to.be.true;

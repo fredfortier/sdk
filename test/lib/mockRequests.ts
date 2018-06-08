@@ -1,6 +1,6 @@
 import * as nock from 'nock';
 import { Server } from 'mock-socket';
-import {WebsocketEvent, WebsocketAction, RadarEvent, RadarNewOrder, RadarSignedOrder} from 'radar-types';
+import {WebsocketEvent, WebsocketAction, RadarNewOrder, RadarSignedOrder} from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 
 let mockServer;

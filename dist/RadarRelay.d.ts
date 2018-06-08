@@ -1,13 +1,14 @@
 import { ZeroEx } from '0x.js';
 import { RadarToken } from '@radarrelay/types';
-import { RadarRelayConfig, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
+import { RadarRelayConfig, WalletType, WalletConfig, Account } from './types';
 import { TSMap } from 'typescript-map';
-import { EventBus } from './event-emitter';
-import { Market } from './market';
+import { EventBus } from './EventEmitter';
+import { Market } from './Market';
 /**
  * RadarRelay main SDK singleton
  */
 export declare class RadarRelay {
+    activeWalletType: WalletType;
     events: EventBus;
     account: Account;
     tokens: TSMap<string, RadarToken>;
@@ -40,7 +41,7 @@ export declare class RadarRelay {
      *
      * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
      */
-    initialize(config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig): Promise<string | boolean>;
+    initialize(config: WalletConfig): Promise<string | boolean>;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;

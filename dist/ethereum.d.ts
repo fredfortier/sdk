@@ -1,15 +1,15 @@
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
-import { Wallet, WalletType, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
+import { WalletType, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
+import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
 /**
  * Ethereum
  */
 export declare class Ethereum {
-    wallet: Wallet;
+    wallet: LightWallet;
     walletType: WalletType;
     networkId: number;
     web3: Web3;
-    private _events;
     private _config;
     /**
      * Set the provider
@@ -63,8 +63,7 @@ export declare class Ethereum {
      */
     private _setInjectedWalletProvider;
     /**
-     * Set the rpc wallet providers
-     * TODO use Web3Builder
+     * Set the rpc wallet provider
      *
      * @param {config} RpcWalletConfig
      */
