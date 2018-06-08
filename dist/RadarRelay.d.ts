@@ -3,7 +3,7 @@ import { RadarToken } from '@radarrelay/types';
 import { RadarRelayConfig, WalletType, WalletConfig, Account } from './types';
 import { TSMap } from 'typescript-map';
 import { EventBus } from './EventEmitter';
-import { Market } from './Market';
+import { Market } from './market';
 /**
  * RadarRelay main SDK singleton
  */

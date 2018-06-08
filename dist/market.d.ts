@@ -1,5 +1,5 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
-import { Trade } from './Trade';
+import { Trade } from './trade';
 import { Opts } from './types';
 import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';

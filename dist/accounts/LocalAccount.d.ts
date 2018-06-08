@@ -1,6 +1,6 @@
 import { BaseAccount } from './BaseAccount';
 import { RadarToken, WalletType } from '../types';
-import { Ethereum } from '../Ethereum';
+import { Ethereum } from '../ethereum';
 import { ZeroEx } from '0x.js';
 import { TSMap } from 'typescript-map';
 export declare class LocalAccount extends BaseAccount {

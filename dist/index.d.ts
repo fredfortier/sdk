@@ -1,7 +1,7 @@
 export { RadarRelay } from './RadarRelay';
 export { RadarRelayConfig } from './types';
 export { EventBus } from './EventEmitter';
-export { Ethereum } from './Ethereum';
-export { Market } from './Market';
-export { Trade } from './Trade';
+export { Ethereum } from './ethereum';
+export { Market } from './market';
+export { Trade } from './trade';
 export { WebsocketClient } from './WebsocketClient';
