@@ -50,7 +50,7 @@ export interface PartialTxParams {
 }
 
 export interface Opts {
-  transactionOpts: TransactionOpts;
+  transactionOpts?: TransactionOpts;
   awaitTransactionMined?: boolean;
 }
 

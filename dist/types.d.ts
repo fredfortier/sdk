@@ -42,7 +42,7 @@ export interface PartialTxParams {
     chainId: number;
 }
 export interface Opts {
-    transactionOpts: TransactionOpts;
+    transactionOpts?: TransactionOpts;
     awaitTransactionMined?: boolean;
 }
 export interface MsgParams {
