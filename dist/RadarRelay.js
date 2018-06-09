@@ -49,6 +49,7 @@ var trade_1 = require("./trade");
 var LocalAccount_1 = require("./accounts/LocalAccount");
 var RpcAccount_1 = require("./accounts/RpcAccount");
 var InjectedAccount_1 = require("./accounts/InjectedAccount");
+var constants_1 = require("./constants");
 bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
  * RadarRelay main SDK singleton
@@ -107,12 +108,13 @@ var RadarRelay = /** @class */ (function () {
     /**
      * Initialize the SDK
      *
-     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     * @param {WalletConfig}  config  wallet config
      */
     RadarRelay.prototype.initialize = function (config) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, endpoint, websocketEndpoint, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         // local
                         if (config.wallet) {
@@ -128,8 +130,16 @@ var RadarRelay = /** @class */ (function () {
                         }
                         return [4 /*yield*/, this._ethereum.setProvider(this.activeWalletType, config)];
                     case 1:
-                        _a.sent();
-                        return [2 /*return*/, this.getCallback('ethereumInitialized', this._ethereum)];
+                        _c.sent();
+                        if (!(this.activeWalletType === types_1.WalletType.Injected && !(config.web3))) return [3 /*break*/, 3];
+                        _b = constants_1.RADAR_RELAY_ENDPOINTS;
+                        return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
+                    case 2:
+                        _a = _b.apply(void 0, [_c.sent()]), endpoint = _a.endpoint, websocketEndpoint = _a.websocketEndpoint;
+                        this._apiEndpoint = endpoint;
+                        this._wsEndpoint = websocketEndpoint;
+                        _c.label = 3;
+                    case 3: return [2 /*return*/, this.getCallback('ethereumInitialized', this._ethereum)];
                 }
             });
         });
@@ -150,7 +160,7 @@ var RadarRelay = /** @class */ (function () {
                                 this.account = new RpcAccount_1.RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
                                 break;
                             case types_1.WalletType.Injected:
-                                this.account = new InjectedAccount_1.InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+                                this.account = new InjectedAccount_1.InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens, this.events);
                                 break;
                         }
                         return [2 /*return*/, this.getCallback('accountInitialized', this.account)];

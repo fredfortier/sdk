@@ -5,9 +5,11 @@ import { LocalAccount } from './accounts/LocalAccount';
 import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
 export { RadarToken, RadarMarket } from '@radarrelay/types';
-export interface RadarRelayConfig {
+export interface RadarEndpointConfig {
     endpoint: string;
     websocketEndpoint: string;
+}
+export interface RadarRelayConfig extends RadarEndpointConfig {
     sdkInitializationTimeout?: number;
 }
 export interface EthereumConfig {
@@ -90,6 +92,12 @@ export declare enum InfuraNetwork {
     Kovan = "kovan",
     Rinkeby = "rinkeby",
     Ropsten = "ropsten"
+}
+export declare enum NetwordId {
+    Mainnet = 1,
+    Kovan = 42,
+    Rinkeby = 4,
+    Ropsten = 3
 }
 export declare type RpcConnection = string | InfuraNetwork;
 export declare type Account = LocalAccount | RpcAccount | InjectedAccount;

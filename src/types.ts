@@ -6,9 +6,12 @@ import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
 export { RadarToken, RadarMarket } from '@radarrelay/types';
 
-export interface RadarRelayConfig {
+export interface RadarEndpointConfig {
   endpoint: string;
   websocketEndpoint: string;
+}
+
+export interface RadarRelayConfig extends RadarEndpointConfig {
   sdkInitializationTimeout?: number;
 }
 
@@ -107,6 +110,13 @@ export enum InfuraNetwork {
   Kovan = 'kovan',
   Rinkeby = 'rinkeby',
   Ropsten = 'ropsten',
+}
+
+export enum NetwordId {
+  Mainnet = 1,
+  Kovan = 42,
+  Rinkeby = 4,
+  Ropsten = 3,
 }
 
 export type RpcConnection = string | InfuraNetwork;

@@ -24,3 +24,10 @@ var InfuraNetwork;
     InfuraNetwork["Rinkeby"] = "rinkeby";
     InfuraNetwork["Ropsten"] = "ropsten";
 })(InfuraNetwork = exports.InfuraNetwork || (exports.InfuraNetwork = {}));
+var NetwordId;
+(function (NetwordId) {
+    NetwordId[NetwordId["Mainnet"] = 1] = "Mainnet";
+    NetwordId[NetwordId["Kovan"] = 42] = "Kovan";
+    NetwordId[NetwordId["Rinkeby"] = 4] = "Rinkeby";
+    NetwordId[NetwordId["Ropsten"] = 3] = "Ropsten";
+})(NetwordId = exports.NetwordId || (exports.NetwordId = {}));

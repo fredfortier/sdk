@@ -24,6 +24,7 @@ import { Trade } from './trade';
 import { LocalAccount } from './accounts/LocalAccount';
 import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
+import { RADAR_RELAY_ENDPOINTS } from './constants';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
@@ -105,7 +106,7 @@ export class RadarRelay {
   /**
    * Initialize the SDK
    *
-   * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+   * @param {WalletConfig}  config  wallet config
    */
   public async initialize(
     config: WalletConfig
@@ -126,6 +127,14 @@ export class RadarRelay {
     }
 
     await this._ethereum.setProvider(this.activeWalletType, config);
+
+    if (this.activeWalletType === WalletType.Injected && !((config as InjectedWalletConfig).web3)) {
+      // Adjust Radar API endpoint accordingly
+      const { endpoint, websocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
+      this._apiEndpoint = endpoint;
+      this._wsEndpoint = websocketEndpoint;
+    }
+
     return this.getCallback('ethereumInitialized', this._ethereum);
   }
 
@@ -142,7 +151,7 @@ export class RadarRelay {
         this.account = new RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
         break;
       case WalletType.Injected:
-        this.account = new InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
+        this.account = new InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens, this.events);
         break;
     }
     return this.getCallback('accountInitialized', this.account);

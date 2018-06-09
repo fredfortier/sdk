@@ -53,7 +53,7 @@ var Ethereum = /** @class */ (function () {
      * Set the provider
      *
      * @param {WalletType}  type  type of wallet
-     * @param {LightWalletConfig|InjectedWalletConfig|RpcWalletConfig}  config  wallet config params
+     * @param {WalletConfig}  config  wallet config params
      */
     Ethereum.prototype.setProvider = function (type, config) {
         return __awaiter(this, void 0, void 0, function () {
@@ -233,12 +233,10 @@ var Ethereum = /** @class */ (function () {
      * @param {config} InjectedWalletConfig
      */
     Ethereum.prototype._setInjectedWalletProvider = function (config) {
-        if (!config.web3) {
-            // Default to window.web3
-            config.web3 = window.web3;
-        }
+        // Default to window.web3
+        var defaultWeb3 = window.web3;
         if (!config.dataRpcUrl) {
-            this.web3 = config.web3;
+            this.web3 = config.web3 || defaultWeb3;
         }
         else {
             this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);

@@ -39,7 +39,7 @@ export declare class RadarRelay {
     /**
      * Initialize the SDK
      *
-     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     * @param {WalletConfig}  config  wallet config
      */
     initialize(config: WalletConfig): Promise<string | boolean>;
     private initAccountAsync;
