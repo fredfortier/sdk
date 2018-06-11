@@ -107,8 +107,6 @@ export class Ethereum {
       this.web3.eth.defaultAccount = accounts[account];
     } else {
       let found = false;
-      console.log('------- ACCOUNTS -------');
-      console.log(accounts);
       accounts.map(address => {
         if (address === account) {
           found = true;

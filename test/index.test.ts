@@ -85,7 +85,12 @@ describe('RadarRelay', async () => {
     });
 
     it('SDK reloads properly when an account address is changed', async () => {
-      const addresses = await rrsdk.account.getAvailableAddressesAsync();
+      let addresses = await rrsdk.account.getAvailableAddressesAsync();
+      if (addresses.length === 1) {
+        rrsdk.account.addNewAddresses(1);
+        addresses = await rrsdk.account.getAvailableAddressesAsync();
+      }
+
       await rrsdk.account.setAddressAsync(addresses[1]);
       expect(rrsdk.account.address).to.be.eq(addresses[1]);
       // check nested dependency (NOTE: private vars)
