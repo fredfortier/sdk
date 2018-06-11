@@ -5,8 +5,6 @@ import { SdkManager } from '../src';
 import { mockRequests } from './lib/mockRequests';
 import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
-import { RadarRelay } from '../src/RadarRelay';
-import { LocalAccount } from '../src/accounts';
 import { UserOrderType } from '@radarrelay/types';
 
 const expect = chai.expect;
