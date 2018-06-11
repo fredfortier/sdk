@@ -25,63 +25,22 @@ export interface InjectedWalletConfig extends EthereumConfig {
     web3?: Web3;
     dataRpcUrl?: string;
 }
-export interface CoreWalletOptions {
+export interface LightWalletOptions {
     password: string;
     seedPhrase?: string;
     salt?: string;
     hdPathString?: string;
 }
 export interface LightWalletConfig extends EthereumConfig {
-    wallet: CoreWalletOptions;
+    wallet: LightWalletOptions;
     dataRpcUrl: string;
 }
 export interface RpcWalletConfig extends EthereumConfig {
     rpcUrl: string;
 }
-export interface PartialTxParams {
-    nonce: string;
-    gasPrice?: string;
-    gas: string;
-    to: string;
-    from?: string;
-    value?: string;
-    data?: string;
-    chainId: number;
-}
 export interface Opts {
     transactionOpts?: TransactionOpts;
     awaitTransactionMined?: boolean;
-}
-export interface MsgParams {
-    from: string;
-    data: string;
-}
-export interface UnsignedPayload {
-    type: PayloadType;
-    params: PartialTxParams | MsgParams;
-}
-export interface Signer {
-    signPersonalMessageAsync(account: string, message: string): Promise<string>;
-    signPersonalMessageHashAsync(account: string, hash: string): Promise<string>;
-    signTransactionAsync(txParams: PartialTxParams): Promise<string>;
-}
-export interface Wallet {
-    type: WalletType;
-    signer: Signer;
-    getAccounts(): string[];
-    addNewAccounts(numberOfAccounts: number): void;
-    exportSeedPhraseAsync(password: string): string;
-    exportAccountPrivateKeyAsync(account: string, password: string): any;
-}
-export interface TransactionManager {
-    getAccounts(): string[];
-    signTransactionAsync(unsignedTx: UnsignedPayload): Promise<any>;
-    signMessageAsync(unsignedMsg: UnsignedPayload): Promise<any>;
-}
-export declare enum PayloadType {
-    Tx = 0,
-    Msg = 1,
-    PersonalMsg = 2
 }
 export declare enum WalletType {
     Local = 0,

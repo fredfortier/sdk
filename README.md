@@ -43,7 +43,7 @@ interface EthereumConfig {
 ```
 
 ```javascript 
-interface CoreWalletOptions {
+interface LightWalletOptions {
   password: string;
   seedPhrase?: string;
   salt?: string;
@@ -53,7 +53,7 @@ interface CoreWalletOptions {
 
 ```javascript 
 interface LightWalletConfig extends EthereumConfig {
-  wallet: CoreWalletOptions; // Wallet options for a local HD wallet
+  wallet: LightWalletOptions; // Wallet options for a local HD wallet
   dataRpcUrl: string;  // the rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
