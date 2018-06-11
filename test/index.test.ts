@@ -13,11 +13,10 @@ import { RadarRelay } from '../src/RadarRelay';
 import { RpcAccount } from '../src/accounts';
 
 const expect = chai.expect;
-let rrsdk: RadarRelay<LocalAccount> | RadarRelay<RpcAccount>;
 
 describe('RadarRelay', async () => {
 
-    rrsdk = await SdkManager.Setup({
+    const rrsdk = await SdkManager.Setup({
         endpoint: 'http://localhost:8080/v0',
         websocketEndpoint: 'ws://ws.radarrelay.com'
       },
@@ -91,7 +90,7 @@ describe('RadarRelay', async () => {
 
     it('SDK reloads properly when an account address is changed', async () => {
       const addresses = await rrsdk.account.getAvailableAddressesAsync();
-      await (rrsdk.account as LocalAccount).setAddressAsync(addresses[1]);
+      await rrsdk.account.setAddressAsync(addresses[1]);
       expect(rrsdk.account.address).to.be.eq(addresses[1]);
       // check nested dependency (NOTE: private vars)
       expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
