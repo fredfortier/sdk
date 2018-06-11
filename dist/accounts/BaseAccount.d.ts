@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Ethereum } from '../ethereum';
+import { Ethereum } from '../Ethereum';
 import { TransactionReceiptWithDecodedLogs } from '0x.js';
 import BigNumber from 'bignumber.js';
 import { Opts, AccountParams } from '../types';

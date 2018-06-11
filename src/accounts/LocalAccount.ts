@@ -1,10 +1,6 @@
 import { BaseAccount } from './BaseAccount';
-import { RadarToken, WalletType, AccountParams } from '../types';
-import { Ethereum } from '../ethereum';
-import { ZeroEx } from '0x.js';
-import { TSMap } from 'typescript-map';
+import { WalletType, AccountParams } from '../types';
 import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
-import { EventEmitter } from 'events';
 
 export class LocalAccount extends BaseAccount {
   public readonly type = WalletType.Local;
