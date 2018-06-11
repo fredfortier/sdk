@@ -25,7 +25,7 @@ describe('RadarRelay.Market', () => {
   before(async () => {
     mockRequests();
 
-    rrsdk = await SdkManager.InitializeAsync({
+    rrsdk = await SdkManager.SetupAndInitializeAsync({
         endpoint: 'http://localhost:8080/v0',
         websocketEndpoint: 'ws://ws.radarrelay.com'
       },

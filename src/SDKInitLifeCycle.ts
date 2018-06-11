@@ -1,6 +1,5 @@
 
 import { EventEmitter } from 'events';
-import { RadarRelay } from './RadarRelay';
 
 export interface InitPriorityItem {
   // the event that is triggered

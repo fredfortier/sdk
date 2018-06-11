@@ -57,7 +57,7 @@ var RadarRelay = /** @class */ (function () {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    function RadarRelay(rrConfig, wallet) {
+    function RadarRelay(rrConfig, wallet, walletConfig, walletType) {
         /**
          * The load priority list maintains the function call
          * priority for each init method in the RadarRelaySDK class.
@@ -95,6 +95,8 @@ var RadarRelay = /** @class */ (function () {
         this._apiEndpoint = rrConfig.endpoint;
         this._wsEndpoint = rrConfig.websocketEndpoint;
         this._wallet = wallet;
+        this._walletConfig = walletConfig;
+        this._walletType = walletType;
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
@@ -103,22 +105,21 @@ var RadarRelay = /** @class */ (function () {
         this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
         this._lifecycle.setup(this);
     }
+    ;
     /**
      * Initialize the SDK
      *
      * @param {WalletConfig}  config  wallet config
      */
-    RadarRelay.prototype.initialize = function (walletConfig, walletType) {
+    RadarRelay.prototype.initializeAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, endpoint, websocketEndpoint, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0:
-                        this.activeWalletType = walletType;
-                        return [4 /*yield*/, this._ethereum.setProvider(this.activeWalletType, walletConfig)];
+                    case 0: return [4 /*yield*/, this._ethereum.setProvider(this._walletType, this._walletConfig)];
                     case 1:
                         _c.sent();
-                        if (!(this.activeWalletType === types_1.WalletType.Injected && !(walletConfig.web3))) return [3 /*break*/, 3];
+                        if (!(this._walletType === types_1.WalletType.Injected && !(this._walletConfig.web3))) return [3 /*break*/, 3];
                         _b = constants_1.RADAR_RELAY_ENDPOINTS;
                         return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
                     case 2:

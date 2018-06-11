@@ -19,7 +19,7 @@ describe.skip('RadarRelay.Ws', () => {
   before(async () => {
     mockRequests();
 
-    rrsdk = await SdkManager.InitializeAsync({
+    rrsdk = await SdkManager.SetupAndInitializeAsync({
         endpoint: 'https://api-beta.rrdev.io/v0',
         websocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
       },

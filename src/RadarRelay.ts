@@ -4,12 +4,9 @@ import { EventEmitter } from 'events';
 import { RadarToken, RadarMarket } from '@radarrelay/types';
 import {
   RadarRelayConfig,
-  LightWalletConfig,
-  RpcWalletConfig,
   InjectedWalletConfig,
   WalletType,
   WalletConfig,
-  Account,
   AccountParams
 } from './types';
 import BigNumber from 'bignumber.js';
@@ -32,7 +29,6 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
  */
 export class RadarRelay<T extends BaseAccount> {
 
-  public activeWalletType: WalletType;
   public events: EventBus;
   public account: T;
   public tokens: TSMap<string, RadarToken>;
@@ -48,6 +44,8 @@ export class RadarRelay<T extends BaseAccount> {
   private _markets: RadarMarket[];
   private _lifecycle: SDKInitLifeCycle;
   private _wallet: new (params: AccountParams) => T
+  private _walletConfig: WalletConfig;
+  private _walletType: WalletType;
 ;
 
   /**
@@ -87,12 +85,14 @@ export class RadarRelay<T extends BaseAccount> {
    *
    * @param {RadarRelayConfig}  config  sdk config
    */
-  constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T) {
+  constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T, walletConfig: WalletConfig, walletType: WalletType) {
     // set the api/ws endpoint outside
     // of the init _lifecycle
     this._apiEndpoint = rrConfig.endpoint;
     this._wsEndpoint = rrConfig.websocketEndpoint;
     this._wallet = wallet;
+    this._walletConfig = walletConfig;
+    this._walletType = walletType;
 
     // instantiate event handler
     this.events = new EventEmitter();
@@ -110,11 +110,10 @@ export class RadarRelay<T extends BaseAccount> {
    *
    * @param {WalletConfig}  config  wallet config
    */
-  public async initialize(walletConfig: WalletConfig, walletType: WalletType): Promise<RadarRelay<T>> {
-    this.activeWalletType = walletType;
-    await this._ethereum.setProvider(this.activeWalletType, walletConfig);
+  public async initializeAsync(): Promise<RadarRelay<T>> {
+    await this._ethereum.setProvider(this._walletType, this._walletConfig);
 
-    if (this.activeWalletType === WalletType.Injected && !((walletConfig as InjectedWalletConfig).web3)) {
+    if (this._walletType === WalletType.Injected && !((this._walletConfig as InjectedWalletConfig).web3)) {
       // Adjust Radar API endpoint accordingly
       const { endpoint, websocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
       this._apiEndpoint = endpoint;

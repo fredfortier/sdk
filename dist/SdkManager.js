@@ -42,25 +42,59 @@ var SdkManager = /** @class */ (function () {
     function SdkManager() {
     }
     /**
-     * Initialize the appropriate sdk
+     * Create the SDK instance without starting the initialization lifecycle.
+     * This allows event listeners to be attached before the starting the lifecycle.
      * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
      * @param {WalletConfig} walletConfig Wallet specific configuration options
      */
-    SdkManager.InitializeAsync = function (rrConfig, walletConfig) {
+    SdkManager.Setup = function (rrConfig, walletConfig) {
+        if (walletConfig.wallet) {
+            return new RadarRelay_1.RadarRelay(rrConfig, accounts_1.LocalAccount, walletConfig, types_1.WalletType.Local);
+        }
+        if (walletConfig.rpcUrl) {
+            return new RadarRelay_1.RadarRelay(rrConfig, accounts_1.RpcAccount, walletConfig, types_1.WalletType.Rpc);
+        }
+        if (walletConfig.type) {
+            return new RadarRelay_1.RadarRelay(rrConfig, accounts_1.InjectedAccount, walletConfig, types_1.WalletType.Injected);
+        }
+    };
+    /**
+     * Start the initialization lifecycle for the SDK instance that was created using Setup.
+     * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
+     * @param {WalletConfig} walletConfig Wallet specific configuration options
+     */
+    SdkManager.InitializeAsync = function (sdkInstance) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, sdkInstance.initializeAsync()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * Create the SDK instance and run the initialization lifecycle
+     * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
+     * @param {WalletConfig} walletConfig Wallet specific configuration options
+     */
+    SdkManager.SetupAndInitializeAsync = function (rrConfig, walletConfig) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (!walletConfig.wallet) return [3 /*break*/, 2];
-                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.LocalAccount).initialize(walletConfig, types_1.WalletType.Local)];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.LocalAccount, walletConfig, types_1.WalletType.Local).initializeAsync()];
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         if (!walletConfig.rpcUrl) return [3 /*break*/, 4];
-                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.RpcAccount).initialize(walletConfig, types_1.WalletType.Rpc)];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.RpcAccount, walletConfig, types_1.WalletType.Rpc).initializeAsync()];
                     case 3: return [2 /*return*/, _a.sent()];
                     case 4:
                         if (!walletConfig.type) return [3 /*break*/, 6];
-                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.InjectedAccount).initialize(walletConfig, types_1.WalletType.Injected)];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.InjectedAccount, walletConfig, types_1.WalletType.Injected).initializeAsync()];
                     case 5: return [2 /*return*/, _a.sent()];
                     case 6: return [2 /*return*/];
                 }

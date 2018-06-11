@@ -24,7 +24,7 @@ export class Ethereum {
   public networkId: number;
   public web3: Web3;
 
-  private _config: LightWalletConfig | InjectedWalletConfig | RpcWalletConfig;
+  private _config: WalletConfig;
 
   /**
    * Set the provider
@@ -32,10 +32,7 @@ export class Ethereum {
    * @param {WalletType}  type  type of wallet
    * @param {WalletConfig}  config  wallet config params
    */
-  public async setProvider(
-    type: WalletType,
-    config: WalletConfig
-  ) {
+  public async setProvider(type: WalletType, config: WalletConfig) {
     this._config = config;
 
     switch (type) {

@@ -9,7 +9,6 @@ import { BaseAccount } from './accounts/BaseAccount';
  * RadarRelay main SDK singleton
  */
 export declare class RadarRelay<T extends BaseAccount> {
-    activeWalletType: WalletType;
     events: EventBus;
     account: T;
     tokens: TSMap<string, RadarToken>;
@@ -24,6 +23,8 @@ export declare class RadarRelay<T extends BaseAccount> {
     private _markets;
     private _lifecycle;
     private _wallet;
+    private _walletConfig;
+    private _walletType;
     /**
      * The load priority list maintains the function call
      * priority for each init method in the RadarRelaySDK class.
@@ -37,13 +38,13 @@ export declare class RadarRelay<T extends BaseAccount> {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T);
+    constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T, walletConfig: WalletConfig, walletType: WalletType);
     /**
      * Initialize the SDK
      *
      * @param {WalletConfig}  config  wallet config
      */
-    initialize(walletConfig: WalletConfig, walletType: WalletType): Promise<RadarRelay<T>>;
+    initializeAsync(): Promise<RadarRelay<T>>;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;
