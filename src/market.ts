@@ -1,5 +1,5 @@
 import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
-import { Trade } from './trade';
+import { Trade } from './Trade';
 import { WebsocketClient } from './WebsocketClient';
 import { Opts } from './types';
 import {

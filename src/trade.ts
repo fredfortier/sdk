@@ -1,4 +1,4 @@
-import { Market } from './market';
+import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { WalletType, Opts } from './types';
 import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';

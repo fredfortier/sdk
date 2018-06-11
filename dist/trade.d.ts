@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Market } from './market';
+import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { Opts } from './types';
 import { ZeroEx, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
