@@ -1,12 +1,11 @@
 import { Market } from './market';
 import { EventEmitter } from 'events';
-import { WalletType, Opts, Account } from './types';
+import { WalletType, Opts } from './types';
 import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
-import { RadarRelay } from './RadarRelay';
 import { BaseAccount } from './accounts';
 
 export class Trade<T extends BaseAccount> {

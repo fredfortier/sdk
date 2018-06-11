@@ -1,11 +1,11 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import {ZeroEx} from '0x.js';
+import { ZeroEx } from '0x.js';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import {SdkManager} from '../src/index';
-import {mockRequests} from './lib/mockRequests';
+import { SdkManager } from '../src/index';
+import { mockRequests } from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
 import { WebSocket } from 'mock-socket';
 
@@ -20,9 +20,9 @@ describe.skip('RadarRelay.Ws', () => {
     mockRequests();
 
     rrsdk = await SdkManager.SetupAndInitializeAsync({
-        endpoint: 'https://api-beta.rrdev.io/v0',
-        websocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
-      },
+      endpoint: 'https://api-beta.rrdev.io/v0',
+      websocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
+    },
       {
         wallet: {
           password: 'password'
@@ -45,7 +45,7 @@ describe.skip('RadarRelay.Ws', () => {
     // });
   });
 
- // TODO need to overwrite socket with mock-socket
+  // TODO need to overwrite socket with mock-socket
   it('fires event on order create', async () => {
 
     await new Promise(async (resolve, reject) => {

@@ -1,8 +1,8 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import {SdkManager} from '../src';
-import {mockRequests} from './lib/mockRequests';
+import { SdkManager } from '../src';
+import { mockRequests } from './lib/mockRequests';
 import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
 import { RadarRelay } from '../src/RadarRelay';
@@ -18,17 +18,13 @@ describe('RadarRelay.Market', () => {
   let wethAddr;
   let zrxAddr;
 
-  function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   before(async () => {
     mockRequests();
 
     rrsdk = await SdkManager.SetupAndInitializeAsync({
-        endpoint: 'http://localhost:8080/v0',
-        websocketEndpoint: 'ws://ws.radarrelay.com'
-      },
+      endpoint: 'http://localhost:8080/v0',
+      websocketEndpoint: 'ws://ws.radarrelay.com'
+    },
       {
         wallet: {
           password: 'password',
@@ -44,8 +40,8 @@ describe('RadarRelay.Market', () => {
     wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
 
     // set allowance
-    await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, {awaitTransactionMined: true});
-    await rrsdk.account.setUnlimitedTokenAllowanceAsync(zrxAddr, {awaitTransactionMined: true});
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(wethAddr, { awaitTransactionMined: true });
+    await rrsdk.account.setUnlimitedTokenAllowanceAsync(zrxAddr, { awaitTransactionMined: true });
   });
 
   it('getBookAsync', async () => {
@@ -89,25 +85,20 @@ describe('RadarRelay.Market', () => {
 
   it('marketOrderAsync', async () => {
     await rrsdk.account.setUnlimitedTokenAllowanceAsync(
-      wethAddr, {awaitTransactionMined: true}
+      wethAddr, { awaitTransactionMined: true }
     );
     const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync(UserOrderType.BUY,
-      new BigNumber(0.001), {awaitTransactionMined: true} // awaitTxMined
+      new BigNumber(0.001), { awaitTransactionMined: true } // awaitTxMined
     );
     expect(receipt.status).to.be.eq(1);
   });
 
   it('cancelOrderAsync', async () => {
-      const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(
-        signedOrder, {awaitTransactionMined: true} // awaitTxMined
-      );
-      expect(receipt.status).to.be.eq(1);
-      await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
-      // try {
-      //   await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder)
-      // } catch (err) {
-      //   console.log(err);
-      // }
+    const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(
+      signedOrder, { awaitTransactionMined: true } // awaitTxMined
+    );
+    expect(receipt.status).to.be.eq(1);
+    await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
   });
 
 });

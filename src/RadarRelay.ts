@@ -43,10 +43,9 @@ export class RadarRelay<T extends BaseAccount> {
   private _prevApiEndpoint: string;
   private _markets: RadarMarket[];
   private _lifecycle: SDKInitLifeCycle;
-  private _wallet: new (params: AccountParams) => T
+  private _wallet: new (params: AccountParams) => T;
   private _walletConfig: WalletConfig;
   private _walletType: WalletType;
-;
 
   /**
    * The load priority list maintains the function call

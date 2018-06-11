@@ -105,7 +105,6 @@ var RadarRelay = /** @class */ (function () {
         this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
         this._lifecycle.setup(this);
     }
-    ;
     /**
      * Initialize the SDK
      *

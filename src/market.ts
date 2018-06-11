@@ -1,4 +1,4 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, Order, TransactionOpts } from '0x.js';
+import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
 import { Trade } from './trade';
 import { WebsocketClient } from './WebsocketClient';
 import { Opts } from './types';
