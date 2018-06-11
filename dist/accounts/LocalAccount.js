@@ -57,10 +57,10 @@ var LocalAccount = /** @class */ (function (_super) {
      * @param {string} endpoint
      * @param {TSMap<string, RadarToken>} tokens
      */
-    function LocalAccount(ethereum, zeroEx, endpoint, tokens) {
-        var _this = _super.call(this, ethereum, zeroEx, endpoint, tokens) || this;
+    function LocalAccount(params) {
+        var _this = _super.call(this, params) || this;
         _this.type = types_1.WalletType.Local;
-        _this._wallet = _this._ethereum.wallet;
+        _this._wallet = _this._ethereum.wallet; // This probably shouldn't be held on Ethereum
         return _this;
     }
     /**

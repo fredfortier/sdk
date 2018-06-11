@@ -1,14 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -45,39 +35,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var BaseAccount_1 = require("./BaseAccount");
-var types_1 = require("../types");
-var InjectedAccount = /** @class */ (function (_super) {
-    __extends(InjectedAccount, _super);
-    /**
-     * Instantiate an InjectedAccount
-     *
-     * @param {Ethereum} ethereum
-     * @param {ZeroEx} zeroEx
-     * @param {string} endpoint
-     * @param {TSMap<string, RadarToken>} tokens
-     */
-    function InjectedAccount(params) {
-        var _this = _super.call(this, params) || this;
-        _this.type = types_1.WalletType.Injected;
-        _this._watchActiveAddress();
-        return _this;
+var RadarRelay_1 = require("./RadarRelay");
+var accounts_1 = require("./accounts");
+var types_1 = require("./types");
+var SdkManager = /** @class */ (function () {
+    function SdkManager() {
     }
-    /**
-     * Watch the active address and update if necessary
-     */
-    InjectedAccount.prototype._watchActiveAddress = function () {
-        var _this = this;
-        setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
+    // Implementation
+    SdkManager.InitializeAsync = function (rrConfig, walletConfig) {
+        return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (this._ethereum.web3.eth.accounts[0] !== this.address) {
-                    this.address = this._ethereum.web3.eth.accounts[0];
-                    this._events.emit('addressChanged', this.address);
+                switch (_a.label) {
+                    case 0:
+                        if (!walletConfig.wallet) return [3 /*break*/, 2];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.LocalAccount).initialize(walletConfig, types_1.WalletType.Local)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        if (!walletConfig.rpcUrl) return [3 /*break*/, 4];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.RpcAccount).initialize(walletConfig, types_1.WalletType.Rpc)];
+                    case 3: return [2 /*return*/, _a.sent()];
+                    case 4:
+                        if (!walletConfig.type) return [3 /*break*/, 6];
+                        return [4 /*yield*/, new RadarRelay_1.RadarRelay(rrConfig, accounts_1.InjectedAccount).initialize(walletConfig, types_1.WalletType.Injected)];
+                    case 5: return [2 /*return*/, _a.sent()];
+                    case 6: return [2 /*return*/];
                 }
-                return [2 /*return*/];
             });
-        }); }, 500);
+        });
     };
-    return InjectedAccount;
-}(BaseAccount_1.BaseAccount));
-exports.InjectedAccount = InjectedAccount;
+    return SdkManager;
+}());
+exports.SdkManager = SdkManager;

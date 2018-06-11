@@ -6,11 +6,13 @@ import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
+import { RadarRelay } from './RadarRelay';
+import { BaseAccount } from './accounts';
 
-export class Trade {
+export class Trade<T extends BaseAccount> {
 
   private _endpoint: string;
-  private _account: Account;
+  private _account: T;
   private _zeroEx: ZeroEx;
   private _events: EventEmitter;
   private _tokens: TSMap<string, RadarToken>;
@@ -18,7 +20,7 @@ export class Trade {
   constructor(
     zeroEx: ZeroEx,
     apiEndpoint: string,
-    account: Account,
+    account: T,
     events: EventEmitter,
     tokens: TSMap<string, RadarToken>) {
     this._zeroEx = zeroEx;
@@ -29,7 +31,7 @@ export class Trade {
   }
 
   public async marketOrder(
-    market: Market,
+    market: Market<T>,
     type: UserOrderType,
     quantity: BigNumber,
     opts?: Opts
@@ -69,7 +71,7 @@ export class Trade {
 
   // sign and post order to book
   public async limitOrder(
-    market: Market = null,
+    market: Market<T> = null,
     type: UserOrderType, // ask == sell, bid == buy
     quantity: BigNumber, // base token quantity
     price: BigNumber, // price (in quote)

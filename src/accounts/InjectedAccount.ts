@@ -1,13 +1,13 @@
 import { BaseAccount } from './BaseAccount';
-import { Ethereum } from '..';
+import { Ethereum } from '../ethereum';
+import { RadarRelay } from '../RadarRelay';
 import { ZeroEx } from '0x.js';
 import { TSMap } from 'typescript-map';
-import { RadarToken, WalletType } from '../types';
+import { RadarToken, WalletType, AccountParams } from '../types';
 import { EventEmitter } from 'events';
 
 export class InjectedAccount extends BaseAccount {
   public readonly type = WalletType.Injected;
-  private _events: EventEmitter;
 
   /**
    * Instantiate an InjectedAccount
@@ -17,16 +17,8 @@ export class InjectedAccount extends BaseAccount {
    * @param {string} endpoint
    * @param {TSMap<string, RadarToken>} tokens
    */
-  constructor(
-    ethereum: Ethereum,
-    zeroEx: ZeroEx,
-    endpoint: string,
-    tokens: TSMap<string, RadarToken>,
-    events: EventEmitter
-  ) {
-    super(ethereum, zeroEx, endpoint, tokens);
-
-    this._events = events;
+  constructor(params: AccountParams) {
+    super(params);
     this._watchActiveAddress();
   }
 

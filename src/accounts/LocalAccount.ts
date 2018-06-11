@@ -1,9 +1,10 @@
 import { BaseAccount } from './BaseAccount';
-import { RadarToken, WalletType } from '../types';
+import { RadarToken, WalletType, AccountParams } from '../types';
 import { Ethereum } from '../ethereum';
 import { ZeroEx } from '0x.js';
 import { TSMap } from 'typescript-map';
 import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
+import { EventEmitter } from 'events';
 
 export class LocalAccount extends BaseAccount {
   public readonly type = WalletType.Local;
@@ -17,10 +18,10 @@ export class LocalAccount extends BaseAccount {
    * @param {string} endpoint
    * @param {TSMap<string, RadarToken>} tokens
    */
-  constructor(ethereum: Ethereum, zeroEx: ZeroEx, endpoint: string, tokens: TSMap<string, RadarToken>) {
-    super(ethereum, zeroEx, endpoint, tokens);
+  constructor(params: AccountParams) {
+    super(params);
 
-    this._wallet = this._ethereum.wallet;
+    this._wallet = this._ethereum.wallet; // This probably shouldn't be held on Ethereum
   }
 
   /**

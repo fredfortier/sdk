@@ -10,7 +10,8 @@
       "curly": [true, "ignore-same-line"],
       "no-namespace": false,
       "no-submodule-imports": false,
-      "no-return-await": false
+      "no-return-await": false,
+      "max-line-length": false
     }
   }
   

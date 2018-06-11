@@ -9,7 +9,8 @@ import {
   InjectedWalletConfig,
   WalletType,
   WalletConfig,
-  Account
+  Account,
+  AccountParams
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
@@ -21,26 +22,24 @@ import { EventBus } from './EventEmitter';
 import { Ethereum } from './ethereum';
 import { Market } from './market';
 import { Trade } from './trade';
-import { LocalAccount } from './accounts/LocalAccount';
-import { RpcAccount } from './accounts/RpcAccount';
-import { InjectedAccount } from './accounts/InjectedAccount';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
+import { BaseAccount } from './accounts/BaseAccount';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 /**
  * RadarRelay main SDK singleton
  */
-export class RadarRelay {
+export class RadarRelay<T extends BaseAccount> {
 
   public activeWalletType: WalletType;
   public events: EventBus;
-  public account: Account;
+  public account: T;
   public tokens: TSMap<string, RadarToken>;
-  public markets: TSMap<string, Market>;
+  public markets: TSMap<string, Market<T>>;
   public zeroEx: ZeroEx;
 
-  private _trade: Trade;
+  private _trade: Trade<T>;
   private _ethereum: Ethereum;
   private _apiEndpoint: string;
   private _wsEndpoint: string;
@@ -48,6 +47,8 @@ export class RadarRelay {
   private _prevApiEndpoint: string;
   private _markets: RadarMarket[];
   private _lifecycle: SDKInitLifeCycle;
+  private _wallet: new (params: AccountParams) => T
+;
 
   /**
    * The load priority list maintains the function call
@@ -86,11 +87,12 @@ export class RadarRelay {
    *
    * @param {RadarRelayConfig}  config  sdk config
    */
-  constructor(config: RadarRelayConfig) {
+  constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T) {
     // set the api/ws endpoint outside
     // of the init _lifecycle
-    this._apiEndpoint = config.endpoint;
-    this._wsEndpoint = config.websocketEndpoint;
+    this._apiEndpoint = rrConfig.endpoint;
+    this._wsEndpoint = rrConfig.websocketEndpoint;
+    this._wallet = wallet;
 
     // instantiate event handler
     this.events = new EventEmitter();
@@ -99,7 +101,7 @@ export class RadarRelay {
     this._ethereum = new Ethereum();
 
     // setup the _lifecycle
-    this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeout);
+    this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
     this._lifecycle.setup(this);
   }
 
@@ -108,52 +110,33 @@ export class RadarRelay {
    *
    * @param {WalletConfig}  config  wallet config
    */
-  public async initialize(
-    config: WalletConfig
-  ): Promise<string | boolean> {
-    // local
-    if ((config as LightWalletConfig).wallet) {
-      this.activeWalletType = WalletType.Local;
-    }
+  public async initialize(walletConfig: WalletConfig, walletType: WalletType): Promise<RadarRelay<T>> {
+    this.activeWalletType = walletType;
+    await this._ethereum.setProvider(this.activeWalletType, walletConfig);
 
-    // rpc
-    if ((config as RpcWalletConfig).rpcUrl) {
-      this.activeWalletType = WalletType.Rpc;
-    }
-
-    // injected
-    if ((config as InjectedWalletConfig).type !== undefined) {
-      this.activeWalletType = WalletType.Injected;
-    }
-
-    await this._ethereum.setProvider(this.activeWalletType, config);
-
-    if (this.activeWalletType === WalletType.Injected && !((config as InjectedWalletConfig).web3)) {
+    if (this.activeWalletType === WalletType.Injected && !((walletConfig as InjectedWalletConfig).web3)) {
       // Adjust Radar API endpoint accordingly
       const { endpoint, websocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
       this._apiEndpoint = endpoint;
       this._wsEndpoint = websocketEndpoint;
     }
 
-    return this.getCallback('ethereumInitialized', this._ethereum);
+    this.getCallback('ethereumInitialized', this._ethereum);
+
+    return this;
   }
 
   // --- not user configurable below this line --- //
 
-  private async initAccountAsync(account: string | number): Promise<string | boolean> {
-    await this._ethereum.setDefaultAccount(account);
-
-    switch (this.activeWalletType) {
-      case WalletType.Local:
-        this.account = new LocalAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
-        break;
-      case WalletType.Rpc:
-        this.account = new RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
-        break;
-      case WalletType.Injected:
-        this.account = new InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens, this.events);
-        break;
-    }
+  private async initAccountAsync(address: string | number): Promise<string | boolean> {
+    await this._ethereum.setDefaultAccount(address);
+    this.account = new this._wallet({
+      ethereum: this._ethereum,
+      events: this.events,
+      zeroEx: this.zeroEx,
+      endpoint: this._apiEndpoint,
+      tokens: this.tokens
+    });
     return this.getCallback('accountInitialized', this.account);
   }
 
@@ -170,7 +153,7 @@ export class RadarRelay {
   }
 
   private initTrade(): Promise<string | boolean> {
-    this._trade = new Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+    this._trade = new Trade<T>(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
     return this.getCallback('tradeInitialized', this._trade);
   }
 

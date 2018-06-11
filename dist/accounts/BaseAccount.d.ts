@@ -1,16 +1,19 @@
-import { Ethereum } from '..';
-import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
+/// <reference types="node" />
+import { Ethereum } from '../ethereum';
+import { TransactionReceiptWithDecodedLogs } from '0x.js';
 import BigNumber from 'bignumber.js';
-import { Opts } from '../types';
-import { RadarFill, RadarSignedOrder, RadarToken } from '@radarrelay/types';
-import { TSMap } from 'typescript-map';
+import { Opts, AccountParams } from '../types';
+import { RadarFill, RadarSignedOrder } from '@radarrelay/types';
+import { EventEmitter } from 'events';
 export declare class BaseAccount {
+    readonly type: any;
     address: string;
     protected _ethereum: Ethereum;
+    protected _events: EventEmitter;
     private _zeroEx;
     private _endpoint;
     private _tokens;
-    constructor(ethereum: Ethereum, zeroEx: ZeroEx, endpoint: string, tokens: TSMap<string, RadarToken>);
+    constructor(params: AccountParams);
     /**
      * Get available addresses for this account
      */

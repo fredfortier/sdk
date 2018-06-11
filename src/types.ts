@@ -1,9 +1,13 @@
-import { TransactionOpts } from '0x.js';
+import { TransactionOpts, ZeroEx } from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 import { LocalAccount } from './accounts/LocalAccount';
 import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
+import { Ethereum } from './ethereum';
+import { EventEmitter } from 'events';
+import { TSMap } from 'typescript-map';
+import { RadarToken } from '@radarrelay/types';
 export { RadarToken, RadarMarket } from '@radarrelay/types';
 
 export interface RadarEndpointConfig {
@@ -102,7 +106,7 @@ export enum WalletType {
 }
 
 export enum InjectedWalletType {
-  Metmask
+  Metmask = 'metamask'
 }
 
 export enum InfuraNetwork {
@@ -124,3 +128,11 @@ export type RpcConnection = string | InfuraNetwork;
 export type Account = LocalAccount | RpcAccount | InjectedAccount;
 
 export type WalletConfig = LightWalletConfig | RpcWalletConfig | InjectedWalletConfig;
+
+export interface AccountParams {
+  ethereum: Ethereum;
+  events: EventEmitter;
+  zeroEx: ZeroEx;
+  endpoint: string;
+  tokens: TSMap<string, RadarToken>;
+}

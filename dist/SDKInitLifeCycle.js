@@ -3,19 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var SDKInitLifeCycle = /** @class */ (function () {
     function SDKInitLifeCycle(events, priorityList, timeout) {
         if (timeout === void 0) { timeout = 10000; }
-        this.priority = {};
-        this.priorityList = priorityList;
-        this.events = events;
-        this.timeout = timeout;
+        this._priority = {};
+        this._priorityList = priorityList;
+        this._events = events;
+        this._timeout = timeout;
         // Setup the priority event map and
         // event handlers which maintains
         // the current loaded event priority
-        this.last = (priorityList.length - 1);
+        this._last = (priorityList.length - 1);
         for (var index in priorityList) {
             if (priorityList.hasOwnProperty(index)) {
                 var item = priorityList[index];
-                this.priority[item.event] = index;
-                this.events.on(item.event, this.handleEvent.bind(this, item.event));
+                this._priority[item.event] = index;
+                this._events.on(item.event, this.handleEvent.bind(this, item.event));
             }
         }
     }
@@ -26,48 +26,48 @@ var SDKInitLifeCycle = /** @class */ (function () {
     // functions belong to.
     SDKInitLifeCycle.prototype.setup = function (scope) {
         var _a;
-        for (var _i = 0, _b = this.priorityList; _i < _b.length; _i++) {
+        for (var _i = 0, _b = this._priorityList; _i < _b.length; _i++) {
             var item = _b[_i];
             if (item.func) {
                 if (item.args) {
-                    this.events.on(item.event, (_a = item.func).bind.apply(_a, [scope].concat(item.args)));
+                    this._events.on(item.event, (_a = item.func).bind.apply(_a, [scope].concat(item.args)));
                 }
                 else {
-                    this.events.on(item.event, item.func.bind(scope));
+                    this._events.on(item.event, item.func.bind(scope));
                 }
             }
         }
     };
     SDKInitLifeCycle.prototype.promise = function (event) {
         var _this = this;
-        if (this.runInterval)
+        if (this._runInterval)
             return Promise.resolve(true);
-        this.current = this.priority[event];
-        this.startTime = new Date().getTime();
+        this._current = this._priority[event];
+        this._startTime = new Date().getTime();
         return new Promise(function (resolve, reject) {
-            _this.runInterval = setInterval(_this.checkEventProgress.bind(_this, resolve, reject), 100);
+            _this._runInterval = setInterval(_this.checkEventProgress.bind(_this, resolve, reject), 100);
         });
     };
     SDKInitLifeCycle.prototype.checkEventProgress = function (resolve, reject) {
         var now = new Date().getTime();
-        if (now - this.startTime >= this.timeout) {
-            clearInterval(this.runInterval);
-            this.runInterval = undefined;
-            return reject("SDK init lifecycle timed out after " + this.timeout + "ms");
+        if (now - this._startTime >= this._timeout) {
+            clearInterval(this._runInterval);
+            this._runInterval = undefined;
+            return reject("SDK init lifecycle timed out after " + this._timeout + "ms");
         }
-        if (this.current >= this.last) {
-            clearInterval(this.runInterval);
-            this.runInterval = undefined;
+        if (this._current >= this._last) {
+            clearInterval(this._runInterval);
+            this._runInterval = undefined;
             return resolve(true);
         }
     };
     SDKInitLifeCycle.prototype.handleEvent = function (event) {
-        var current = this.priority[event];
-        this.current = (current >= this.current) ? current : this.current;
-        var progressPerc = Math.floor((this.current / this.last) * 100);
-        this.events.emit('loading', {
+        var current = this._priority[event];
+        this._current = (current >= this._current) ? current : this._current;
+        var progressPerc = Math.floor((this._current / this._last) * 100);
+        this._events.emit('loading', {
             progress: progressPerc || 0,
-            elapsedTime: (new Date().getTime() - this.startTime),
+            elapsedTime: (new Date().getTime() - this._startTime),
             source: this.constructor.name + ':' + event
         });
     };

@@ -1,8 +1,5 @@
 import { BaseAccount } from './BaseAccount';
-import { RadarToken, WalletType } from '../types';
-import { Ethereum } from '../ethereum';
-import { ZeroEx } from '0x.js';
-import { TSMap } from 'typescript-map';
+import { WalletType, AccountParams } from '../types';
 export declare class LocalAccount extends BaseAccount {
     readonly type: WalletType;
     private _wallet;
@@ -14,7 +11,7 @@ export declare class LocalAccount extends BaseAccount {
      * @param {string} endpoint
      * @param {TSMap<string, RadarToken>} tokens
      */
-    constructor(ethereum: Ethereum, zeroEx: ZeroEx, endpoint: string, tokens: TSMap<string, RadarToken>);
+    constructor(params: AccountParams);
     /**
      * Export an account wallet seed phrase.
      *

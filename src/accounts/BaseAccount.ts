@@ -1,24 +1,28 @@
-import { Ethereum } from '..';
+import { Ethereum } from '../ethereum';
 import { promisify } from 'util';
 import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
 import BigNumber from 'bignumber.js';
-import { Opts } from '../types';
+import { Opts, AccountParams } from '../types';
 import * as request from 'request-promise';
 import { RadarFill, RadarSignedOrder, RadarToken } from '@radarrelay/types';
 import { TSMap } from 'typescript-map';
+import { EventEmitter } from 'events';
 
 export class BaseAccount {
+  public readonly type;
   public address: string;
   protected _ethereum: Ethereum;
+  protected _events: EventEmitter;
   private _zeroEx: ZeroEx;
   private _endpoint: string;
   private _tokens: TSMap<string, RadarToken>;
 
-  constructor(ethereum: Ethereum, zeroEx: ZeroEx, endpoint: string, tokens: TSMap<string, RadarToken>) {
-    this._ethereum = ethereum;
-    this._zeroEx = zeroEx;
-    this._endpoint = endpoint;
-    this._tokens = tokens;
+  constructor(params: AccountParams) {
+    this._ethereum = params.ethereum;
+    this._events = params.events;
+    this._zeroEx = params.zeroEx;
+    this._endpoint = params.endpoint;
+    this._tokens = params.tokens;
     this.address = this._ethereum.defaultAccount;
   }
 

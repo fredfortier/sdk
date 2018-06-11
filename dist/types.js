@@ -15,7 +15,7 @@ var WalletType;
 })(WalletType = exports.WalletType || (exports.WalletType = {}));
 var InjectedWalletType;
 (function (InjectedWalletType) {
-    InjectedWalletType[InjectedWalletType["Metmask"] = 0] = "Metmask";
+    InjectedWalletType["Metmask"] = "metamask";
 })(InjectedWalletType = exports.InjectedWalletType || (exports.InjectedWalletType = {}));
 var InfuraNetwork;
 (function (InfuraNetwork) {

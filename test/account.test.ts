@@ -3,7 +3,7 @@
 
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import {RadarRelay} from '../src';
+import {SdkManager} from '../src';
 import {mockRequests} from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
 
@@ -19,17 +19,18 @@ describe('RadarRelay.Account', () => {
     before(async () => {
       mockRequests();
 
-      rrsdk = new RadarRelay({
-        endpoint: 'http://localhost:8080/v0',
-        websocketEndpoint: 'ws://ws.radarrelay.com'
-      });
-      await rrsdk.initialize({
-        wallet: {
-          password: 'password',
-          seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+      rrsdk = await SdkManager.InitializeAsync({
+          endpoint: 'http://localhost:8080/v0',
+          websocketEndpoint: 'ws://ws.radarrelay.com'
         },
-        dataRpcUrl: 'http://localhost:8545'
-      });
+        {
+          wallet: {
+            password: 'password',
+            seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+          },
+          dataRpcUrl: 'http://localhost:8545'
+        }
+      );
 
       // set addr for later use
       zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;

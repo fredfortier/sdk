@@ -39,11 +39,12 @@ var util_1 = require("util");
 var _0x_js_1 = require("0x.js");
 var request = require("request-promise");
 var BaseAccount = /** @class */ (function () {
-    function BaseAccount(ethereum, zeroEx, endpoint, tokens) {
-        this._ethereum = ethereum;
-        this._zeroEx = zeroEx;
-        this._endpoint = endpoint;
-        this._tokens = tokens;
+    function BaseAccount(params) {
+        this._ethereum = params.ethereum;
+        this._events = params.events;
+        this._zeroEx = params.zeroEx;
+        this._endpoint = params.endpoint;
+        this._tokens = params.tokens;
         this.address = this._ethereum.defaultAccount;
     }
     /**

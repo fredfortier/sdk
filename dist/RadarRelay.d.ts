@@ -1,18 +1,19 @@
 import { ZeroEx } from '0x.js';
 import { RadarToken } from '@radarrelay/types';
-import { RadarRelayConfig, WalletType, WalletConfig, Account } from './types';
+import { RadarRelayConfig, WalletType, WalletConfig, AccountParams } from './types';
 import { TSMap } from 'typescript-map';
 import { EventBus } from './EventEmitter';
 import { Market } from './market';
+import { BaseAccount } from './accounts/BaseAccount';
 /**
  * RadarRelay main SDK singleton
  */
-export declare class RadarRelay {
+export declare class RadarRelay<T extends BaseAccount> {
     activeWalletType: WalletType;
     events: EventBus;
-    account: Account;
+    account: T;
     tokens: TSMap<string, RadarToken>;
-    markets: TSMap<string, Market>;
+    markets: TSMap<string, Market<T>>;
     zeroEx: ZeroEx;
     private _trade;
     private _ethereum;
@@ -22,6 +23,7 @@ export declare class RadarRelay {
     private _prevApiEndpoint;
     private _markets;
     private _lifecycle;
+    private _wallet;
     /**
      * The load priority list maintains the function call
      * priority for each init method in the RadarRelaySDK class.
@@ -35,13 +37,13 @@ export declare class RadarRelay {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    constructor(config: RadarRelayConfig);
+    constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T);
     /**
      * Initialize the SDK
      *
      * @param {WalletConfig}  config  wallet config
      */
-    initialize(config: WalletConfig): Promise<string | boolean>;
+    initialize(walletConfig: WalletConfig, walletType: WalletType): Promise<RadarRelay<T>>;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;

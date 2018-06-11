@@ -46,9 +46,6 @@ var SDKInitLifeCycle_1 = require("./SDKInitLifeCycle");
 var ethereum_1 = require("./ethereum");
 var market_1 = require("./market");
 var trade_1 = require("./trade");
-var LocalAccount_1 = require("./accounts/LocalAccount");
-var RpcAccount_1 = require("./accounts/RpcAccount");
-var InjectedAccount_1 = require("./accounts/InjectedAccount");
 var constants_1 = require("./constants");
 bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
@@ -60,7 +57,7 @@ var RadarRelay = /** @class */ (function () {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    function RadarRelay(config) {
+    function RadarRelay(rrConfig, wallet) {
         /**
          * The load priority list maintains the function call
          * priority for each init method in the RadarRelaySDK class.
@@ -95,14 +92,15 @@ var RadarRelay = /** @class */ (function () {
         ];
         // set the api/ws endpoint outside
         // of the init _lifecycle
-        this._apiEndpoint = config.endpoint;
-        this._wsEndpoint = config.websocketEndpoint;
+        this._apiEndpoint = rrConfig.endpoint;
+        this._wsEndpoint = rrConfig.websocketEndpoint;
+        this._wallet = wallet;
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
         this._ethereum = new ethereum_1.Ethereum();
         // setup the _lifecycle
-        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeout);
+        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
         this._lifecycle.setup(this);
     }
     /**
@@ -110,28 +108,17 @@ var RadarRelay = /** @class */ (function () {
      *
      * @param {WalletConfig}  config  wallet config
      */
-    RadarRelay.prototype.initialize = function (config) {
+    RadarRelay.prototype.initialize = function (walletConfig, walletType) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, endpoint, websocketEndpoint, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        // local
-                        if (config.wallet) {
-                            this.activeWalletType = types_1.WalletType.Local;
-                        }
-                        // rpc
-                        if (config.rpcUrl) {
-                            this.activeWalletType = types_1.WalletType.Rpc;
-                        }
-                        // injected
-                        if (config.type !== undefined) {
-                            this.activeWalletType = types_1.WalletType.Injected;
-                        }
-                        return [4 /*yield*/, this._ethereum.setProvider(this.activeWalletType, config)];
+                        this.activeWalletType = walletType;
+                        return [4 /*yield*/, this._ethereum.setProvider(this.activeWalletType, walletConfig)];
                     case 1:
                         _c.sent();
-                        if (!(this.activeWalletType === types_1.WalletType.Injected && !(config.web3))) return [3 /*break*/, 3];
+                        if (!(this.activeWalletType === types_1.WalletType.Injected && !(walletConfig.web3))) return [3 /*break*/, 3];
                         _b = constants_1.RADAR_RELAY_ENDPOINTS;
                         return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
                     case 2:
@@ -139,30 +126,28 @@ var RadarRelay = /** @class */ (function () {
                         this._apiEndpoint = endpoint;
                         this._wsEndpoint = websocketEndpoint;
                         _c.label = 3;
-                    case 3: return [2 /*return*/, this.getCallback('ethereumInitialized', this._ethereum)];
+                    case 3:
+                        this.getCallback('ethereumInitialized', this._ethereum);
+                        return [2 /*return*/, this];
                 }
             });
         });
     };
     // --- not user configurable below this line --- //
-    RadarRelay.prototype.initAccountAsync = function (account) {
+    RadarRelay.prototype.initAccountAsync = function (address) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(account)];
+                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(address)];
                     case 1:
                         _a.sent();
-                        switch (this.activeWalletType) {
-                            case types_1.WalletType.Local:
-                                this.account = new LocalAccount_1.LocalAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
-                                break;
-                            case types_1.WalletType.Rpc:
-                                this.account = new RpcAccount_1.RpcAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens);
-                                break;
-                            case types_1.WalletType.Injected:
-                                this.account = new InjectedAccount_1.InjectedAccount(this._ethereum, this.zeroEx, this._apiEndpoint, this.tokens, this.events);
-                                break;
-                        }
+                        this.account = new this._wallet({
+                            ethereum: this._ethereum,
+                            events: this.events,
+                            zeroEx: this.zeroEx,
+                            endpoint: this._apiEndpoint,
+                            tokens: this.tokens
+                        });
                         return [2 /*return*/, this.getCallback('accountInitialized', this.account)];
                 }
             });

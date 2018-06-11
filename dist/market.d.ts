@@ -3,7 +3,8 @@ import { Trade } from './trade';
 import { Opts } from './types';
 import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
-export declare class Market {
+import { BaseAccount } from './accounts';
+export declare class Market<T extends BaseAccount> {
     id: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -17,7 +18,7 @@ export declare class Market {
     private _wsEndpoint;
     private _trade;
     private _wsClient;
-    constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade);
+    constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>);
     getBookAsync(): Promise<RadarBook>;
     getFillsAsync(): Promise<RadarFill[]>;
     getCandlesAsync(): Promise<RadarCandle[]>;
