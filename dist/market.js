@@ -128,7 +128,7 @@ var Market = /** @class */ (function () {
      * @param {string}                 topic  market topic
      * @param {WebsocketRequestTopic}  topic
      */
-    Market.prototype.subscribe = function (topic, handleFunc) {
+    Market.prototype.subscribe = function (topic, handlerFunc) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -142,7 +142,7 @@ var Market = /** @class */ (function () {
                             type: radar_types_1.WebsocketRequestType.SUBSCRIBE,
                             topic: topic,
                             market: this.id
-                        }, handleFunc)];
+                        }, handlerFunc)];
                 }
             });
         });
