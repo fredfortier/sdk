@@ -1,4 +1,4 @@
-import { Ethereum } from '../Ethereum';
+import { Ethereum } from '../ethereum';
 import { promisify } from 'util';
 import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
 import BigNumber from 'bignumber.js';

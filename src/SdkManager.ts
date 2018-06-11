@@ -14,7 +14,11 @@ export class SdkManager {
   public static async InitializeAsync(rrConfig: RadarRelayConfig, walletConfig: RpcWalletConfig): Promise<RadarRelay<RpcAccount>>;
   public static async InitializeAsync(rrConfig: RadarRelayConfig, walletConfig: InjectedWalletConfig): Promise<RadarRelay<InjectedAccount>>;
 
-  // Implementation
+  /**
+   * Initialize the appropriate sdk
+   * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
+   * @param {WalletConfig} walletConfig Wallet specific configuration options
+   */
   public static async InitializeAsync(rrConfig: RadarRelayConfig, walletConfig: WalletConfig) {
     if ((walletConfig as LightWalletConfig).wallet) {
       return await new RadarRelay<LocalAccount>(rrConfig, LocalAccount).initialize(walletConfig, WalletType.Local);

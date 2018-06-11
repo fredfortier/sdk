@@ -43,7 +43,7 @@ var request = require("request-promise");
 var typescript_map_1 = require("typescript-map");
 // SDK Classes
 var SDKInitLifeCycle_1 = require("./SDKInitLifeCycle");
-var Ethereum_1 = require("./Ethereum");
+var ethereum_1 = require("./ethereum");
 var market_1 = require("./market");
 var trade_1 = require("./trade");
 var constants_1 = require("./constants");
@@ -98,7 +98,7 @@ var RadarRelay = /** @class */ (function () {
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
-        this._ethereum = new Ethereum_1.Ethereum();
+        this._ethereum = new ethereum_1.Ethereum();
         // setup the _lifecycle
         this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
         this._lifecycle.setup(this);

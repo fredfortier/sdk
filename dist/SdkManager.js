@@ -41,7 +41,11 @@ var types_1 = require("./types");
 var SdkManager = /** @class */ (function () {
     function SdkManager() {
     }
-    // Implementation
+    /**
+     * Initialize the appropriate sdk
+     * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
+     * @param {WalletConfig} walletConfig Wallet specific configuration options
+     */
     SdkManager.InitializeAsync = function (rrConfig, walletConfig) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
