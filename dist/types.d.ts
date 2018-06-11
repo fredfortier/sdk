@@ -64,11 +64,6 @@ export interface Wallet {
     exportSeedPhraseAsync(password: string): string;
     exportAccountPrivateKeyAsync(account: string, password: string): any;
 }
-export interface TransactionManager {
-    getAccounts(): string[];
-    signTransactionAsync(unsignedTx: UnsignedPayload): Promise<any>;
-    signMessageAsync(unsignedMsg: UnsignedPayload): Promise<any>;
-}
 export declare enum PayloadType {
     Tx = 0,
     Msg = 1,
