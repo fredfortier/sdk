@@ -121,7 +121,7 @@ export class RadarRelay<T extends BaseAccount> {
       this._wsEndpoint = websocketEndpoint;
     }
 
-    this.getCallback('ethereumInitialized', this._ethereum);
+    await this.getCallback('ethereumInitialized', this._ethereum);
 
     return this;
   }

@@ -126,8 +126,9 @@ var RadarRelay = /** @class */ (function () {
                         this._apiEndpoint = endpoint;
                         this._wsEndpoint = websocketEndpoint;
                         _c.label = 3;
-                    case 3:
-                        this.getCallback('ethereumInitialized', this._ethereum);
+                    case 3: return [4 /*yield*/, this.getCallback('ethereumInitialized', this._ethereum)];
+                    case 4:
+                        _c.sent();
                         return [2 /*return*/, this];
                 }
             });
