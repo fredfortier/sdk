@@ -67,11 +67,12 @@ var WebsocketClient = /** @class */ (function () {
         subscribeRequest.requestId = this._curSubID;
         this._client.send(JSON.stringify(subscribeRequest));
         this._subscriptions[this._curSubID] = {
+            requestId: this._curSubID,
             subscriptionHandler: subscriptionHandler,
             unsubscribe: function () {
                 // Send unsubscribe for this subscribe request
                 subscribeRequest.type = radar_types_1.WebsocketRequestType.UNSUBSCRIBE;
-                return _this._client.send(JSON.stringify(subscribeRequest));
+                _this._client.send(JSON.stringify(subscribeRequest));
             }
         };
         return this._subscriptions[this._curSubID];

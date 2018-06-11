@@ -128,7 +128,7 @@ var Market = /** @class */ (function () {
      * @param {string}                 topic  market topic
      * @param {WebsocketRequestTopic}  topic
      */
-    Market.prototype.subscribe = function (topic, handlerFunc) {
+    Market.prototype.subscribeAsync = function (topic, handlerFunc) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {

@@ -77,12 +77,6 @@ export interface Wallet {
   exportAccountPrivateKeyAsync(account: string, password: string);
 }
 
-export interface TransactionManager {
-  getAccounts(): string[];
-  signTransactionAsync(unsignedTx: UnsignedPayload): Promise<any>;
-  signMessageAsync(unsignedMsg: UnsignedPayload): Promise<any>;
-}
-
 export enum PayloadType {
   Tx,
   Msg,
