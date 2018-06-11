@@ -52,7 +52,7 @@ describe.skip('RadarRelay.Ws', () => {
 
       const zrxWethMarket = rrsdk.markets.get('ZRX-WETH');
 
-      const subscription = await zrxWethMarket.subscribe('BOOK', mssg => {
+      const subscription = await zrxWethMarket.subscribeAsync('BOOK', mssg => {
         console.log(mssg);
         if (mssg.action === 'NEW') {
           resolve();

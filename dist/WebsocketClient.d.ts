@@ -22,7 +22,11 @@ export declare class WebsocketClient {
      * @param {RadarSubscribeRequest}  subscribeRequest
      * @param {function}               subscriptionHandler
      */
-    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: any): any;
+    subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: (messsage: any) => void): {
+        requestId: number;
+        subscriptionHandler: (messsage: any) => void;
+        unsubscribe: () => void;
+    };
     /**
      * Connect method
      */

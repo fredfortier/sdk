@@ -29,7 +29,11 @@ export declare class Market<T extends BaseAccount> {
      * @param {string}                 topic  market topic
      * @param {WebsocketRequestTopic}  topic
      */
-    subscribe(topic: WebsocketRequestTopic, handleFunc: () => {}): Promise<{}>;
+    subscribeAsync(topic: WebsocketRequestTopic, handlerFunc: (message: any) => void): Promise<{
+        requestId: number;
+        subscriptionHandler: (message: any) => void;
+        unsubscribe: () => void;
+    }>;
     /**
      * Execute a market order
      *

@@ -32,17 +32,25 @@ export class WebsocketClient {
    * @param {RadarSubscribeRequest}  subscribeRequest
    * @param {function}               subscriptionHandler
    */
-  public subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler) {
+  public subscribe(
+    subscribeRequest: RadarSubscribeRequest,
+    subscriptionHandler: (messsage: any) => void
+  ): {
+    requestId: number,
+    subscriptionHandler: (messsage: any) => void,
+    unsubscribe: () => void
+  } {
     if (!this._clientIsConnected) throw new Error('WEBSOCKET_DISCONNECTED');
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
     this._client.send(JSON.stringify(subscribeRequest));
     this._subscriptions[this._curSubID] = {
+      requestId: this._curSubID,
       subscriptionHandler,
       unsubscribe: () => {
         // Send unsubscribe for this subscribe request
         (subscribeRequest as any).type = WebsocketRequestType.UNSUBSCRIBE;
-        return this._client.send(JSON.stringify(subscribeRequest));
+        this._client.send(JSON.stringify(subscribeRequest));
       }
     };
 

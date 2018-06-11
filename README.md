@@ -1,13 +1,14 @@
 ---
-path: "/radar-relay-sdk"
-version: "0.2.3"
+path: "/sdk"
+version: "0.2.5"
 ---
 
 # Radar Relay SDK
 
 The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
 
-[![CircleCI](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta)
+[![npm version](https://badge.fury.io/js/%40radarrelay%2Fsdk.svg)](https://badge.fury.io/js/%40radarrelay%2Fsdk)
+[![CircleCI](https://circleci.com/gh/RadarRelay/sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/sdk/tree/beta)
 
 ## SDK Reference
 For a full SDK reference see: [docs.radarrelay.com/sdk-reference](https://docs.radarrelay.com/sdk-reference).
@@ -153,7 +154,9 @@ rr.markets.get('ZRX-WETH').getOrderBookAsync
 
 // Subscriptions
 // NOTE: CANDLE and TICKER topics are not yet supported.
-const subscription = rr.markets.get('ZRX-WETH').subscribe(WebsocketRequestTopic.BOOK, handlerFunction);
+const subscription = await rr.markets.get('ZRX-WETH').subscribeAsync(
+  WebsocketRequestTopic.BOOK, handlerFunction
+);
 
 // Unsubscribe to a previously created subscription
 subscription.unsubscribe();
