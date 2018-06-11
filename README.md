@@ -154,7 +154,9 @@ rr.markets.get('ZRX-WETH').getOrderBookAsync
 
 // Subscriptions
 // NOTE: CANDLE and TICKER topics are not yet supported.
-const subscription = rr.markets.get('ZRX-WETH').subscribe(WebsocketRequestTopic.BOOK, handlerFunction);
+const subscription = await rr.markets.get('ZRX-WETH').subscribeAsync(
+  WebsocketRequestTopic.BOOK, handlerFunction
+);
 
 // Unsubscribe to a previously created subscription
 subscription.unsubscribe();

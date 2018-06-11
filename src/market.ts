@@ -85,7 +85,7 @@ export class Market {
    * @param {string}                 topic  market topic
    * @param {WebsocketRequestTopic}  topic
    */
-  public async subscribe(
+  public async subscribeAsync(
     topic: WebsocketRequestTopic,
     handlerFunc: (message: any) => void
   ): Promise<{
