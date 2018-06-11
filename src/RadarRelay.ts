@@ -16,9 +16,9 @@ import { TSMap } from 'typescript-map';
 // SDK Classes
 import { SDKInitLifeCycle, InitPriorityItem } from './SDKInitLifeCycle';
 import { EventBus } from './EventEmitter';
-import { Ethereum } from './ethereum';
-import { Market } from './market';
-import { Trade } from './trade';
+import { Ethereum } from './Ethereum';
+import { Market } from './Market';
+import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
 

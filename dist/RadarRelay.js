@@ -43,9 +43,9 @@ var request = require("request-promise");
 var typescript_map_1 = require("typescript-map");
 // SDK Classes
 var SDKInitLifeCycle_1 = require("./SDKInitLifeCycle");
-var ethereum_1 = require("./ethereum");
-var market_1 = require("./market");
-var trade_1 = require("./trade");
+var Ethereum_1 = require("./Ethereum");
+var Market_1 = require("./Market");
+var Trade_1 = require("./Trade");
 var constants_1 = require("./constants");
 bignumber_js_1.default.config({ EXPONENTIAL_AT: 1e+9 });
 /**
@@ -100,7 +100,7 @@ var RadarRelay = /** @class */ (function () {
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
-        this._ethereum = new ethereum_1.Ethereum();
+        this._ethereum = new Ethereum_1.Ethereum();
         // setup the _lifecycle
         this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
         this._lifecycle.setup(this);
@@ -176,7 +176,7 @@ var RadarRelay = /** @class */ (function () {
         return this.getCallback('zeroExInitialized', this.zeroEx);
     };
     RadarRelay.prototype.initTrade = function () {
-        this._trade = new trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+        this._trade = new Trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
         return this.getCallback('tradeInitialized', this._trade);
     };
     RadarRelay.prototype.initTokensAsync = function () {
@@ -222,7 +222,7 @@ var RadarRelay = /** @class */ (function () {
                         this._prevApiEndpoint = this._apiEndpoint;
                         this.markets = new typescript_map_1.TSMap();
                         this._markets.map(function (market) {
-                            _this.markets.set(market.id, new market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
+                            _this.markets.set(market.id, new Market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
                         });
                         return [2 /*return*/, this.getCallback('marketsInitialized', this.markets)];
                 }

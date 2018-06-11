@@ -4,7 +4,7 @@ import Web3 = require('web3');
 import { LocalAccount } from './accounts/LocalAccount';
 import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
-import { Ethereum } from './ethereum';
+import { Ethereum } from './Ethereum';
 import { EventEmitter } from 'events';
 import { TSMap } from 'typescript-map';
 import { RadarToken } from '@radarrelay/types';
