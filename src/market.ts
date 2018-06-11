@@ -85,7 +85,7 @@ export class Market {
    * @param {string}                 topic  market topic
    * @param {WebsocketRequestTopic}  topic
    */
-  public async subscribe(topic: WebsocketRequestTopic, handleFunc: () => {}): Promise<{}> {
+  public async subscribe(topic: WebsocketRequestTopic, handlerFunc: (message: any) => void): Promise<{}> {
     if (!this._wsClient.connected) {
       await this._wsClient.connect(this._wsEndpoint);
     }
@@ -93,7 +93,7 @@ export class Market {
        type: WebsocketRequestType.SUBSCRIBE,
        topic,
        market: this.id
-     }, handleFunc);
+     }, handlerFunc);
   }
 
   /**
