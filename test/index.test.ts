@@ -4,13 +4,9 @@
 // TODO test is dependent on local running API
 // Create MOCK API endpoints
 
-import * as mocha from 'mocha';
 import * as chai from 'chai';
 import {SdkManager} from '../src/index';
 import {mockRequests} from './lib/mockRequests';
-import { LocalAccount } from '../src/accounts/LocalAccount';
-import { RadarRelay } from '../src/RadarRelay';
-import { RpcAccount } from '../src/accounts';
 
 const expect = chai.expect;
 
