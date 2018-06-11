@@ -8,7 +8,7 @@ version: "0.2.4"
 The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
 
 [![npm version](https://badge.fury.io/js/%40radarrelay%2Fsdk.svg)](https://badge.fury.io/js/%40radarrelay%2Fsdk)
-[![CircleCI](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/radar-relay-sdk/tree/beta)
+[![CircleCI](https://circleci.com/gh/RadarRelay/sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/sdk/tree/beta)
 
 ## SDK Reference
 For a full SDK reference see: [docs.radarrelay.com/sdk-reference](https://docs.radarrelay.com/sdk-reference).
