@@ -1,48 +1,104 @@
-
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import * as mocha from 'mocha';
+// TODO test is dependent on local running API
+// Create MOCK API endpoints
+
 import * as chai from 'chai';
-import {RadarRelaySDK} from '../src/index';
+import { SdkManager } from '../src/index';
+import { mockRequests } from './lib/mockRequests';
 
 const expect = chai.expect;
 
-// TODO use testrpc
-describe('RadarRelaySDK', () => {
+describe('RadarRelay', async () => {
 
-    let rrsdk;
-    let networkUpdatedEventFired = false;
-    let accountUpdatedEventFired = false;
+  const rrsdk = await SdkManager.Setup({
+    endpoint: 'http://localhost:8080/v0',
+    websocketEndpoint: 'ws://ws.radarrelay.com'
+  },
+    {
+      wallet: {
+        password: 'password',
+        seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+      },
+      dataRpcUrl: 'http://localhost:8545'
+    }
+  );
 
-    it('properly sets ethereum connection and fires event', async () => {
-      rrsdk = new RadarRelaySDK();
+  mockRequests();
 
-      rrsdk.events.on('networkUpdated', () => {
-        networkUpdatedEventFired = true;
-      });
-      await rrsdk.setEthereumConnectionAsync('http://35.196.15.153:8545');
+  rrsdk.events.on('loading', data => {
+    // console.log(data);
+  });
 
-      expect(rrsdk.networkId).is.not.undefined;
-      expect(networkUpdatedEventFired).to.be.true;
-    });
+  let ethereumInitialized = false;
+  let accountInitialized = false;
+  let ethereumNetworkIdInitialized = false;
+  let zeroExInitialized = false;
+  let tokensInitialized = false;
+  let marketsInitialized = false;
+  let tradeInitialized = false;
 
-    it.skip('properly handles setting invalid connection');
+  rrsdk.events.on('ethereumInitialized', network => {
+    ethereumInitialized = true;
+  });
+  rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
+    ethereumNetworkIdInitialized = true;
+  });
+  rrsdk.events.on('tokensInitialized', account => {
+    tokensInitialized = true;
+  });
+  rrsdk.events.on('accountInitialized', account => {
+    accountInitialized = true;
+  });
+  rrsdk.events.on('zeroExInitialized', zeroEx => {
+    zeroExInitialized = true;
+  });
+  rrsdk.events.on('tradeInitialized', trade => {
+    tradeInitialized = true;
+  });
+  rrsdk.events.on('marketsInitialized', markets => {
+    marketsInitialized = true;
+  });
 
-    it('properly sets account and fires event', () => {
-      rrsdk.events.on('accountUpdated', () => {
-        accountUpdatedEventFired = true;
-      });
-      rrsdk.setAccount(0);
-      expect(rrsdk.account.address).is.not.undefined;
-      expect(accountUpdatedEventFired).to.be.true;
-    });
+  beforeEach(() => {
+    ethereumInitialized = false;
+    tokensInitialized = false;
+    accountInitialized = false;
+    ethereumNetworkIdInitialized = false;
+    zeroExInitialized = false;
+    marketsInitialized = false;
+    tradeInitialized = false;
+  });
 
-    it.skip('properly handles setting invalid account');
+  it('properly initializes and updates via init lifecycle', async () => {
 
-    it('initializes ZeroEx', () => {
-      const exchangeAddress = rrsdk.zeroEx.exchange.getContractAddress();
-      expect(exchangeAddress).is.not.undefined;
-    });
+    await SdkManager.InitializeAsync(rrsdk);
+
+    expect(accountInitialized).to.be.true;
+    expect(ethereumInitialized).to.be.true;
+    expect(tokensInitialized).to.be.true;
+    expect(accountInitialized).to.be.true;
+    expect(zeroExInitialized).to.be.true;
+    expect(tradeInitialized).to.be.true;
+    expect(marketsInitialized).to.be.true;
+  });
+
+  it('SDK reloads properly when an account address is changed', async () => {
+    let addresses = await rrsdk.account.getAvailableAddressesAsync();
+    if (addresses.length === 1) {
+      rrsdk.account.addNewAddresses(1);
+      addresses = await rrsdk.account.getAvailableAddressesAsync();
+    }
+
+    await rrsdk.account.setAddressAsync(addresses[1]);
+    expect(rrsdk.account.address).to.be.eq(addresses[1]);
+    // check nested dependency (NOTE: private vars)
+    expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
+  });
+
+  it.skip('properly handles setting invalid connection');
+
+  it.skip('properly handles setting invalid account');
 
 });
