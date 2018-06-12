@@ -15,28 +15,52 @@ For a full SDK reference see: [docs.radarrelay.com/sdk-reference](https://docs.r
 
 ## Usage
 
-### Setup
+### Installation
 `~ npm install @radarrelay/sdk` or `~ yarn add @radarrelay/sdk`
 
-```javascript
-import RadarRelay from '@radarrelay/sdk';
+### Setup & Initialize
+**Setup** refers to the instantiation of the `RadarRelay` class and setup for the initialization lifecycle.
 
-const rr = new RadarRelay({
-  endpoint: string; // endpoint for radar relay's api: e.g. https://api.radarrelay.com/v0
-  websocketEndpoint: string // endpoint for radar relay's websockers e.g. wss://ws.radarrelay.com
-});
+**Initialize** refers to the execution of the "initialization lifecycle" - A collection of asynchronous operations that hook up the wallet, set the web3 provider, and spin up the classes necessary to begin trading.
+
+Setup and initialization of the SDK can be completed in a single call if you don't want to listen for initialization events.
+
+```javascript
+import { SdkManager } from '@radarrelay/sdk';
+
+const rr = await SdkManager.SetupAndInitializeAsync({
+  endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
+  websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
+}, WalletConfig); // Wallet Configuration Details
+```
+
+
+### Setup
+Setup can be separated from initialization, which is useful if you would like to add listeners for the various initialization events.
+
+```javascript
+import { SdkManager } from '@radarrelay/sdk';
+
+const rr = SdkManager.Setup({
+  endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
+  websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
+}, WalletConfig); // Wallet Configuration Details
 ```
 
 ### Initialize
 Initializing sets the desired Ethereum wallet configuration. The SDK can be initialized with three different wallet types: `LightWallet`, `InjectedWallet`, and an `RpcWallet`. See the below types for more information.
 
 ```javascript
-rr.initialize(LightWalletConfig|InjectedWalletConfig|RpcWalletConfig); 
+await SdkManager.InitializeAsync(rr); 
+```
+
+Or directly on the SDK instance:
+
+```javascript
+await rr.initializeAsync(); 
 ```
 
 #### Wallet Configuration Types
-
-
 ```javascript 
 interface EthereumConfig {
   defaultGasPrice?: BigNumber;
@@ -55,26 +79,23 @@ interface LightWalletOptions {
 ```javascript 
 interface LightWalletConfig extends EthereumConfig {
   wallet: LightWalletOptions; // Wallet options for a local HD wallet
-  dataRpcUrl: string;  // the rpc connection used to broadcast transactions and retreive Ethereum chain state
+  dataRpcUrl: string;  // The rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
 
 ```javascript 
 interface InjectedWalletConfig extends EthereumConfig {
   type: InjectedWalletType;
-  web3: Web3; // Injected web3 object
-  dataRpcUrl: string; // the rpc connection used to broadcast transactions and retreive Ethereum chain state
+  web3?: Web3; // Injected web3 object (Default: window.web3)
+  dataRpcUrl?: string; // Rpc connection used to broadcast transactions and retreive Ethereum chain state (Default: Injected Web3 Connection)
 }
 ```
 
 ```javascript 
 interface RpcWalletConfig extends EthereumConfig {
-  walletRpcUrl: string; // The RPC connection to an unlocked node
-  dataRpcUrl: string; // The rpc connection used to broadcast transactions and retreive Ethereum chain state
+  rpcUrl: string; // The RPC connection to an unlocked node
 }
 ```
-
-
 
 ### Events
 Anything that triggers state changes (like changing the network, or a fill)
@@ -93,6 +114,7 @@ rr.events.on(
   'marketsInitialized'
   'transactionPending'
   'transactionMined'
+  'addressChanged'
 )
 rr.events.emit('see_above' | 'or emit anything', with, some, data)
 ```

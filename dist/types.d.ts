@@ -15,7 +15,7 @@ export interface RadarEndpointConfig {
     websocketEndpoint: string;
 }
 export interface RadarRelayConfig extends RadarEndpointConfig {
-    sdkInitializationTimeout?: number;
+    sdkInitializationTimeoutMs?: number;
 }
 export interface EthereumConfig {
     defaultGasPrice?: BigNumber;

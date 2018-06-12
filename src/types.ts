@@ -16,7 +16,7 @@ export interface RadarEndpointConfig {
 }
 
 export interface RadarRelayConfig extends RadarEndpointConfig {
-  sdkInitializationTimeout?: number;
+  sdkInitializationTimeoutMs?: number;
 }
 
 export interface EthereumConfig {

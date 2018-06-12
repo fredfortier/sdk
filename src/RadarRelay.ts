@@ -100,7 +100,7 @@ export class RadarRelay<T extends BaseAccount> {
     this._ethereum = new Ethereum();
 
     // setup the _lifecycle
-    this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeout);
+    this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeoutMs);
     this._lifecycle.setup(this);
   }
 
