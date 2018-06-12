@@ -35,6 +35,9 @@ export class Trade<T extends BaseAccount> {
     quantity: BigNumber,
     opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
+    if (!opts) {
+      opts = {};
+    }
 
     const marketResponse = await request.post({
       url: `${this._endpoint}/markets/${market.id}/order/market`,
@@ -50,12 +53,23 @@ export class Trade<T extends BaseAccount> {
       marketResponse.orders[i].expirationUnixTimestampSec = new BigNumber(order.expirationUnixTimestampSec);
     });
 
-    const txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
-      marketResponse.orders,
-      ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
-      true,
-      this._account.address,
-      opts.transactionOpts);
+    let txHash: string;
+    if (marketResponse.orders.length === 1) {
+      // Save gas by executing a fill order if only one order was returned
+      txHash = await this._zeroEx.exchange.fillOrderAsync(
+        marketResponse.orders[0],
+        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
+        true,
+        this._account.address,
+        opts.transactionOpts);
+    } else {
+      txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
+        marketResponse.orders,
+        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
+        true,
+        this._account.address,
+        opts.transactionOpts);
+    }
 
     this._events.emit('transactionPending', txHash);
 
@@ -118,6 +132,10 @@ export class Trade<T extends BaseAccount> {
   public async cancelOrderAsync(
     order: SignedOrder, opts?: Opts
   ): Promise<TransactionReceiptWithDecodedLogs | string> {
+    if (!opts) {
+      opts = {};
+    }
+
     const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
     this._events.emit('transactionPending', txHash);
 

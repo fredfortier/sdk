@@ -89,6 +89,9 @@ var BaseAccount = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
                         txOpts = {
                             gasPrice: opts.transactionOpts ? opts.transactionOpts.gasPrice : undefined,
                             gas: opts.transactionOpts ? opts.transactionOpts.gasLimit : undefined
@@ -116,7 +119,11 @@ var BaseAccount = /** @class */ (function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -139,7 +146,11 @@ var BaseAccount = /** @class */ (function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -183,6 +194,9 @@ var BaseAccount = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
                         amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
                         return [4 /*yield*/, this._zeroEx.token.transferAsync(token, this.address, to, amt, opts.transactionOpts)];
                     case 1:
@@ -227,6 +241,9 @@ var BaseAccount = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
                         amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
                         return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt, opts.transactionOpts)];
                     case 1:
@@ -251,7 +268,11 @@ var BaseAccount = /** @class */ (function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
