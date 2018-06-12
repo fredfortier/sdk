@@ -35,101 +35,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = require("util");
 var _0x_js_1 = require("0x.js");
-var types_1 = require("./types");
-var es6_promisify_1 = require("es6-promisify");
 var request = require("request-promise");
-var Account = /** @class */ (function () {
-    function Account(ethereum, zeroEx, apiEndpoint, tokens) {
-        // TODO tokens + decimal calculations and conversions
-        this._endpoint = apiEndpoint;
-        this._tokens = tokens;
-        this._ethereum = ethereum;
-        this._zeroEx = zeroEx;
-        this._wallet = this._ethereum.wallet || undefined;
+var BaseAccount = /** @class */ (function () {
+    function BaseAccount(params) {
+        this._ethereum = params.ethereum;
+        this._events = params.events;
+        this._zeroEx = params.zeroEx;
+        this._endpoint = params.endpoint;
+        this._tokens = params.tokens;
         this.address = this._ethereum.defaultAccount;
     }
-    Object.defineProperty(Account.prototype, "walletType", {
-        get: function () {
-            return this._wallet ? types_1.WalletType.Local : types_1.WalletType.Rpc;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    /**
-     * Export an account wallet seed phrase.
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string} password
-     */
-    Account.prototype.exportSeedPhraseAsync = function (password) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!this._wallet)
-                            return [2 /*return*/, ''];
-                        return [4 /*yield*/, this._wallet.exportSeedPhraseAsync(password)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    /**
-     * Export a wallet address private key
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string} password
-     */
-    Account.prototype.exportAddressPrivateKeyAsync = function (password) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!this._wallet)
-                            return [2 /*return*/, ''];
-                        return [4 /*yield*/, this._wallet.exportAccountPrivateKeyAsync(this.address, password)];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    /**
-     * Set the current address in use
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string|number} address or address index
-     */
-    Account.prototype.setAddressAsync = function (address) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._ethereum.setDefaultAccount(address)];
-                    case 1:
-                        _a.sent();
-                        this.address = this._ethereum.defaultAccount;
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    /**
-     * Add new addresses for this account
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {number}  num  amount of addresses to create
-     */
-    Account.prototype.addNewAddresses = function (num) {
-        this._wallet.addNewAccounts(num);
-    };
     /**
      * Get available addresses for this account
      */
-    Account.prototype.getAvailableAddressesAsync = function () {
+    BaseAccount.prototype.getAvailableAddressesAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, es6_promisify_1.promisify(this._ethereum.web3.eth.getAccounts)()];
+                    case 0: return [4 /*yield*/, util_1.promisify(this._ethereum.web3.eth.getAccounts)()];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -138,7 +63,7 @@ var Account = /** @class */ (function () {
     /**
      * Get ETH balance for the current selected address
      */
-    Account.prototype.getEthBalanceAsync = function () {
+    BaseAccount.prototype.getEthBalanceAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
             var balance;
             return __generator(this, function (_a) {
@@ -158,7 +83,7 @@ var Account = /** @class */ (function () {
      * @param {BigNumber}  amount amount of eth to transfer
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.transferEthAsync = function (to, amount, opts) {
+    BaseAccount.prototype.transferEthAsync = function (to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txOpts, txHash;
             return __generator(this, function (_a) {
@@ -186,7 +111,7 @@ var Account = /** @class */ (function () {
      * @param {BigNumber}  amount amount of eth to wrap
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.wrapEthAsync = function (amount, opts) {
+    BaseAccount.prototype.wrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
@@ -209,7 +134,7 @@ var Account = /** @class */ (function () {
      * @param {BigNumber}  amount amount of WETH to unwrap
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.unwrapEthAsync = function (amount, opts) {
+    BaseAccount.prototype.unwrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
@@ -231,7 +156,7 @@ var Account = /** @class */ (function () {
      *
      * @param {string}  token  token address
      */
-    Account.prototype.getTokenBalanceAsync = function (token) {
+    BaseAccount.prototype.getTokenBalanceAsync = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             var balance;
             return __generator(this, function (_a) {
@@ -252,7 +177,7 @@ var Account = /** @class */ (function () {
      * @param {BigNumber}  amount amount of token to transfer
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.transferTokenAsync = function (token, to, amount, opts) {
+    BaseAccount.prototype.transferTokenAsync = function (token, to, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
@@ -276,7 +201,7 @@ var Account = /** @class */ (function () {
      *
      * @param {string}     token  token address
      */
-    Account.prototype.getTokenAllowanceAsync = function (token) {
+    BaseAccount.prototype.getTokenAllowanceAsync = function (token) {
         return __awaiter(this, void 0, void 0, function () {
             var baseUnitallowance;
             return __generator(this, function (_a) {
@@ -296,7 +221,7 @@ var Account = /** @class */ (function () {
      * @param {BigNumber}  amount allowance amount
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.setTokenAllowanceAsync = function (token, amount, opts) {
+    BaseAccount.prototype.setTokenAllowanceAsync = function (token, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
@@ -321,7 +246,7 @@ var Account = /** @class */ (function () {
      * @param {string}     token  token address
      * @param {Opts}       opts   optional transaction options
      */
-    Account.prototype.setUnlimitedTokenAllowanceAsync = function (token, opts) {
+    BaseAccount.prototype.setUnlimitedTokenAllowanceAsync = function (token, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
@@ -344,7 +269,7 @@ var Account = /** @class */ (function () {
      * @param {number} page
      * @param {number} perPage
      */
-    Account.prototype.getOrdersAsync = function (page, perPage) {
+    BaseAccount.prototype.getOrdersAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }
         if (perPage === void 0) { perPage = 100; }
         return __awaiter(this, void 0, void 0, function () {
@@ -365,7 +290,7 @@ var Account = /** @class */ (function () {
      * @param {number} page
      * @param {number} perPage
      */
-    Account.prototype.getFillsAsync = function (page, perPage) {
+    BaseAccount.prototype.getFillsAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }
         if (perPage === void 0) { perPage = 100; }
         return __awaiter(this, void 0, void 0, function () {
@@ -380,7 +305,7 @@ var Account = /** @class */ (function () {
             });
         });
     };
-    Account.prototype._getWETHTokenAddress = function () {
+    BaseAccount.prototype._getWETHTokenAddress = function () {
         var token;
         this._tokens.forEach(function (t) {
             if (t.symbol === 'WETH') {
@@ -389,6 +314,6 @@ var Account = /** @class */ (function () {
         });
         return token.address;
     };
-    return Account;
+    return BaseAccount;
 }());
-exports.Account = Account;
+exports.BaseAccount = BaseAccount;

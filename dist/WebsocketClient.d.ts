@@ -1,4 +1,4 @@
-import { RadarSubscribeRequest } from 'radar-types';
+import { RadarSubscribeRequest } from '@radarrelay/types';
 /**
  * Websocket client helper class
  * for websocket connection handling

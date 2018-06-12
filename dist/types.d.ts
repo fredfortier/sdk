@@ -1,73 +1,46 @@
-import { TransactionOpts } from '0x.js';
+/// <reference types="node" />
+import { TransactionOpts, ZeroEx } from '0x.js';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
-export { RadarToken, RadarMarket } from 'radar-types';
-export interface RadarRelayConfig {
+import { LocalAccount } from './accounts/LocalAccount';
+import { RpcAccount } from './accounts/RpcAccount';
+import { InjectedAccount } from './accounts/InjectedAccount';
+import { Ethereum } from './Ethereum';
+import { EventEmitter } from 'events';
+import { TSMap } from 'typescript-map';
+import { RadarToken } from '@radarrelay/types';
+export { RadarToken, RadarMarket } from '@radarrelay/types';
+export interface RadarEndpointConfig {
     endpoint: string;
     websocketEndpoint: string;
-    sdkInitializationTimeout?: number;
+}
+export interface RadarRelayConfig extends RadarEndpointConfig {
+    sdkInitializationTimeoutMs?: number;
 }
 export interface EthereumConfig {
     defaultGasPrice?: BigNumber;
 }
 export interface InjectedWalletConfig extends EthereumConfig {
     type: InjectedWalletType;
-    web3: Web3;
-    dataRpcUrl: string;
+    web3?: Web3;
+    dataRpcUrl?: string;
 }
-export interface CoreWalletOptions {
+export interface LightWalletOptions {
     password: string;
     seedPhrase?: string;
     salt?: string;
     hdPathString?: string;
 }
 export interface LightWalletConfig extends EthereumConfig {
-    wallet: CoreWalletOptions;
+    wallet: LightWalletOptions;
     dataRpcUrl: string;
 }
 export interface RpcWalletConfig extends EthereumConfig {
-    walletRpcUrl: string;
-    dataRpcUrl: string;
-}
-export interface PartialTxParams {
-    nonce: string;
-    gasPrice?: string;
-    gas: string;
-    to: string;
-    from?: string;
-    value?: string;
-    data?: string;
-    chainId: number;
+    rpcUrl: string;
 }
 export interface Opts {
-    transactionOpts: TransactionOpts;
+    transactionOpts?: TransactionOpts;
     awaitTransactionMined?: boolean;
-}
-export interface MsgParams {
-    from: string;
-    data: string;
-}
-export interface UnsignedPayload {
-    type: PayloadType;
-    params: PartialTxParams | MsgParams;
-}
-export interface Signer {
-    signPersonalMessageAsync(account: string, message: string): Promise<string>;
-    signPersonalMessageHashAsync(account: string, hash: string): Promise<string>;
-    signTransactionAsync(txParams: PartialTxParams): Promise<string>;
-}
-export interface Wallet {
-    type: WalletType;
-    signer: Signer;
-    getAccounts(): string[];
-    addNewAccounts(numberOfAccounts: number): void;
-    exportSeedPhraseAsync(password: string): string;
-    exportAccountPrivateKeyAsync(account: string, password: string): any;
-}
-export declare enum PayloadType {
-    Tx = 0,
-    Msg = 1,
-    PersonalMsg = 2
 }
 export declare enum WalletType {
     Local = 0,
@@ -76,7 +49,7 @@ export declare enum WalletType {
     Ledger = 3
 }
 export declare enum InjectedWalletType {
-    Metmask = 0
+    Metmask = "metamask"
 }
 export declare enum InfuraNetwork {
     Mainnet = "mainnet",
@@ -84,4 +57,19 @@ export declare enum InfuraNetwork {
     Rinkeby = "rinkeby",
     Ropsten = "ropsten"
 }
+export declare enum NetwordId {
+    Mainnet = 1,
+    Kovan = 42,
+    Rinkeby = 4,
+    Ropsten = 3
+}
 export declare type RpcConnection = string | InfuraNetwork;
+export declare type Account = LocalAccount | RpcAccount | InjectedAccount;
+export declare type WalletConfig = LightWalletConfig | RpcWalletConfig | InjectedWalletConfig;
+export interface AccountParams {
+    ethereum: Ethereum;
+    events: EventEmitter;
+    zeroEx: ZeroEx;
+    endpoint: string;
+    tokens: TSMap<string, RadarToken>;
+}

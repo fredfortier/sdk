@@ -1,18 +1,18 @@
 import { ZeroEx } from '0x.js';
-import { RadarToken } from 'radar-types';
-import { RadarRelayConfig, LightWalletConfig, RpcWalletConfig, InjectedWalletConfig } from './types';
+import { RadarToken } from '@radarrelay/types';
+import { RadarRelayConfig, WalletType, WalletConfig, AccountParams } from './types';
 import { TSMap } from 'typescript-map';
-import { EventBus } from './event-emitter';
-import { Account } from './account';
-import { Market } from './market';
+import { EventBus } from './EventEmitter';
+import { Market } from './Market';
+import { BaseAccount } from './accounts/BaseAccount';
 /**
  * RadarRelay main SDK singleton
  */
-export declare class RadarRelay {
+export declare class RadarRelay<T extends BaseAccount> {
     events: EventBus;
-    account: Account;
+    account: T;
     tokens: TSMap<string, RadarToken>;
-    markets: TSMap<string, Market>;
+    markets: TSMap<string, Market<T>>;
     zeroEx: ZeroEx;
     private _trade;
     private _ethereum;
@@ -22,6 +22,9 @@ export declare class RadarRelay {
     private _prevApiEndpoint;
     private _markets;
     private _lifecycle;
+    private _wallet;
+    private _walletConfig;
+    private _walletType;
     /**
      * The load priority list maintains the function call
      * priority for each init method in the RadarRelaySDK class.
@@ -35,13 +38,13 @@ export declare class RadarRelay {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    constructor(config: RadarRelayConfig);
+    constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T, walletConfig: WalletConfig, walletType: WalletType);
     /**
      * Initialize the SDK
      *
-     * @param {LightWalletConfig|RpcWalletConfig|InjectedWalletConfig}  config  wallet config
+     * @param {WalletConfig}  config  wallet config
      */
-    initialize(config: LightWalletConfig | RpcWalletConfig | InjectedWalletConfig): Promise<string | boolean>;
+    initializeAsync(): Promise<RadarRelay<T>>;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;

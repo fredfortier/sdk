@@ -35,8 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var websocket_client_1 = require("./websocket-client");
-var radar_types_1 = require("radar-types");
+var WebsocketClient_1 = require("./WebsocketClient");
+var types_1 = require("@radarrelay/types");
 var ErrorFormatter_1 = require("./errors/ErrorFormatter");
 var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
@@ -46,7 +46,7 @@ var Market = /** @class */ (function () {
         this._endpoint = apiEndpoint;
         this._wsEndpoint = wsEndpoint;
         this._trade = trade;
-        this._wsClient = new websocket_client_1.WebsocketClient(wsEndpoint);
+        this._wsClient = new WebsocketClient_1.WebsocketClient(wsEndpoint);
         // Setup instance vars
         this.id = params.id;
         this.baseTokenAddress = params.baseTokenAddress;
@@ -139,7 +139,7 @@ var Market = /** @class */ (function () {
                         _a.sent();
                         _a.label = 2;
                     case 2: return [2 /*return*/, this._wsClient.subscribe({
-                            type: radar_types_1.WebsocketRequestType.SUBSCRIBE,
+                            type: types_1.WebsocketRequestType.SUBSCRIBE,
                             topic: topic,
                             market: this.id
                         }, handlerFunc)];

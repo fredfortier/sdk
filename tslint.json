@@ -1,16 +1,16 @@
 {
-    "extends": [
-      "tslint-config-0xproject"
-    ],
-    "rules": {
-      "no-console": false,
-      "no-shadowed-variable": false,
-      "trailing-comma": "never",
-      "align": false,
-      "curly": [true, "ignore-same-line"],
-      "no-namespace": false,
-      "no-submodule-imports": false,
-      "no-return-await": false
-    }
+  "extends": [
+    "tslint-config-0xproject"
+  ],
+  "rules": {
+    "no-console": false,
+    "no-shadowed-variable": false,
+    "trailing-comma": false,
+    "align": false,
+    "curly": [true, "ignore-same-line"],
+    "no-namespace": false,
+    "no-submodule-imports": false,
+    "no-return-await": false,
+    "max-line-length": false
   }
-  
+}

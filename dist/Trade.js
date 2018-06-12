@@ -107,7 +107,7 @@ var Trade = /** @class */ (function () {
                         // add missing data
                         order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();
                         order.maker = this._account.address;
-                        prefix = (this._account.walletType === types_1.WalletType.Local);
+                        prefix = (this._account.type === types_1.WalletType.Local);
                         orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
                         return [4 /*yield*/, this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix)];
                     case 2:

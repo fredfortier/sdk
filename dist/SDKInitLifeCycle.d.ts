@@ -6,14 +6,14 @@ export interface InitPriorityItem {
     args?: any[];
 }
 export declare class SDKInitLifeCycle {
-    private priorityList;
-    private events;
-    private priority;
-    private current;
-    private last;
-    private startTime;
-    private timeout;
-    private runInterval;
+    private _priorityList;
+    private _events;
+    private _priority;
+    private _current;
+    private _last;
+    private _startTime;
+    private _timeout;
+    private _runInterval;
     constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout?: number);
     setup(scope: any): void;
     promise(event: string): Promise<boolean | string>;

@@ -35,8 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Web3ProviderEngine = require("web3-provider-engine");
-var RPCSubprovider = require("web3-provider-engine/subproviders/rpc");
 var Web3 = require("web3");
 var bignumber_js_1 = require("bignumber.js");
 var es6_promisify_1 = require("es6-promisify");
@@ -44,6 +42,7 @@ var wallet_manager_1 = require("@radarrelay/wallet-manager");
 var web3_builder_1 = require("@radarrelay/web3-builder");
 var subproviders_1 = require("@radarrelay/subproviders");
 var types_1 = require("./types");
+var types_2 = require("@radarrelay/wallet-manager/dist/types");
 /**
  * Ethereum
  */
@@ -54,7 +53,7 @@ var Ethereum = /** @class */ (function () {
      * Set the provider
      *
      * @param {WalletType}  type  type of wallet
-     * @param {LightWalletConfig|InjectedWalletConfig|RpcWalletConfig}  config  wallet config params
+     * @param {WalletConfig}  config  wallet config params
      */
     Ethereum.prototype.setProvider = function (type, config) {
         return __awaiter(this, void 0, void 0, function () {
@@ -201,32 +200,28 @@ var Ethereum = /** @class */ (function () {
      */
     Ethereum.prototype._setLightWalletProvider = function (config) {
         return __awaiter(this, void 0, void 0, function () {
-            var walletManager, wallet, err_1, web3Builder;
+            var wallet, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        walletManager = new wallet_manager_1.LightWalletManager();
-                        _a.label = 1;
+                        _a.trys.push([0, 2, , 6]);
+                        return [4 /*yield*/, wallet_manager_1.LightWalletManager.loadWalletAsync(config.wallet.password)];
                     case 1:
-                        _a.trys.push([1, 3, , 7]);
-                        return [4 /*yield*/, walletManager.loadWalletAsync(config.wallet.password)];
-                    case 2:
-                        wallet = _a.sent();
-                        return [3 /*break*/, 7];
-                    case 3:
-                        err_1 = _a.sent();
-                        if (!(err_1.message === 'NO_WALLET_FOUND')) return [3 /*break*/, 5];
-                        return [4 /*yield*/, walletManager.createWalletAsync(config.wallet)];
-                    case 4:
-                        // create a new light wallet
                         wallet = _a.sent();
                         return [3 /*break*/, 6];
-                    case 5: throw new Error(err_1.message);
-                    case 6: return [3 /*break*/, 7];
-                    case 7:
+                    case 2:
+                        err_1 = _a.sent();
+                        if (!(err_1.message === types_2.WalletError.NoWalletFound)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, wallet_manager_1.LightWalletManager.createWalletAsync(config.wallet)];
+                    case 3:
+                        // create a new light wallet
+                        wallet = _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4: throw new Error(err_1.message);
+                    case 5: return [3 /*break*/, 6];
+                    case 6:
                         this.wallet = wallet;
-                        web3Builder = new web3_builder_1.Web3Builder();
-                        this.web3 = web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet.signing, wallet.keystore, wallet.pwDerivedKey), config.dataRpcUrl, true);
+                        this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet.signing, wallet.keystore, wallet.pwDerivedKey), config.dataRpcUrl, true);
                         return [2 /*return*/];
                 }
             });
@@ -238,27 +233,23 @@ var Ethereum = /** @class */ (function () {
      * @param {config} InjectedWalletConfig
      */
     Ethereum.prototype._setInjectedWalletProvider = function (config) {
-        var web3Builder = new web3_builder_1.Web3Builder();
-        this.web3 = web3Builder.createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);
+        // Default to window.web3
+        var defaultWeb3 = window.web3;
+        if (!config.dataRpcUrl) {
+            this.web3 = config.web3 || defaultWeb3;
+        }
+        else {
+            this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);
+        }
     };
     /**
-     * Set the rpc wallet providers
-     * TODO use Web3Builder
+     * Set the rpc wallet provider
      *
      * @param {config} RpcWalletConfig
      */
     Ethereum.prototype._setRpcWalletProvider = function (config) {
-        // --- Use unlocked node --- //
-        var providerEngine = new Web3ProviderEngine();
-        // Add nonce subprovider tracker
-        // providerEngine.addProvider(new NonceTrackerSubprovider());
-        // Init wallet InjectedWeb3Subprovider provider (for signing, accounts, and transactions)
-        var walletProvider = new Web3.providers.HttpProvider(config.walletRpcUrl);
-        this.web3 = new Web3(walletProvider);
-        providerEngine.addProvider(new subproviders_1.InjectedWeb3Subprovider(walletProvider));
-        // Init RPCProvider for Ethereum data
-        providerEngine.addProvider(new RPCSubprovider({ rpcUrl: config.dataRpcUrl }));
-        providerEngine.start();
+        var provider = new Web3.providers.HttpProvider(config.rpcUrl);
+        this.web3 = new Web3(provider);
     };
     return Ethereum;
 }());

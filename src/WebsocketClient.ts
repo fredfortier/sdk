@@ -1,5 +1,5 @@
-import {RadarSubscribeRequest, RadarUnsubscribeRequest, WebsocketRequestType} from 'radar-types';
-import {w3cwebsocket} from 'websocket';
+import { RadarSubscribeRequest, WebsocketRequestType } from '@radarrelay/types';
+import { w3cwebsocket } from 'websocket';
 
 /**
  * Websocket client helper class
@@ -125,20 +125,20 @@ export class WebsocketClient {
    */
   private _messageHandler(message: MessageEvent) {
 
-      if (this._subscriptions) {
-        if (typeof(message.data) === 'string') {
-          let parsed;
-          try {
-            parsed = JSON.parse(message.data);
-            if (parsed.requestId && this._subscriptions[parsed.requestId]) {
-              this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
-            }
-          } catch (err) {
-            console.log(err);
+    if (this._subscriptions) {
+      if (typeof (message.data) === 'string') {
+        let parsed;
+        try {
+          parsed = JSON.parse(message.data);
+          if (parsed.requestId && this._subscriptions[parsed.requestId]) {
+            this._subscriptions[parsed.requestId].subscriptionHandler(parsed);
           }
-       } else {
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
         console.log(message);
-       }
+      }
     }
   }
 

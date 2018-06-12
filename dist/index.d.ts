@@ -1,8 +1,9 @@
-export { RadarRelay } from './radar-relay';
+export { SdkManager } from './SdkManager';
+export { RadarRelay } from './RadarRelay';
 export { RadarRelayConfig } from './types';
-export { EventBus } from './event-emitter';
-export { Ethereum } from './ethereum';
-export { Account } from './account';
-export { Market } from './market';
-export { Trade } from './trade';
-export { WebsocketClient } from './websocket-client';
+export { EventBus } from './EventEmitter';
+export { Ethereum } from './Ethereum';
+export { Market } from './Market';
+export { Trade } from './Trade';
+export { WebsocketClient } from './WebsocketClient';
+export * from './accounts';

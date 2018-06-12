@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var radar_types_1 = require("radar-types");
+var types_1 = require("@radarrelay/types");
 var websocket_1 = require("websocket");
 /**
  * Websocket client helper class
@@ -71,7 +71,7 @@ var WebsocketClient = /** @class */ (function () {
             subscriptionHandler: subscriptionHandler,
             unsubscribe: function () {
                 // Send unsubscribe for this subscribe request
-                subscribeRequest.type = radar_types_1.WebsocketRequestType.UNSUBSCRIBE;
+                subscribeRequest.type = types_1.WebsocketRequestType.UNSUBSCRIBE;
                 _this._client.send(JSON.stringify(subscribeRequest));
             }
         };

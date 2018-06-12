@@ -1,16 +1,20 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-var radar_relay_1 = require("./radar-relay");
-exports.RadarRelay = radar_relay_1.RadarRelay;
-var event_emitter_1 = require("./event-emitter");
-exports.EventBus = event_emitter_1.EventBus;
-var ethereum_1 = require("./ethereum");
-exports.Ethereum = ethereum_1.Ethereum;
-var account_1 = require("./account");
-exports.Account = account_1.Account;
-var market_1 = require("./market");
-exports.Market = market_1.Market;
-var trade_1 = require("./trade");
-exports.Trade = trade_1.Trade;
-var websocket_client_1 = require("./websocket-client");
-exports.WebsocketClient = websocket_client_1.WebsocketClient;
+var SdkManager_1 = require("./SdkManager");
+exports.SdkManager = SdkManager_1.SdkManager;
+var RadarRelay_1 = require("./RadarRelay");
+exports.RadarRelay = RadarRelay_1.RadarRelay;
+var EventEmitter_1 = require("./EventEmitter");
+exports.EventBus = EventEmitter_1.EventBus;
+var Ethereum_1 = require("./Ethereum");
+exports.Ethereum = Ethereum_1.Ethereum;
+var Market_1 = require("./Market");
+exports.Market = Market_1.Market;
+var Trade_1 = require("./Trade");
+exports.Trade = Trade_1.Trade;
+var WebsocketClient_1 = require("./WebsocketClient");
+exports.WebsocketClient = WebsocketClient_1.WebsocketClient;
+__export(require("./accounts"));

@@ -1,46 +1,19 @@
-import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
-import { Ethereum } from './ethereum';
-import { WalletType, Opts } from './types';
-import { RadarSignedOrder, RadarFill, RadarToken } from 'radar-types';
+/// <reference types="node" />
+import { Ethereum } from '../Ethereum';
+import { TransactionReceiptWithDecodedLogs } from '0x.js';
 import BigNumber from 'bignumber.js';
-import { TSMap } from 'typescript-map';
-export declare class Account {
+import { Opts, AccountParams } from '../types';
+import { RadarFill, RadarSignedOrder } from '@radarrelay/types';
+import { EventEmitter } from 'events';
+export declare class BaseAccount {
+    readonly type: any;
     address: string;
-    private _wallet;
-    private _ethereum;
+    protected _ethereum: Ethereum;
+    protected _events: EventEmitter;
     private _zeroEx;
-    private _tokens;
     private _endpoint;
-    constructor(ethereum: Ethereum, zeroEx: ZeroEx, apiEndpoint: string, tokens: TSMap<string, RadarToken>);
-    readonly walletType: WalletType.Local | WalletType.Rpc;
-    /**
-     * Export an account wallet seed phrase.
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string} password
-     */
-    exportSeedPhraseAsync(password: string): Promise<string>;
-    /**
-     * Export a wallet address private key
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string} password
-     */
-    exportAddressPrivateKeyAsync(password: string): Promise<string>;
-    /**
-     * Set the current address in use
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {string|number} address or address index
-     */
-    setAddressAsync(address: string | number): Promise<void>;
-    /**
-     * Add new addresses for this account
-     * NOTE: This method is only available if using a LightWallet
-     *
-     * @param {number}  num  amount of addresses to create
-     */
-    addNewAddresses(num: number): void;
+    private _tokens;
+    constructor(params: AccountParams);
     /**
      * Get available addresses for this account
      */
