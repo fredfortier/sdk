@@ -9,7 +9,7 @@ import {
   LightWalletConfig,
   RpcWalletConfig,
   InjectedWalletConfig,
-  WalletConfig,
+  Config,
 } from './types';
 import { WalletError } from '@radarrelay/wallet-manager/dist/types';
 import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
@@ -24,15 +24,15 @@ export class Ethereum {
   public networkId: number;
   public web3: Web3;
 
-  private _config: WalletConfig;
+  private _config: Config;
 
   /**
    * Set the provider
    *
    * @param {WalletType}  type  type of wallet
-   * @param {WalletConfig}  config  wallet config params
+   * @param {Config}  config  wallet config params
    */
-  public async setProvider(type: WalletType, config: WalletConfig) {
+  public async setProvider(type: WalletType, config: Config) {
     this._config = config;
 
     switch (type) {

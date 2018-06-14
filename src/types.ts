@@ -10,20 +10,25 @@ import { TSMap } from 'typescript-map';
 import { RadarToken } from '@radarrelay/types';
 export { RadarToken, RadarMarket } from '@radarrelay/types';
 
-export interface RadarEndpointConfig {
-  endpoint: string;
-  websocketEndpoint: string;
+export interface SdkConfig {
+  sdkInitializationTimeoutMs?: number;
 }
 
-export interface RadarRelayConfig extends RadarEndpointConfig {
-  sdkInitializationTimeoutMs?: number;
+export interface EndpointConfig {
+  radarRestEndpoint: string;
+  radarWebsocketEndpoint: string;
+}
+
+export interface OptionalEndpointConfig {
+  radarRestEndpoint?: string;
+  radarWebsocketEndpoint?: string;
 }
 
 export interface EthereumConfig {
   defaultGasPrice?: BigNumber;
 }
 
-export interface InjectedWalletConfig extends EthereumConfig {
+export interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, EthereumConfig {
   type: InjectedWalletType;
   web3?: Web3;
   dataRpcUrl?: string;
@@ -36,12 +41,12 @@ export interface LightWalletOptions {
   hdPathString?: string;
 }
 
-export interface LightWalletConfig extends EthereumConfig {
+export interface LightWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   wallet: LightWalletOptions;
   dataRpcUrl: string;
 }
 
-export interface RpcWalletConfig extends EthereumConfig {
+export interface RpcWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   rpcUrl: string;
 }
 
@@ -79,7 +84,7 @@ export type RpcConnection = string | InfuraNetwork;
 
 export type Account = LocalAccount | RpcAccount | InjectedAccount;
 
-export type WalletConfig = LightWalletConfig | RpcWalletConfig | InjectedWalletConfig;
+export type Config = LightWalletConfig | RpcWalletConfig | InjectedWalletConfig;
 
 export interface AccountParams {
   ethereum: Ethereum;

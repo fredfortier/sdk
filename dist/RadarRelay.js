@@ -57,7 +57,7 @@ var RadarRelay = /** @class */ (function () {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    function RadarRelay(rrConfig, wallet, walletConfig, walletType) {
+    function RadarRelay(wallet, walletType, config) {
         /**
          * The load priority list maintains the function call
          * priority for each init method in the RadarRelaySDK class.
@@ -90,45 +90,35 @@ var RadarRelay = /** @class */ (function () {
                 func: undefined
             }
         ];
-        // set the api/ws endpoint outside
-        // of the init _lifecycle
-        this._apiEndpoint = rrConfig.endpoint;
-        this._wsEndpoint = rrConfig.websocketEndpoint;
         this._wallet = wallet;
-        this._walletConfig = walletConfig;
+        this._config = config;
         this._walletType = walletType;
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
         this._ethereum = new Ethereum_1.Ethereum();
         // setup the _lifecycle
-        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, rrConfig.sdkInitializationTimeoutMs);
+        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeoutMs);
         this._lifecycle.setup(this);
     }
     /**
      * Initialize the SDK
      *
-     * @param {WalletConfig}  config  wallet config
+     * @param {Config}  config  wallet config
      */
     RadarRelay.prototype.initializeAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, endpoint, websocketEndpoint, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0: return [4 /*yield*/, this._ethereum.setProvider(this._walletType, this._walletConfig)];
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._ethereum.setProvider(this._walletType, this._config)];
                     case 1:
-                        _c.sent();
-                        if (!(this._walletType === types_1.WalletType.Injected && !(this._walletConfig.web3))) return [3 /*break*/, 3];
-                        _b = constants_1.RADAR_RELAY_ENDPOINTS;
-                        return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
+                        _a.sent();
+                        return [4 /*yield*/, this.setEndpointOrThrowAsync()];
                     case 2:
-                        _a = _b.apply(void 0, [_c.sent()]), endpoint = _a.endpoint, websocketEndpoint = _a.websocketEndpoint;
-                        this._apiEndpoint = endpoint;
-                        this._wsEndpoint = websocketEndpoint;
-                        _c.label = 3;
-                    case 3: return [4 /*yield*/, this.getCallback('ethereumInitialized', this._ethereum)];
-                    case 4:
-                        _c.sent();
+                        _a.sent();
+                        return [4 /*yield*/, this.getCallback('ethereumInitialized', this._ethereum)];
+                    case 3:
+                        _a.sent();
                         return [2 /*return*/, this];
                 }
             });
@@ -146,7 +136,7 @@ var RadarRelay = /** @class */ (function () {
                             ethereum: this._ethereum,
                             events: this.events,
                             zeroEx: this.zeroEx,
-                            endpoint: this._apiEndpoint,
+                            endpoint: this._config.radarRestEndpoint,
                             tokens: this.tokens
                         });
                         return [2 /*return*/, this.getCallback('accountInitialized', this.account)];
@@ -176,7 +166,7 @@ var RadarRelay = /** @class */ (function () {
         return this.getCallback('zeroExInitialized', this.zeroEx);
     };
     RadarRelay.prototype.initTrade = function () {
-        this._trade = new Trade_1.Trade(this.zeroEx, this._apiEndpoint, this.account, this.events, this.tokens);
+        this._trade = new Trade_1.Trade(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events, this.tokens);
         return this.getCallback('tradeInitialized', this._trade);
     };
     RadarRelay.prototype.initTokensAsync = function () {
@@ -186,9 +176,9 @@ var RadarRelay = /** @class */ (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        if (!(this._prevApiEndpoint !== this._apiEndpoint)) return [3 /*break*/, 2];
+                        if (!(this._prevApiEndpoint !== this._config.radarRestEndpoint)) return [3 /*break*/, 2];
                         _b = (_a = JSON).parse;
-                        return [4 /*yield*/, request.get(this._apiEndpoint + "/tokens")];
+                        return [4 /*yield*/, request.get(this._config.radarRestEndpoint + "/tokens")];
                     case 1:
                         tokens = _b.apply(_a, [_c.sent()]);
                         this.tokens = new typescript_map_1.TSMap();
@@ -210,19 +200,19 @@ var RadarRelay = /** @class */ (function () {
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        if (!(this._prevApiEndpoint !== this._apiEndpoint)) return [3 /*break*/, 2];
+                        if (!(this._prevApiEndpoint !== this._config.radarRestEndpoint)) return [3 /*break*/, 2];
                         _a = this;
                         _c = (_b = JSON).parse;
-                        return [4 /*yield*/, request.get(this._apiEndpoint + "/markets")];
+                        return [4 /*yield*/, request.get(this._config.radarRestEndpoint + "/markets")];
                     case 1:
                         _a._markets = _c.apply(_b, [_d.sent()]);
                         _d.label = 2;
                     case 2:
                         // TODO probably not the best place for this
-                        this._prevApiEndpoint = this._apiEndpoint;
+                        this._prevApiEndpoint = this._config.radarRestEndpoint;
                         this.markets = new typescript_map_1.TSMap();
                         this._markets.map(function (market) {
-                            _this.markets.set(market.id, new Market_1.Market(market, _this._apiEndpoint, _this._wsEndpoint, _this._trade));
+                            _this.markets.set(market.id, new Market_1.Market(market, _this._config.radarRestEndpoint, _this._config.radarWebsocketEndpoint, _this._trade));
                         });
                         return [2 /*return*/, this.getCallback('marketsInitialized', this.markets)];
                 }
@@ -233,6 +223,30 @@ var RadarRelay = /** @class */ (function () {
         var callback = this._lifecycle.promise(event);
         this.events.emit(event, data);
         return callback;
+    };
+    RadarRelay.prototype.setEndpointOrThrowAsync = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var walletConfig, _a, radarRestEndpoint, radarWebsocketEndpoint, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        walletConfig = this._config;
+                        if (!(this._walletType === types_1.WalletType.Injected && !walletConfig.web3)) return [3 /*break*/, 2];
+                        _b = constants_1.RADAR_RELAY_ENDPOINTS;
+                        return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
+                    case 1:
+                        _a = _b.apply(void 0, [_c.sent()]), radarRestEndpoint = _a.radarRestEndpoint, radarWebsocketEndpoint = _a.radarWebsocketEndpoint;
+                        this._config.radarRestEndpoint = radarRestEndpoint;
+                        this._config.radarWebsocketEndpoint = radarWebsocketEndpoint;
+                        _c.label = 2;
+                    case 2:
+                        if (!this._config.radarRestEndpoint || !this._config.radarWebsocketEndpoint) {
+                            throw new Error('Invalid or missing Radar Relay API Endpoints');
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     return RadarRelay;
 }());

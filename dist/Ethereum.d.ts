@@ -1,6 +1,6 @@
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
-import { WalletType, WalletConfig } from './types';
+import { WalletType, Config } from './types';
 import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
 /**
  * Ethereum
@@ -15,9 +15,9 @@ export declare class Ethereum {
      * Set the provider
      *
      * @param {WalletType}  type  type of wallet
-     * @param {WalletConfig}  config  wallet config params
+     * @param {Config}  config  wallet config params
      */
-    setProvider(type: WalletType, config: WalletConfig): Promise<void>;
+    setProvider(type: WalletType, config: Config): Promise<void>;
     /**
      * Default account getter
      */

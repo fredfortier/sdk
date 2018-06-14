@@ -53,7 +53,7 @@ var Ethereum = /** @class */ (function () {
      * Set the provider
      *
      * @param {WalletType}  type  type of wallet
-     * @param {WalletConfig}  config  wallet config params
+     * @param {Config}  config  wallet config params
      */
     Ethereum.prototype.setProvider = function (type, config) {
         return __awaiter(this, void 0, void 0, function () {

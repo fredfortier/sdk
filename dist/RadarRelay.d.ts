@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { RadarToken } from '@radarrelay/types';
-import { RadarRelayConfig, WalletType, WalletConfig, AccountParams } from './types';
+import { WalletType, Config, AccountParams } from './types';
 import { TSMap } from 'typescript-map';
 import { EventBus } from './EventEmitter';
 import { Market } from './Market';
@@ -16,14 +16,12 @@ export declare class RadarRelay<T extends BaseAccount> {
     zeroEx: ZeroEx;
     private _trade;
     private _ethereum;
-    private _apiEndpoint;
-    private _wsEndpoint;
     private _networkId;
     private _prevApiEndpoint;
     private _markets;
     private _lifecycle;
     private _wallet;
-    private _walletConfig;
+    private _config;
     private _walletType;
     /**
      * The load priority list maintains the function call
@@ -38,11 +36,11 @@ export declare class RadarRelay<T extends BaseAccount> {
      *
      * @param {RadarRelayConfig}  config  sdk config
      */
-    constructor(rrConfig: RadarRelayConfig, wallet: new (params: AccountParams) => T, walletConfig: WalletConfig, walletType: WalletType);
+    constructor(wallet: new (params: AccountParams) => T, walletType: WalletType, config: Config);
     /**
      * Initialize the SDK
      *
-     * @param {WalletConfig}  config  wallet config
+     * @param {Config}  config  wallet config
      */
     initializeAsync(): Promise<RadarRelay<T>>;
     private initAccountAsync;
@@ -52,4 +50,5 @@ export declare class RadarRelay<T extends BaseAccount> {
     private initTokensAsync;
     private initMarketsAsync;
     private getCallback;
+    private setEndpointOrThrowAsync;
 }

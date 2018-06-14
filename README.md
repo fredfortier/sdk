@@ -31,7 +31,7 @@ import { SdkManager } from '@radarrelay/sdk';
 const rr = await SdkManager.SetupAndInitializeAsync({
   endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
   websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
-}, WalletConfig); // Wallet Configuration Details
+}, Config); // Wallet Configuration Details
 ```
 
 
@@ -44,7 +44,7 @@ import { SdkManager } from '@radarrelay/sdk';
 const rr = SdkManager.Setup({
   endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
   websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
-}, WalletConfig); // Wallet Configuration Details
+}, Config); // Wallet Configuration Details
 ```
 
 ### Initialize

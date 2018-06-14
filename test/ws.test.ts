@@ -20,16 +20,13 @@ describe.skip('RadarRelay.Ws', () => {
     mockRequests();
 
     rrsdk = await SdkManager.SetupAndInitializeAsync({
-      endpoint: 'https://api-beta.rrdev.io/v0',
-      websocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
-    },
-      {
-        wallet: {
-          password: 'password'
-        },
-        dataRpcUrl: 'https://kovan.infura.io'
-      }
-    );
+      wallet: {
+        password: 'password'
+      },
+      dataRpcUrl: 'https://kovan.infura.io',
+      radarRestEndpoint: 'https://api-beta.rrdev.io/v0',
+      radarWebsocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
+    });
 
     // TODO use websocket mock
     // rrsdk = new RadarRelay({

@@ -13,17 +13,14 @@ const expect = chai.expect;
 describe('RadarRelay', async () => {
 
   const rrsdk = await SdkManager.Setup({
-    endpoint: 'http://localhost:8080/v0',
-    websocketEndpoint: 'ws://ws.radarrelay.com'
-  },
-    {
       wallet: {
         password: 'password',
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
-      dataRpcUrl: 'http://localhost:8545'
-    }
-  );
+      dataRpcUrl: 'http://localhost:8545',
+      radarRestEndpoint: 'http://localhost:8080/v0',
+      radarWebsocketEndpoint: 'ws://ws.radarrelay.com'
+    });
 
   mockRequests();
 
