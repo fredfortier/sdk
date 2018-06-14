@@ -28,6 +28,4 @@ export class InjectedAccount extends BaseAccount {
       }
     }, 500);
   }
-
-  // TODO: Probably not in here, but we need the active network. Possibly with a changed event.e
 }
