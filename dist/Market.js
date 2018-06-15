@@ -125,8 +125,8 @@ var Market = /** @class */ (function () {
     /**
      * subscribe to a socket topic for this market
      *
-     * @param {string}                 topic  market topic
-     * @param {WebsocketRequestTopic}  topic
+     * @param {WebsocketRequestTopic}  topic  The market topic
+     * @param {(message: any) => void}  handlerFunc The subscription handler
      */
     Market.prototype.subscribeAsync = function (topic, handlerFunc) {
         return __awaiter(this, void 0, void 0, function () {
@@ -134,7 +134,7 @@ var Market = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!!this._wsClient.connected) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this._wsClient.connect(this._wsEndpoint)];
+                        return [4 /*yield*/, this._wsClient.connect()];
                     case 1:
                         _a.sent();
                         _a.label = 2;
@@ -152,7 +152,7 @@ var Market = /** @class */ (function () {
      *
      * @param {UserOrderType} type   Order type of BUY|SELL
      * @param {BigNumber}     amount Amount in base token
-     * @param {Opts}          opts   Optional transaction options
+     * @param {Opts}          [opts]   Optional transaction options
      */
     Market.prototype.marketOrderAsync = function (type, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
@@ -202,7 +202,7 @@ var Market = /** @class */ (function () {
      * Cancel an order
      *
      * @param {SignedOrder}  order SignedOrder to cancel
-     * @param {Opts}         opts  Optional transaction options
+     * @param {Opts}         [opts]  Optional transaction options
      */
     Market.prototype.cancelOrderAsync = function (order, opts) {
         return __awaiter(this, void 0, void 0, function () {

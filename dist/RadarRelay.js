@@ -91,8 +91,8 @@ var RadarRelay = /** @class */ (function () {
             }
         ];
         this._wallet = wallet;
-        this._config = config;
         this._walletType = walletType;
+        this._config = config;
         // instantiate event handler
         this.events = new events_1.EventEmitter();
         // instantiate ethereum class
@@ -104,7 +104,7 @@ var RadarRelay = /** @class */ (function () {
     /**
      * Initialize the SDK
      *
-     * @param {Config}  config  wallet config
+     * @param {Config}  config  The wallet configuration
      */
     RadarRelay.prototype.initializeAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -231,7 +231,7 @@ var RadarRelay = /** @class */ (function () {
                 switch (_c.label) {
                     case 0:
                         walletConfig = this._config;
-                        if (!(this._walletType === types_1.WalletType.Injected && !walletConfig.web3)) return [3 /*break*/, 2];
+                        if (!(this._walletType === types_1.WalletType.Injected && !walletConfig.dataRpcUrl)) return [3 /*break*/, 2];
                         _b = constants_1.RADAR_RELAY_ENDPOINTS;
                         return [4 /*yield*/, this._ethereum.getNetworkIdAsync()];
                     case 1:

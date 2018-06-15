@@ -52,10 +52,7 @@ var LocalAccount = /** @class */ (function (_super) {
     /**
      * Instantiate a LocalAccount
      *
-     * @param {Ethereum} ethereum
-     * @param {ZeroEx} zeroEx
-     * @param {string} endpoint
-     * @param {TSMap<string, RadarToken>} tokens
+     * @param {AccountParams} params The account params
      */
     function LocalAccount(params) {
         var _this = _super.call(this, params) || this;
@@ -64,9 +61,9 @@ var LocalAccount = /** @class */ (function (_super) {
         return _this;
     }
     /**
-     * Export an account wallet seed phrase.
+     * Export an account wallet seed phrase
      *
-     * @param {string} password
+     * @param {string} password The plaintext password
      */
     LocalAccount.prototype.exportSeedPhraseAsync = function (password) {
         return __awaiter(this, void 0, void 0, function () {
@@ -84,7 +81,7 @@ var LocalAccount = /** @class */ (function (_super) {
     /**
      * Export a wallet address private key
      *
-     * @param {string} password
+     * @param {string} password The plaintext password
      */
     LocalAccount.prototype.exportAddressPrivateKeyAsync = function (password) {
         return __awaiter(this, void 0, void 0, function () {
@@ -102,7 +99,7 @@ var LocalAccount = /** @class */ (function (_super) {
     /**
      * Set the current address in use
      *
-     * @param {string|number} address or address index
+     * @param {string|number} address The address or address index
      */
     LocalAccount.prototype.setAddressAsync = function (address) {
         return __awaiter(this, void 0, void 0, function () {
@@ -119,9 +116,8 @@ var LocalAccount = /** @class */ (function (_super) {
     };
     /**
      * Add new addresses for this account
-     * NOTE: This method is only available if using a LightWallet
      *
-     * @param {number}  num  amount of addresses to create
+     * @param {number} num The number of addresses to add
      */
     LocalAccount.prototype.addNewAddresses = function (num) {
         this._wallet.addNewAccounts(num);

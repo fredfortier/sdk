@@ -29,8 +29,8 @@ export class WebsocketClient {
   /**
    * Create a Radar subscription
    *
-   * @param {RadarSubscribeRequest}  subscribeRequest
-   * @param {function}               subscriptionHandler
+   * @param {RadarSubscribeRequest} subscribeRequest The subscribe request
+   * @param {function} subscriptionHandler The subscription handler
    */
   public subscribe(
     subscribeRequest: RadarSubscribeRequest,
@@ -58,7 +58,7 @@ export class WebsocketClient {
   }
 
   /**
-   * Connect method
+   * Open a connection to the Radar Relay WebSocket API
    */
   public async connect() {
     return new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ export class WebsocketClient {
   /**
    * Default connection handler
    *
-   * @param {Event} conn
+   * @param {Event} conn The open event
    */
   private _connectHandler(conn: Event) {
     this.connected = true;
@@ -91,9 +91,9 @@ export class WebsocketClient {
   }
 
   /**
-   * default close handler
+   * Default close handler
    *
-   * @param {CloseEvent} closed
+   * @param {CloseEvent} closed The close event
    */
   private _closeHandler(closed: CloseEvent) {
     this.connected = false;
@@ -104,9 +104,9 @@ export class WebsocketClient {
   }
 
   /**
-   * default error handler
+   * Default error handler
    *
-   * @param {Event} err
+   * @param {Event} err The error event
    */
   private _errorHandler(err: Event) {
     this.connected = false;
@@ -121,7 +121,7 @@ export class WebsocketClient {
    * Handle a message passing it to
    * the active subscription if it exists
    *
-   * @param {MessageEvent} message
+   * @param {MessageEvent} message The message event
    */
   private _messageHandler(message: MessageEvent) {
 

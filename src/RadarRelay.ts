@@ -83,8 +83,8 @@ export class RadarRelay<T extends BaseAccount> {
    */
   constructor(wallet: new (params: AccountParams) => T, walletType: WalletType, config: Config) {
     this._wallet = wallet;
-    this._config = config;
     this._walletType = walletType;
+    this._config = config;
 
     // instantiate event handler
     this.events = new EventEmitter();
@@ -100,7 +100,7 @@ export class RadarRelay<T extends BaseAccount> {
   /**
    * Initialize the SDK
    *
-   * @param {Config}  config  wallet config
+   * @param {Config}  config  The wallet configuration
    */
   public async initializeAsync(): Promise<RadarRelay<T>> {
     await this._ethereum.setProvider(this._walletType, this._config);
@@ -179,7 +179,7 @@ export class RadarRelay<T extends BaseAccount> {
 
   private async setEndpointOrThrowAsync() {
     const walletConfig = this._config as InjectedWalletConfig;
-    if (this._walletType === WalletType.Injected && !walletConfig.web3) {
+    if (this._walletType === WalletType.Injected && !walletConfig.dataRpcUrl) {
       // Set Radar Relay API Endpoints if using injected provider
       const { radarRestEndpoint, radarWebsocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
       this._config.radarRestEndpoint = radarRestEndpoint;

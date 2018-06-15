@@ -29,8 +29,8 @@ export class Ethereum {
   /**
    * Set the provider
    *
-   * @param {WalletType}  type  type of wallet
-   * @param {Config}  config  wallet config params
+   * @param {WalletType} type The wallet type
+   * @param {Config} config The wallet config
    */
   public async setProvider(type: WalletType, config: Config) {
     this._config = config;
@@ -56,9 +56,9 @@ export class Ethereum {
   }
 
   /**
-   * get the ether balance for an account
+   * Get the ether balance for an account
    *
-   * @param {string} address
+   * @param {string} address The address
    */
   public async getEthBalanceAsync(address: string): Promise<BigNumber> {
     const bal = await promisify(cb => this.web3.eth.getBalance(address, cb))();
@@ -66,11 +66,11 @@ export class Ethereum {
   }
 
   /**
-   * transfer ether to another account
+   * Transfer ether to another account
    *
-   * @param {string} from
-   * @param {string} to
-   * @param {BigNumber} value
+   * @param {string} from The from address
+   * @param {string} to The to address
+   * @param {BigNumber} value The value to transfer
    */
   public async transferEthAsync(
     from: string, to: string, value: BigNumber, opts?: { gasPrice: BigNumber, gas: number }
@@ -86,7 +86,7 @@ export class Ethereum {
   }
 
   /**
-   * get the RPC Connections networkId
+   * Get the RPC Connections networkId
    */
   public async getNetworkIdAsync(): Promise<number> {
     const networkId: string = await promisify(this.web3.version.getNetwork)();
@@ -95,10 +95,9 @@ export class Ethereum {
   }
 
   /**
-   * set eth defaultAccount to a
-   * new address index or address
+   * Set ETH defaultAccount to a new address index or address
    *
-   * @param {number|string}  account  account index or address
+   * @param {number|string}  account The account index or address
    */
   public async setDefaultAccount(account: number | string): Promise<void> {
     const accounts = await promisify(this.web3.eth.getAccounts)();
@@ -118,9 +117,9 @@ export class Ethereum {
   }
 
   /**
-   * Set the local LightWallet Providers
+   * Set the local LightWallet Provider
    *
-   * @param {config} LightWalletConfig
+   * @param {config} LightWalletConfig The LightWallet configuration
    */
   private async _setLightWalletProvider(config: LightWalletConfig) {
     // attempt to load existing light wallet
@@ -145,7 +144,7 @@ export class Ethereum {
   /**
    * Set injected wallet provider
    *
-   * @param {config} InjectedWalletConfig
+   * @param {config} InjectedWalletConfig The InjectedWallet config
    */
   private _setInjectedWalletProvider(config: InjectedWalletConfig) {
     // Default to window.web3
@@ -163,7 +162,7 @@ export class Ethereum {
   /**
    * Set the rpc wallet provider
    *
-   * @param {config} RpcWalletConfig
+   * @param {config} RpcWalletConfig The RpcWallet config
    */
   private _setRpcWalletProvider(config: RpcWalletConfig): void {
     const provider = new Web3.providers.HttpProvider(config.rpcUrl);

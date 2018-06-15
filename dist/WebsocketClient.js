@@ -56,8 +56,8 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * Create a Radar subscription
      *
-     * @param {RadarSubscribeRequest}  subscribeRequest
-     * @param {function}               subscriptionHandler
+     * @param {RadarSubscribeRequest} subscribeRequest The subscribe request
+     * @param {function} subscriptionHandler The subscription handler
      */
     WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
         var _this = this;
@@ -78,7 +78,7 @@ var WebsocketClient = /** @class */ (function () {
         return this._subscriptions[this._curSubID];
     };
     /**
-     * Connect method
+     * Open a connection to the Radar Relay WebSocket API
      */
     WebsocketClient.prototype.connect = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -105,7 +105,7 @@ var WebsocketClient = /** @class */ (function () {
     /**
      * Default connection handler
      *
-     * @param {Event} conn
+     * @param {Event} conn The open event
      */
     WebsocketClient.prototype._connectHandler = function (conn) {
         this.connected = true;
@@ -114,9 +114,9 @@ var WebsocketClient = /** @class */ (function () {
         }
     };
     /**
-     * default close handler
+     * Default close handler
      *
-     * @param {CloseEvent} closed
+     * @param {CloseEvent} closed The close event
      */
     WebsocketClient.prototype._closeHandler = function (closed) {
         this.connected = false;
@@ -126,9 +126,9 @@ var WebsocketClient = /** @class */ (function () {
         console.log('closed', closed);
     };
     /**
-     * default error handler
+     * Default error handler
      *
-     * @param {Event} err
+     * @param {Event} err The error event
      */
     WebsocketClient.prototype._errorHandler = function (err) {
         this.connected = false;
@@ -142,7 +142,7 @@ var WebsocketClient = /** @class */ (function () {
      * Handle a message passing it to
      * the active subscription if it exists
      *
-     * @param {MessageEvent} message
+     * @param {MessageEvent} message The message event
      */
     WebsocketClient.prototype._messageHandler = function (message) {
         if (this._subscriptions) {

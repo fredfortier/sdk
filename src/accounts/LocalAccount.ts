@@ -9,10 +9,7 @@ export class LocalAccount extends BaseAccount {
   /**
    * Instantiate a LocalAccount
    *
-   * @param {Ethereum} ethereum
-   * @param {ZeroEx} zeroEx
-   * @param {string} endpoint
-   * @param {TSMap<string, RadarToken>} tokens
+   * @param {AccountParams} params The account params
    */
   constructor(params: AccountParams) {
     super(params);
@@ -21,9 +18,9 @@ export class LocalAccount extends BaseAccount {
   }
 
   /**
-   * Export an account wallet seed phrase.
+   * Export an account wallet seed phrase
    *
-   * @param {string} password
+   * @param {string} password The plaintext password
    */
   public async exportSeedPhraseAsync(password: string): Promise<string> {
     if (!this._wallet) return '';
@@ -33,7 +30,7 @@ export class LocalAccount extends BaseAccount {
   /**
    * Export a wallet address private key
    *
-   * @param {string} password
+   * @param {string} password The plaintext password
    */
   public async exportAddressPrivateKeyAsync(password: string): Promise<string> {
     if (!this._wallet) return '';
@@ -43,7 +40,7 @@ export class LocalAccount extends BaseAccount {
   /**
    * Set the current address in use
    *
-   * @param {string|number} address or address index
+   * @param {string|number} address The address or address index
    */
   public async setAddressAsync(address: string | number) {
     await this._ethereum.setDefaultAccount(address);
@@ -52,9 +49,8 @@ export class LocalAccount extends BaseAccount {
 
   /**
    * Add new addresses for this account
-   * NOTE: This method is only available if using a LightWallet
    *
-   * @param {number}  num  amount of addresses to create
+   * @param {number} num The number of addresses to add
    */
   public addNewAddresses(num: number): void {
     this._wallet.addNewAccounts(num);

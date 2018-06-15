@@ -6,7 +6,8 @@ export declare class SdkManager {
     static Setup(config: RpcWalletConfig): RadarRelay<RpcAccount>;
     static Setup(config: InjectedWalletConfig): RadarRelay<InjectedAccount>;
     /**
-     * Start the initialization lifecycle for the SDK instance that was created using Setup.
+     * Start the initialization lifecycle for the SDK instance that was created using Setup
+     *
      * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
      * @param {Config} walletConfig Wallet specific configuration options
      */

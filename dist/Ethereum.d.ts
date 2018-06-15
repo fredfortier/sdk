@@ -14,8 +14,8 @@ export declare class Ethereum {
     /**
      * Set the provider
      *
-     * @param {WalletType}  type  type of wallet
-     * @param {Config}  config  wallet config params
+     * @param {WalletType} type The wallet type
+     * @param {Config} config The wallet config
      */
     setProvider(type: WalletType, config: Config): Promise<void>;
     /**
@@ -23,49 +23,48 @@ export declare class Ethereum {
      */
     readonly defaultAccount: string;
     /**
-     * get the ether balance for an account
+     * Get the ether balance for an account
      *
-     * @param {string} address
+     * @param {string} address The address
      */
     getEthBalanceAsync(address: string): Promise<BigNumber>;
     /**
-     * transfer ether to another account
+     * Transfer ether to another account
      *
-     * @param {string} from
-     * @param {string} to
-     * @param {BigNumber} value
+     * @param {string} from The from address
+     * @param {string} to The to address
+     * @param {BigNumber} value The value to transfer
      */
     transferEthAsync(from: string, to: string, value: BigNumber, opts?: {
         gasPrice: BigNumber;
         gas: number;
     }): Promise<string>;
     /**
-     * get the RPC Connections networkId
+     * Get the RPC Connections networkId
      */
     getNetworkIdAsync(): Promise<number>;
     /**
-     * set eth defaultAccount to a
-     * new address index or address
+     * Set ETH defaultAccount to a new address index or address
      *
-     * @param {number|string}  account  account index or address
+     * @param {number|string}  account The account index or address
      */
     setDefaultAccount(account: number | string): Promise<void>;
     /**
-     * Set the local LightWallet Providers
+     * Set the local LightWallet Provider
      *
-     * @param {config} LightWalletConfig
+     * @param {config} LightWalletConfig The LightWallet configuration
      */
     private _setLightWalletProvider;
     /**
      * Set injected wallet provider
      *
-     * @param {config} InjectedWalletConfig
+     * @param {config} InjectedWalletConfig The InjectedWallet config
      */
     private _setInjectedWalletProvider;
     /**
      * Set the rpc wallet provider
      *
-     * @param {config} RpcWalletConfig
+     * @param {config} RpcWalletConfig The RpcWallet config
      */
     private _setRpcWalletProvider;
 }

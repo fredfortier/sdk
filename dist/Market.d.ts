@@ -26,8 +26,8 @@ export declare class Market<T extends BaseAccount> {
     /**
      * subscribe to a socket topic for this market
      *
-     * @param {string}                 topic  market topic
-     * @param {WebsocketRequestTopic}  topic
+     * @param {WebsocketRequestTopic}  topic  The market topic
+     * @param {(message: any) => void}  handlerFunc The subscription handler
      */
     subscribeAsync(topic: WebsocketRequestTopic, handlerFunc: (message: any) => void): Promise<{
         requestId: number;
@@ -39,7 +39,7 @@ export declare class Market<T extends BaseAccount> {
      *
      * @param {UserOrderType} type   Order type of BUY|SELL
      * @param {BigNumber}     amount Amount in base token
-     * @param {Opts}          opts   Optional transaction options
+     * @param {Opts}          [opts]   Optional transaction options
      */
     marketOrderAsync(type: UserOrderType, amount: BigNumber, opts?: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
     /**
@@ -55,7 +55,7 @@ export declare class Market<T extends BaseAccount> {
      * Cancel an order
      *
      * @param {SignedOrder}  order SignedOrder to cancel
-     * @param {Opts}         opts  Optional transaction options
+     * @param {Opts}         [opts]  Optional transaction options
      */
     cancelOrderAsync(order: SignedOrder, opts?: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
 }

@@ -52,10 +52,7 @@ var InjectedAccount = /** @class */ (function (_super) {
     /**
      * Instantiate an InjectedAccount
      *
-     * @param {Ethereum} ethereum
-     * @param {ZeroEx} zeroEx
-     * @param {string} endpoint
-     * @param {TSMap<string, RadarToken>} tokens
+     * @param {AccountParams} params The account parameters
      */
     function InjectedAccount(params) {
         var _this = _super.call(this, params) || this;

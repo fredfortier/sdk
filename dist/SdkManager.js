@@ -44,6 +44,7 @@ var SdkManager = /** @class */ (function () {
     /**
      * Create the SDK instance without starting the initialization lifecycle.
      * This allows event listeners to be attached before the starting the lifecycle.
+     *
      * @param {Config} config Wallet configuration options
      */
     SdkManager.Setup = function (config) {
@@ -58,7 +59,8 @@ var SdkManager = /** @class */ (function () {
         }
     };
     /**
-     * Start the initialization lifecycle for the SDK instance that was created using Setup.
+     * Start the initialization lifecycle for the SDK instance that was created using Setup
+     *
      * @param {RadarRelayConfig} rrConfig Radar Relay configuration options
      * @param {Config} walletConfig Wallet specific configuration options
      */
@@ -76,6 +78,7 @@ var SdkManager = /** @class */ (function () {
     };
     /**
      * Create the SDK instance and run the initialization lifecycle
+     *
      * @param {Config} config Wallet configuration options
      */
     SdkManager.SetupAndInitializeAsync = function (config) {

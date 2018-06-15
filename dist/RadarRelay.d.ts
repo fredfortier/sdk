@@ -40,7 +40,7 @@ export declare class RadarRelay<T extends BaseAccount> {
     /**
      * Initialize the SDK
      *
-     * @param {Config}  config  wallet config
+     * @param {Config}  config  The wallet configuration
      */
     initializeAsync(): Promise<RadarRelay<T>>;
     private initAccountAsync;
