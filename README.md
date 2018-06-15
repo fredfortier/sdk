@@ -64,8 +64,7 @@ interface EndpointConfig {
 ```
 
 ```javascript 
-// Injected Wallets do not require an endpoint argument
-// if using the wallet's connection to the Ethereum network
+// Injected Wallets do not require an endpoint argument if using the wallet's connection to the Ethereum network
 export interface OptionalEndpointConfig {
   radarRestEndpoint?: string;
   radarWebsocketEndpoint?: string;
