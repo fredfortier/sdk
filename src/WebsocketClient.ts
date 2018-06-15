@@ -1,5 +1,6 @@
 import { RadarSubscribeRequest, WebsocketRequestType } from '@radarrelay/types';
 import { w3cwebsocket } from 'websocket';
+import { SdkError } from './types';
 
 /**
  * Websocket client helper class
@@ -40,7 +41,7 @@ export class WebsocketClient {
     subscriptionHandler: (messsage: any) => void,
     unsubscribe: () => void
   } {
-    if (!this._clientIsConnected) throw new Error('WEBSOCKET_DISCONNECTED');
+    if (!this._clientIsConnected) throw new Error(SdkError.WebSocketDisconnected);
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
     this._client.send(JSON.stringify(subscribeRequest));

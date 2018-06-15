@@ -173,7 +173,7 @@ var Ethereum = /** @class */ (function () {
                         accounts = _a.sent();
                         if (typeof (account) === 'number') {
                             if (typeof (accounts[account]) === 'undefined')
-                                throw new Error('unable to retrieve account');
+                                throw new Error(types_1.SdkError.UnableToRetrieveAccount);
                             this.web3.eth.defaultAccount = accounts[account];
                         }
                         else {
@@ -185,7 +185,7 @@ var Ethereum = /** @class */ (function () {
                                 }
                             });
                             if (!found_1)
-                                throw new Error('unable to retrieve account');
+                                throw new Error(types_1.SdkError.UnableToRetrieveAccount);
                         }
                         return [2 /*return*/];
                 }

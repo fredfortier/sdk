@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("@radarrelay/types");
 var websocket_1 = require("websocket");
+var types_2 = require("./types");
 /**
  * Websocket client helper class
  * for websocket connection handling
@@ -62,7 +63,7 @@ var WebsocketClient = /** @class */ (function () {
     WebsocketClient.prototype.subscribe = function (subscribeRequest, subscriptionHandler) {
         var _this = this;
         if (!this._clientIsConnected)
-            throw new Error('WEBSOCKET_DISCONNECTED');
+            throw new Error(types_2.SdkError.WebSocketDisconnected);
         this._curSubID = this._curSubID + 1;
         subscribeRequest.requestId = this._curSubID;
         this._client.send(JSON.stringify(subscribeRequest));

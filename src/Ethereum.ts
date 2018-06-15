@@ -10,6 +10,7 @@ import {
   RpcWalletConfig,
   InjectedWalletConfig,
   Config,
+  SdkError,
 } from './types';
 import { WalletError } from '@radarrelay/wallet-manager/dist/types';
 import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
@@ -102,7 +103,7 @@ export class Ethereum {
   public async setDefaultAccount(account: number | string): Promise<void> {
     const accounts = await promisify(this.web3.eth.getAccounts)();
     if (typeof (account) === 'number') {
-      if (typeof (accounts[account]) === 'undefined') throw new Error('unable to retrieve account');
+      if (typeof (accounts[account]) === 'undefined') throw new Error(SdkError.UnableToRetrieveAccount);
       this.web3.eth.defaultAccount = accounts[account];
     } else {
       let found = false;
@@ -112,7 +113,7 @@ export class Ethereum {
           this.web3.eth.defaultAccount = address;
         }
       });
-      if (!found) throw new Error('unable to retrieve account');
+      if (!found) throw new Error(SdkError.UnableToRetrieveAccount);
     }
   }
 

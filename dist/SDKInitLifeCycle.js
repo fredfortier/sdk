@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var types_1 = require("./types");
 var SDKInitLifeCycle = /** @class */ (function () {
     function SDKInitLifeCycle(events, priorityList, timeout) {
         if (timeout === void 0) { timeout = 10000; }
@@ -65,7 +66,7 @@ var SDKInitLifeCycle = /** @class */ (function () {
         var current = this._priority[event];
         this._current = (current >= this._current) ? current : this._current;
         var progressPerc = Math.floor((this._current / this._last) * 100);
-        this._events.emit('loading', {
+        this._events.emit(types_1.EventName.Loading, {
             progress: progressPerc || 0,
             elapsedTime: (new Date().getTime() - this._startTime),
             source: this.constructor.name + ':' + event

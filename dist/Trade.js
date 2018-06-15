@@ -81,14 +81,14 @@ var Trade = /** @class */ (function () {
                         txHash = _a.sent();
                         _a.label = 5;
                     case 5:
-                        this._events.emit('transactionPending', txHash);
+                        this._events.emit(types_1.EventName.TransactionPending, txHash);
                         if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
                     case 6:
                         receipt = _a.sent();
-                        this._events.emit('transactionComplete', receipt);
+                        this._events.emit(types_1.EventName.TransactionComplete, receipt);
                         return [2 /*return*/, receipt];
                 }
             });
@@ -154,14 +154,14 @@ var Trade = /** @class */ (function () {
                         return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        this._events.emit('transactionPending', txHash);
+                        this._events.emit(types_1.EventName.TransactionPending, txHash);
                         if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
                     case 2:
                         receipt = _a.sent();
-                        this._events.emit('transactionComplete', receipt);
+                        this._events.emit(types_1.EventName.TransactionComplete, receipt);
                         return [2 /*return*/, receipt];
                 }
             });

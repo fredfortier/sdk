@@ -67,26 +67,26 @@ var RadarRelay = /** @class */ (function () {
          */
         this.loadPriorityList = [
             {
-                event: 'ethereumInitialized',
+                event: types_1.EventName.EthereumInitialized,
                 func: this.initEthereumNetworkIdAsync
             }, {
-                event: 'ethereumNetworkIdInitialized',
+                event: types_1.EventName.EthereumNetworkIdInitialized,
                 func: this.initZeroEx
             }, {
-                event: 'zeroExInitialized',
+                event: types_1.EventName.ZeroExInitialized,
                 func: this.initTokensAsync
             }, {
-                event: 'tokensInitialized',
+                event: types_1.EventName.TokensInitialized,
                 func: this.initAccountAsync,
                 args: [0] // pass default account of 0 to setAccount
             }, {
-                event: 'accountInitialized',
+                event: types_1.EventName.AccountInitialized,
                 func: this.initTrade
             }, {
-                event: 'tradeInitialized',
+                event: types_1.EventName.TradeInitialized,
                 func: this.initMarketsAsync
             }, {
-                event: 'marketsInitialized',
+                event: types_1.EventName.MarketsInitialized,
                 func: undefined
             }
         ];
@@ -116,7 +116,7 @@ var RadarRelay = /** @class */ (function () {
                         return [4 /*yield*/, this.setEndpointOrThrowAsync()];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, this.getCallback('ethereumInitialized', this._ethereum)];
+                        return [4 /*yield*/, this.getCallback(types_1.EventName.EthereumInitialized, this._ethereum)];
                     case 3:
                         _a.sent();
                         return [2 /*return*/, this];
@@ -139,7 +139,7 @@ var RadarRelay = /** @class */ (function () {
                             endpoint: this._config.radarRestEndpoint,
                             tokens: this.tokens
                         });
-                        return [2 /*return*/, this.getCallback('accountInitialized', this.account)];
+                        return [2 /*return*/, this.getCallback(types_1.EventName.AccountInitialized, this.account)];
                 }
             });
         });
@@ -154,7 +154,7 @@ var RadarRelay = /** @class */ (function () {
                         return [4 /*yield*/, this._ethereum.getNetworkIdAsync.apply(this._ethereum)];
                     case 1:
                         _a._networkId = _b.sent();
-                        return [2 /*return*/, this.getCallback('ethereumNetworkIdInitialized', this._networkId)];
+                        return [2 /*return*/, this.getCallback(types_1.EventName.EthereumNetworkIdInitialized, this._networkId)];
                 }
             });
         });
@@ -163,11 +163,11 @@ var RadarRelay = /** @class */ (function () {
         this.zeroEx = new _0x_js_1.ZeroEx(this._ethereum.web3.currentProvider, {
             networkId: this._networkId
         });
-        return this.getCallback('zeroExInitialized', this.zeroEx);
+        return this.getCallback(types_1.EventName.ZeroExInitialized, this.zeroEx);
     };
     RadarRelay.prototype.initTrade = function () {
         this._trade = new Trade_1.Trade(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events, this.tokens);
-        return this.getCallback('tradeInitialized', this._trade);
+        return this.getCallback(types_1.EventName.TradeInitialized, this._trade);
     };
     RadarRelay.prototype.initTokensAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -188,7 +188,7 @@ var RadarRelay = /** @class */ (function () {
                         _c.label = 2;
                     case 2: 
                     // todo index by address
-                    return [2 /*return*/, this.getCallback('tokensInitialized', this.tokens)];
+                    return [2 /*return*/, this.getCallback(types_1.EventName.TokensInitialized, this.tokens)];
                 }
             });
         });
@@ -214,7 +214,7 @@ var RadarRelay = /** @class */ (function () {
                         this._markets.map(function (market) {
                             _this.markets.set(market.id, new Market_1.Market(market, _this._config.radarRestEndpoint, _this._config.radarWebsocketEndpoint, _this._trade));
                         });
-                        return [2 /*return*/, this.getCallback('marketsInitialized', this.markets)];
+                        return [2 /*return*/, this.getCallback(types_1.EventName.MarketsInitialized, this.markets)];
                 }
             });
         });
@@ -241,7 +241,7 @@ var RadarRelay = /** @class */ (function () {
                         _c.label = 2;
                     case 2:
                         if (!this._config.radarRestEndpoint || !this._config.radarWebsocketEndpoint) {
-                            throw new Error('Invalid or missing Radar Relay API Endpoints');
+                            throw new Error(types_1.SdkError.InvalidOrMissingEndpoints);
                         }
                         return [2 /*return*/];
                 }

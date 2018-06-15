@@ -9,7 +9,7 @@ import { Ethereum } from './Ethereum';
 import { EventEmitter } from 'events';
 import { TSMap } from 'typescript-map';
 import { RadarToken } from '@radarrelay/types';
-export { RadarToken, RadarMarket } from '@radarrelay/types';
+export * from '@radarrelay/types';
 export interface SdkConfig {
     sdkInitializationTimeoutMs?: number;
 }
@@ -66,6 +66,24 @@ export declare enum NetwordId {
     Kovan = 42,
     Rinkeby = 4,
     Ropsten = 3
+}
+export declare enum EventName {
+    Loading = "loading",
+    EthereumInitialized = "ethereumInitialized",
+    EthereumNetworkIdInitialized = "ethereumNetworkIdInitialized",
+    ZeroExInitialized = "zeroExInitialized",
+    TokensInitialized = "tokensInitialized",
+    AccountInitialized = "accountInitialized",
+    TradeInitialized = "tradeInitialized",
+    MarketsInitialized = "marketsInitialized",
+    TransactionPending = "transactionPending",
+    TransactionComplete = "transactionComplete",
+    AddressChanged = "addressChanged"
+}
+export declare enum SdkError {
+    InvalidOrMissingEndpoints = "INVALID_OR_MISSING_RADAR_RELAY_ENDPOINTS",
+    WebSocketDisconnected = "WEBSOCKET_DISCONNECTED",
+    UnableToRetrieveAccount = "UNABLE_TO_RETRIEVE_ACCOUNT"
 }
 export declare type RpcConnection = string | InfuraNetwork;
 export declare type Account = LocalAccount | RpcAccount | InjectedAccount;

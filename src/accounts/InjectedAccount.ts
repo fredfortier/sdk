@@ -1,5 +1,5 @@
 import { BaseAccount } from './BaseAccount';
-import { WalletType, AccountParams } from '../types';
+import { WalletType, AccountParams, EventName } from '../types';
 
 export class InjectedAccount extends BaseAccount {
   public readonly type = WalletType.Injected;
@@ -21,7 +21,7 @@ export class InjectedAccount extends BaseAccount {
     setInterval(async () => {
       if (this._ethereum.web3.eth.accounts[0] !== this.address) {
         this.address = this._ethereum.web3.eth.accounts[0];
-        this._events.emit('addressChanged', this.address);
+        this._events.emit(EventName.AddressChanged, this.address);
       }
     }, 500);
   }

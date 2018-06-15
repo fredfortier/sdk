@@ -69,7 +69,7 @@ var InjectedAccount = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 if (this._ethereum.web3.eth.accounts[0] !== this.address) {
                     this.address = this._ethereum.web3.eth.accounts[0];
-                    this._events.emit('addressChanged', this.address);
+                    this._events.emit(types_1.EventName.AddressChanged, this.address);
                 }
                 return [2 /*return*/];
             });

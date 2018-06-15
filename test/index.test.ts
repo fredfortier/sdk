@@ -5,7 +5,7 @@
 // Create MOCK API endpoints
 
 import * as chai from 'chai';
-import { SdkManager } from '../src/index';
+import { SdkManager, EventName } from '../src/index';
 import { mockRequests } from './lib/mockRequests';
 
 const expect = chai.expect;
@@ -24,45 +24,41 @@ describe('RadarRelay', async () => {
 
   mockRequests();
 
-  rrsdk.events.on('loading', data => {
-    // console.log(data);
-  });
-
   let ethereumInitialized = false;
-  let accountInitialized = false;
   let ethereumNetworkIdInitialized = false;
-  let zeroExInitialized = false;
   let tokensInitialized = false;
+  let accountInitialized = false;
+  let zeroExInitialized = false;
   let marketsInitialized = false;
   let tradeInitialized = false;
 
-  rrsdk.events.on('ethereumInitialized', network => {
+  rrsdk.events.on(EventName.EthereumInitialized, () => {
     ethereumInitialized = true;
   });
-  rrsdk.events.on('ethereumNetworkIdInitialized', networkId => {
+  rrsdk.events.on(EventName.EthereumNetworkIdInitialized, () => {
     ethereumNetworkIdInitialized = true;
   });
-  rrsdk.events.on('tokensInitialized', account => {
+  rrsdk.events.on(EventName.TokensInitialized, () => {
     tokensInitialized = true;
   });
-  rrsdk.events.on('accountInitialized', account => {
+  rrsdk.events.on(EventName.AccountInitialized, () => {
     accountInitialized = true;
   });
-  rrsdk.events.on('zeroExInitialized', zeroEx => {
+  rrsdk.events.on(EventName.ZeroExInitialized, () => {
     zeroExInitialized = true;
   });
-  rrsdk.events.on('tradeInitialized', trade => {
+  rrsdk.events.on(EventName.TradeInitialized, () => {
     tradeInitialized = true;
   });
-  rrsdk.events.on('marketsInitialized', markets => {
+  rrsdk.events.on(EventName.MarketsInitialized, () => {
     marketsInitialized = true;
   });
 
   beforeEach(() => {
     ethereumInitialized = false;
+    ethereumNetworkIdInitialized = false;
     tokensInitialized = false;
     accountInitialized = false;
-    ethereumNetworkIdInitialized = false;
     zeroExInitialized = false;
     marketsInitialized = false;
     tradeInitialized = false;
@@ -72,8 +68,9 @@ describe('RadarRelay', async () => {
 
     await SdkManager.InitializeAsync(rrsdk);
 
-    expect(accountInitialized).to.be.true;
     expect(ethereumInitialized).to.be.true;
+    expect(ethereumNetworkIdInitialized).to.be.true;
+    expect(accountInitialized).to.be.true;
     expect(tokensInitialized).to.be.true;
     expect(accountInitialized).to.be.true;
     expect(zeroExInitialized).to.be.true;

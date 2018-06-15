@@ -6,7 +6,9 @@ import {
   InjectedWalletConfig,
   WalletType,
   Config,
-  AccountParams
+  AccountParams,
+  EventName,
+  SdkError
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
@@ -53,26 +55,26 @@ export class RadarRelay<T extends BaseAccount> {
    */
   private loadPriorityList: InitPriorityItem[] = [
     {
-      event: 'ethereumInitialized',
+      event: EventName.EthereumInitialized,
       func: this.initEthereumNetworkIdAsync
     }, {
-      event: 'ethereumNetworkIdInitialized',
+      event: EventName.EthereumNetworkIdInitialized,
       func: this.initZeroEx
     }, {
-      event: 'zeroExInitialized',
+      event: EventName.ZeroExInitialized,
       func: this.initTokensAsync
     }, {
-      event: 'tokensInitialized',
+      event: EventName.TokensInitialized,
       func: this.initAccountAsync,
       args: [0] // pass default account of 0 to setAccount
     }, {
-      event: 'accountInitialized',
+      event: EventName.AccountInitialized,
       func: this.initTrade
     }, {
-      event: 'tradeInitialized',
+      event: EventName.TradeInitialized,
       func: this.initMarketsAsync
     }, {
-      event: 'marketsInitialized',
+      event: EventName.MarketsInitialized,
       func: undefined
     }];
 
@@ -105,7 +107,7 @@ export class RadarRelay<T extends BaseAccount> {
   public async initializeAsync(): Promise<RadarRelay<T>> {
     await this._ethereum.setProvider(this._walletType, this._config);
     await this.setEndpointOrThrowAsync();
-    await this.getCallback('ethereumInitialized', this._ethereum);
+    await this.getCallback(EventName.EthereumInitialized, this._ethereum);
 
     return this;
   }
@@ -121,24 +123,24 @@ export class RadarRelay<T extends BaseAccount> {
       endpoint: this._config.radarRestEndpoint,
       tokens: this.tokens
     });
-    return this.getCallback('accountInitialized', this.account);
+    return this.getCallback(EventName.AccountInitialized, this.account);
   }
 
   private async initEthereumNetworkIdAsync(): Promise<string | boolean> {
     this._networkId = await this._ethereum.getNetworkIdAsync.apply(this._ethereum);
-    return this.getCallback('ethereumNetworkIdInitialized', this._networkId);
+    return this.getCallback(EventName.EthereumNetworkIdInitialized, this._networkId);
   }
 
   private initZeroEx(): Promise<string | boolean> {
     this.zeroEx = new ZeroEx(this._ethereum.web3.currentProvider, {
       networkId: this._networkId
     });
-    return this.getCallback('zeroExInitialized', this.zeroEx);
+    return this.getCallback(EventName.ZeroExInitialized, this.zeroEx);
   }
 
   private initTrade(): Promise<string | boolean> {
     this._trade = new Trade<T>(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events, this.tokens);
-    return this.getCallback('tradeInitialized', this._trade);
+    return this.getCallback(EventName.TradeInitialized, this._trade);
   }
 
   private async initTokensAsync(): Promise<string | boolean> {
@@ -151,7 +153,7 @@ export class RadarRelay<T extends BaseAccount> {
       });
     }
     // todo index by address
-    return this.getCallback('tokensInitialized', this.tokens);
+    return this.getCallback(EventName.TokensInitialized, this.tokens);
   }
 
   private async initMarketsAsync(): Promise<string | boolean> {
@@ -168,7 +170,7 @@ export class RadarRelay<T extends BaseAccount> {
       ));
     });
 
-    return this.getCallback('marketsInitialized', this.markets);
+    return this.getCallback(EventName.MarketsInitialized, this.markets);
   }
 
   private getCallback(event, data): Promise<string | boolean> {
@@ -187,7 +189,7 @@ export class RadarRelay<T extends BaseAccount> {
     }
 
     if (!this._config.radarRestEndpoint || !this._config.radarWebsocketEndpoint) {
-      throw new Error('Invalid or missing Radar Relay API Endpoints');
+      throw new Error(SdkError.InvalidOrMissingEndpoints);
     }
   }
 }

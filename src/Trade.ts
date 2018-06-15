@@ -1,6 +1,6 @@
 import { Market } from './Market';
 import { EventEmitter } from 'events';
-import { WalletType, Opts } from './types';
+import { WalletType, Opts, EventName } from './types';
 import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
@@ -71,14 +71,14 @@ export class Trade<T extends BaseAccount> {
         opts.transactionOpts);
     }
 
-    this._events.emit('transactionPending', txHash);
+    this._events.emit(EventName.TransactionPending, txHash);
 
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
 
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    this._events.emit('transactionComplete', receipt);
+    this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
   }
 
@@ -137,14 +137,14 @@ export class Trade<T extends BaseAccount> {
     }
 
     const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
-    this._events.emit('transactionPending', txHash);
+    this._events.emit(EventName.TransactionPending, txHash);
 
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
 
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
-    this._events.emit('transactionComplete', receipt);
+    this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
   }
 
