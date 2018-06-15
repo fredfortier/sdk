@@ -39,6 +39,11 @@ var util_1 = require("util");
 var _0x_js_1 = require("0x.js");
 var request = require("request-promise");
 var BaseAccount = /** @class */ (function () {
+    /**
+     * Instantiate a new BaseAccount
+     *
+     * @param {AccountParams} params The account parameters
+     */
     function BaseAccount(params) {
         this._ethereum = params.ethereum;
         this._events = params.events;
@@ -79,21 +84,24 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Transfer ETH to another address
      *
-     * @param {string}     to     address to transfer to
-     * @param {BigNumber}  amount amount of eth to transfer
-     * @param {Opts}       opts   optional transaction options
+     * @param {string} toAddress The address to transfer to
+     * @param {BigNumber} amount The amount of ETH to transfer
+     * @param {Opts} [opts] The transaction options
      */
-    BaseAccount.prototype.transferEthAsync = function (to, amount, opts) {
+    BaseAccount.prototype.transferEthAsync = function (toAddress, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txOpts, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
                         txOpts = {
                             gasPrice: opts.transactionOpts ? opts.transactionOpts.gasPrice : undefined,
                             gas: opts.transactionOpts ? opts.transactionOpts.gasLimit : undefined
                         };
-                        return [4 /*yield*/, this._ethereum.transferEthAsync(this.address, to, amount, txOpts)];
+                        return [4 /*yield*/, this._ethereum.transferEthAsync(this.address, toAddress, amount, txOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -108,15 +116,19 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Wrap ETH to convert it to WETH
      *
-     * @param {BigNumber}  amount amount of eth to wrap
-     * @param {Opts}       opts   optional transaction options
+     * @param {BigNumber} amount The amount of ETH to wrap
+     * @param {Opts} [opts] The transaction options
      */
     BaseAccount.prototype.wrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -131,15 +143,19 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Unwrap WETH to convert it to ETH
      *
-     * @param {BigNumber}  amount amount of WETH to unwrap
-     * @param {Opts}       opts   optional transaction options
+     * @param {BigNumber} amount The amount of WETH to unwrap
+     * @param {Opts} [opts] The transaction options
      */
     BaseAccount.prototype.unwrapEthAsync = function (amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -154,17 +170,17 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Get balance of a token for the current selected address
      *
-     * @param {string}  token  token address
+     * @param {string} tokenAddress The token address
      */
-    BaseAccount.prototype.getTokenBalanceAsync = function (token) {
+    BaseAccount.prototype.getTokenBalanceAsync = function (tokenAddress) {
         return __awaiter(this, void 0, void 0, function () {
             var balance;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.getBalanceAsync(token, this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.token.getBalanceAsync(tokenAddress, this.address)];
                     case 1:
                         balance = _a.sent();
-                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(token).decimals)];
+                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals)];
                 }
             });
         });
@@ -172,19 +188,22 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Transfer tokens to another address
      *
-     * @param {string}     token  token address
-     * @param {string}     to     address to transfer to
-     * @param {BigNumber}  amount amount of token to transfer
-     * @param {Opts}       opts   optional transaction options
+     * @param {string} tokenAddress The token address
+     * @param {string} toAddress The address to transfer to
+     * @param {BigNumber} amount The amount of token to transfer
+     * @param {Opts} [opts] The transaction options
      */
-    BaseAccount.prototype.transferTokenAsync = function (token, to, amount, opts) {
+    BaseAccount.prototype.transferTokenAsync = function (tokenAddress, toAddress, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.transferAsync(token, this.address, to, amt, opts.transactionOpts)];
+                        if (!opts) {
+                            opts = {};
+                        }
+                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+                        return [4 /*yield*/, this._zeroEx.token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -197,19 +216,19 @@ var BaseAccount = /** @class */ (function () {
         });
     };
     /**
-     * Transfer tokens to another address
+     * Get a token allowance
      *
-     * @param {string}     token  token address
+     * @param {string} tokenAddress The token address
      */
-    BaseAccount.prototype.getTokenAllowanceAsync = function (token) {
+    BaseAccount.prototype.getTokenAllowanceAsync = function (tokenAddress) {
         return __awaiter(this, void 0, void 0, function () {
             var baseUnitallowance;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.getProxyAllowanceAsync(token, this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, this.address)];
                     case 1:
                         baseUnitallowance = _a.sent();
-                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(token).decimals)];
+                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals)];
                 }
             });
         });
@@ -217,18 +236,21 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Set a token allowance
      *
-     * @param {string}     token  token address
-     * @param {BigNumber}  amount allowance amount
-     * @param {Opts}       opts   optional transaction options
+     * @param {string} tokenAddress The token address
+     * @param {BigNumber} amount The allowance amount
+     * @param {Opts} [opts] The transaction options
      */
-    BaseAccount.prototype.setTokenAllowanceAsync = function (token, amount, opts) {
+    BaseAccount.prototype.setTokenAllowanceAsync = function (tokenAddress, amount, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var amt, txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(token).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(token, this.address, amt, opts.transactionOpts)];
+                        if (!opts) {
+                            opts = {};
+                        }
+                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -243,15 +265,19 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Set unlimited token allowance
      *
-     * @param {string}     token  token address
-     * @param {Opts}       opts   optional transaction options
+     * @param {string} tokenAddress The token address
+     * @param {Opts} [opts] The transaction options
      */
-    BaseAccount.prototype.setUnlimitedTokenAllowanceAsync = function (token, opts) {
+    BaseAccount.prototype.setUnlimitedTokenAllowanceAsync = function (tokenAddress, opts) {
         return __awaiter(this, void 0, void 0, function () {
             var txHash;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(token, this.address, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -266,8 +292,8 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Get orders for the selected address that have been placed on Radar
      *
-     * @param {number} page
-     * @param {number} perPage
+     * @param {number} page The page to fetch
+     * @param {number} perPage The number of orders per page
      */
     BaseAccount.prototype.getOrdersAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }
@@ -287,8 +313,8 @@ var BaseAccount = /** @class */ (function () {
     /**
      * Get fills for the selected address that have been executed on Radar
      *
-     * @param {number} page
-     * @param {number} perPage
+     * @param {number} page The page to fetch
+     * @param {number} perPage The number of fills per page
      */
     BaseAccount.prototype.getFillsAsync = function (page, perPage) {
         if (page === void 0) { page = 1; }

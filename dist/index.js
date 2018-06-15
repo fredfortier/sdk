@@ -18,3 +18,4 @@ exports.Trade = Trade_1.Trade;
 var WebsocketClient_1 = require("./WebsocketClient");
 exports.WebsocketClient = WebsocketClient_1.WebsocketClient;
 __export(require("./accounts"));
+__export(require("./types"));

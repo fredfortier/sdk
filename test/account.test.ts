@@ -19,17 +19,14 @@ describe('RadarRelay.Account', () => {
     mockRequests();
 
     rrsdk = await SdkManager.SetupAndInitializeAsync({
-      endpoint: 'http://localhost:8080/v0',
-      websocketEndpoint: 'ws://ws.radarrelay.com'
-    },
-      {
-        wallet: {
-          password: 'password',
-          seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
-        },
-        dataRpcUrl: 'http://localhost:8545'
-      }
-    );
+      wallet: {
+        password: 'password',
+        seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+      },
+      dataRpcUrl: 'http://localhost:8545',
+      radarRestEndpoint: 'http://localhost:8080/v0',
+      radarWebsocketEndpoint: 'ws://ws.radarrelay.com'
+    });
 
     // set addr for later use
     zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;

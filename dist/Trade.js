@@ -52,13 +52,17 @@ var Trade = /** @class */ (function () {
             var marketResponse, txHash, receipt;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, request.post({
-                            url: this._endpoint + "/markets/" + market.id + "/order/market",
-                            json: {
-                                type: type,
-                                quantity: quantity.toString(),
-                            }
-                        })];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, request.post({
+                                url: this._endpoint + "/markets/" + market.id + "/order/market",
+                                json: {
+                                    type: type,
+                                    quantity: quantity.toString(),
+                                }
+                            })];
                     case 1:
                         marketResponse = _a.sent();
                         marketResponse.orders.forEach(function (order, i) {
@@ -66,17 +70,25 @@ var Trade = /** @class */ (function () {
                             marketResponse.orders[i].makerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount);
                             marketResponse.orders[i].expirationUnixTimestampSec = new bignumber_js_1.default(order.expirationUnixTimestampSec);
                         });
-                        return [4 /*yield*/, this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
+                        if (!(marketResponse.orders.length === 1)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this._zeroEx.exchange.fillOrderAsync(marketResponse.orders[0], _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
                     case 2:
+                        // Save gas by executing a fill order if only one order was returned
                         txHash = _a.sent();
-                        this._events.emit('transactionPending', txHash);
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
+                    case 4:
+                        txHash = _a.sent();
+                        _a.label = 5;
+                    case 5:
+                        this._events.emit(types_1.EventName.TransactionPending, txHash);
                         if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
-                    case 3:
+                    case 6:
                         receipt = _a.sent();
-                        this._events.emit('transactionComplete', receipt);
+                        this._events.emit(types_1.EventName.TransactionComplete, receipt);
                         return [2 /*return*/, receipt];
                 }
             });
@@ -135,17 +147,21 @@ var Trade = /** @class */ (function () {
             var txHash, receipt;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts)];
+                    case 0:
+                        if (!opts) {
+                            opts = {};
+                        }
+                        return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
-                        this._events.emit('transactionPending', txHash);
+                        this._events.emit(types_1.EventName.TransactionPending, txHash);
                         if (!opts.awaitTransactionMined) {
                             return [2 /*return*/, txHash];
                         }
                         return [4 /*yield*/, this._zeroEx.awaitTransactionMinedAsync(txHash)];
                     case 2:
                         receipt = _a.sent();
-                        this._events.emit('transactionComplete', receipt);
+                        this._events.emit(types_1.EventName.TransactionComplete, receipt);
                         return [2 /*return*/, receipt];
                 }
             });

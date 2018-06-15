@@ -1,5 +1,6 @@
 import { RadarSubscribeRequest, WebsocketRequestType } from '@radarrelay/types';
 import { w3cwebsocket } from 'websocket';
+import { SdkError } from './types';
 
 /**
  * Websocket client helper class
@@ -29,8 +30,8 @@ export class WebsocketClient {
   /**
    * Create a Radar subscription
    *
-   * @param {RadarSubscribeRequest}  subscribeRequest
-   * @param {function}               subscriptionHandler
+   * @param {RadarSubscribeRequest} subscribeRequest The subscribe request
+   * @param {function} subscriptionHandler The subscription handler
    */
   public subscribe(
     subscribeRequest: RadarSubscribeRequest,
@@ -40,7 +41,7 @@ export class WebsocketClient {
     subscriptionHandler: (messsage: any) => void,
     unsubscribe: () => void
   } {
-    if (!this._clientIsConnected) throw new Error('WEBSOCKET_DISCONNECTED');
+    if (!this._clientIsConnected) throw new Error(SdkError.WebSocketDisconnected);
     this._curSubID = this._curSubID + 1;
     subscribeRequest.requestId = this._curSubID;
     this._client.send(JSON.stringify(subscribeRequest));
@@ -58,7 +59,7 @@ export class WebsocketClient {
   }
 
   /**
-   * Connect method
+   * Open a connection to the Radar Relay WebSocket API
    */
   public async connect() {
     return new Promise((resolve, reject) => {
@@ -81,7 +82,7 @@ export class WebsocketClient {
   /**
    * Default connection handler
    *
-   * @param {Event} conn
+   * @param {Event} conn The open event
    */
   private _connectHandler(conn: Event) {
     this.connected = true;
@@ -91,9 +92,9 @@ export class WebsocketClient {
   }
 
   /**
-   * default close handler
+   * Default close handler
    *
-   * @param {CloseEvent} closed
+   * @param {CloseEvent} closed The close event
    */
   private _closeHandler(closed: CloseEvent) {
     this.connected = false;
@@ -104,9 +105,9 @@ export class WebsocketClient {
   }
 
   /**
-   * default error handler
+   * Default error handler
    *
-   * @param {Event} err
+   * @param {Event} err The error event
    */
   private _errorHandler(err: Event) {
     this.connected = false;
@@ -121,7 +122,7 @@ export class WebsocketClient {
    * Handle a message passing it to
    * the active subscription if it exists
    *
-   * @param {MessageEvent} message
+   * @param {MessageEvent} message The message event
    */
   private _messageHandler(message: MessageEvent) {
 

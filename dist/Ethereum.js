@@ -52,8 +52,8 @@ var Ethereum = /** @class */ (function () {
     /**
      * Set the provider
      *
-     * @param {WalletType}  type  type of wallet
-     * @param {WalletConfig}  config  wallet config params
+     * @param {WalletType} type The wallet type
+     * @param {Config} config The wallet config
      */
     Ethereum.prototype.setProvider = function (type, config) {
         return __awaiter(this, void 0, void 0, function () {
@@ -95,9 +95,9 @@ var Ethereum = /** @class */ (function () {
         configurable: true
     });
     /**
-     * get the ether balance for an account
+     * Get the ether balance for an account
      *
-     * @param {string} address
+     * @param {string} address The address
      */
     Ethereum.prototype.getEthBalanceAsync = function (address) {
         return __awaiter(this, void 0, void 0, function () {
@@ -114,11 +114,11 @@ var Ethereum = /** @class */ (function () {
         });
     };
     /**
-     * transfer ether to another account
+     * Transfer ether to another account
      *
-     * @param {string} from
-     * @param {string} to
-     * @param {BigNumber} value
+     * @param {string} from The from address
+     * @param {string} to The to address
+     * @param {BigNumber} value The value to transfer
      */
     Ethereum.prototype.transferEthAsync = function (from, to, value, opts) {
         return __awaiter(this, void 0, void 0, function () {
@@ -141,7 +141,7 @@ var Ethereum = /** @class */ (function () {
         });
     };
     /**
-     * get the RPC Connections networkId
+     * Get the RPC Connections networkId
      */
     Ethereum.prototype.getNetworkIdAsync = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -158,10 +158,9 @@ var Ethereum = /** @class */ (function () {
         });
     };
     /**
-     * set eth defaultAccount to a
-     * new address index or address
+     * Set ETH defaultAccount to a new address index or address
      *
-     * @param {number|string}  account  account index or address
+     * @param {number|string}  account The account index or address
      */
     Ethereum.prototype.setDefaultAccount = function (account) {
         return __awaiter(this, void 0, void 0, function () {
@@ -174,7 +173,7 @@ var Ethereum = /** @class */ (function () {
                         accounts = _a.sent();
                         if (typeof (account) === 'number') {
                             if (typeof (accounts[account]) === 'undefined')
-                                throw new Error('unable to retrieve account');
+                                throw new Error(types_1.SdkError.UnableToRetrieveAccount);
                             this.web3.eth.defaultAccount = accounts[account];
                         }
                         else {
@@ -186,7 +185,7 @@ var Ethereum = /** @class */ (function () {
                                 }
                             });
                             if (!found_1)
-                                throw new Error('unable to retrieve account');
+                                throw new Error(types_1.SdkError.UnableToRetrieveAccount);
                         }
                         return [2 /*return*/];
                 }
@@ -194,9 +193,9 @@ var Ethereum = /** @class */ (function () {
         });
     };
     /**
-     * Set the local LightWallet Providers
+     * Set the local LightWallet Provider
      *
-     * @param {config} LightWalletConfig
+     * @param {config} LightWalletConfig The LightWallet configuration
      */
     Ethereum.prototype._setLightWalletProvider = function (config) {
         return __awaiter(this, void 0, void 0, function () {
@@ -230,7 +229,7 @@ var Ethereum = /** @class */ (function () {
     /**
      * Set injected wallet provider
      *
-     * @param {config} InjectedWalletConfig
+     * @param {config} InjectedWalletConfig The InjectedWallet config
      */
     Ethereum.prototype._setInjectedWalletProvider = function (config) {
         // Default to window.web3
@@ -245,7 +244,7 @@ var Ethereum = /** @class */ (function () {
     /**
      * Set the rpc wallet provider
      *
-     * @param {config} RpcWalletConfig
+     * @param {config} RpcWalletConfig The RpcWallet config
      */
     Ethereum.prototype._setRpcWalletProvider = function (config) {
         var provider = new Web3.providers.HttpProvider(config.rpcUrl);

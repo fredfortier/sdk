@@ -1,8 +1,3 @@
----
-path: "/sdk"
-version: "0.2.5"
----
-
 # Radar Relay SDK
 
 The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
@@ -28,10 +23,7 @@ Setup and initialization of the SDK can be completed in a single call if you don
 ```javascript
 import { SdkManager } from '@radarrelay/sdk';
 
-const rr = await SdkManager.SetupAndInitializeAsync({
-  endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
-  websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
-}, WalletConfig); // Wallet Configuration Details
+const rr = await SdkManager.SetupAndInitializeAsync(Config); // Radar API and Wallet Configuration
 ```
 
 
@@ -41,10 +33,7 @@ Setup can be separated from initialization, which is useful if you would like to
 ```javascript
 import { SdkManager } from '@radarrelay/sdk';
 
-const rr = SdkManager.Setup({
-  endpoint: 'https://api.radarrelay.com/v0', // Radar Relay's REST API Endpoint
-  websocketEndpoint: 'wss://api.radarrelay.com/ws' // Radar Relay's WebSocket API Endpoint
-}, WalletConfig); // Wallet Configuration Details
+const rr = SdkManager.Setup(Config); // Radar API and Wallet Configuration
 ```
 
 ### Initialize
@@ -62,6 +51,28 @@ await rr.initializeAsync();
 
 #### Wallet Configuration Types
 ```javascript 
+interface SdkConfig {
+  sdkInitializationTimeoutMs?: number;
+}
+```
+
+```javascript 
+interface EndpointConfig {
+  radarRestEndpoint: string;
+  radarWebsocketEndpoint: string;
+}
+```
+
+```javascript 
+// Injected Wallets do not require an endpoint argument
+// if using the wallet's connection to the Ethereum network
+export interface OptionalEndpointConfig {
+  radarRestEndpoint?: string;
+  radarWebsocketEndpoint?: string;
+}
+```
+
+```javascript 
 interface EthereumConfig {
   defaultGasPrice?: BigNumber;
 }
@@ -77,14 +88,14 @@ interface LightWalletOptions {
 ```
 
 ```javascript 
-interface LightWalletConfig extends EthereumConfig {
+interface LightWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   wallet: LightWalletOptions; // Wallet options for a local HD wallet
   dataRpcUrl: string;  // The rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
 
 ```javascript 
-interface InjectedWalletConfig extends EthereumConfig {
+interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, EthereumConfig {
   type: InjectedWalletType;
   web3?: Web3; // Injected web3 object (Default: window.web3)
   dataRpcUrl?: string; // Rpc connection used to broadcast transactions and retreive Ethereum chain state (Default: Injected Web3 Connection)
@@ -92,7 +103,7 @@ interface InjectedWalletConfig extends EthereumConfig {
 ```
 
 ```javascript 
-interface RpcWalletConfig extends EthereumConfig {
+interface RpcWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   rpcUrl: string; // The RPC connection to an unlocked node
 }
 ```
@@ -104,17 +115,17 @@ fires an event that you can listen to via the `events` object.
 ```javascript
 
 rr.events.on(
-  'loading'
-  'ethereumInitialize'
-  'ethereumNetworkIdInitialized' 
-  'zeroExInitialized'
-  'tokensInitialized'
-  'accountInitialized'
-  'tradeInitialized'
-  'marketsInitialized'
-  'transactionPending'
-  'transactionMined'
-  'addressChanged'
+  EventName.Loading
+  EventName.EthereumInitialized
+  EventName.EthereumNetworkIdInitialized
+  EventName.ZeroExInitialized
+  EventName.TokensInitialized
+  EventName.AccountInitialized
+  EventName.TradeInitialized
+  EventName.MarketsInitialized
+  EventName.TransactionPending
+  EventName.TransactionComplete
+  EventName.AddressChanged
 )
 rr.events.emit('see_above' | 'or emit anything', with, some, data)
 ```

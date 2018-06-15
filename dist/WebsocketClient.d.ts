@@ -19,8 +19,8 @@ export declare class WebsocketClient {
     /**
      * Create a Radar subscription
      *
-     * @param {RadarSubscribeRequest}  subscribeRequest
-     * @param {function}               subscriptionHandler
+     * @param {RadarSubscribeRequest} subscribeRequest The subscribe request
+     * @param {function} subscriptionHandler The subscription handler
      */
     subscribe(subscribeRequest: RadarSubscribeRequest, subscriptionHandler: (messsage: any) => void): {
         requestId: number;
@@ -28,32 +28,32 @@ export declare class WebsocketClient {
         unsubscribe: () => void;
     };
     /**
-     * Connect method
+     * Open a connection to the Radar Relay WebSocket API
      */
     connect(): Promise<{}>;
     /**
      * Default connection handler
      *
-     * @param {Event} conn
+     * @param {Event} conn The open event
      */
     private _connectHandler;
     /**
-     * default close handler
+     * Default close handler
      *
-     * @param {CloseEvent} closed
+     * @param {CloseEvent} closed The close event
      */
     private _closeHandler;
     /**
-     * default error handler
+     * Default error handler
      *
-     * @param {Event} err
+     * @param {Event} err The error event
      */
     private _errorHandler;
     /**
      * Handle a message passing it to
      * the active subscription if it exists
      *
-     * @param {MessageEvent} message
+     * @param {MessageEvent} message The message event
      */
     private _messageHandler;
     /**

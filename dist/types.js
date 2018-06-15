@@ -1,5 +1,9 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("@radarrelay/types"));
 var WalletType;
 (function (WalletType) {
     WalletType[WalletType["Local"] = 0] = "Local";
@@ -25,3 +29,23 @@ var NetwordId;
     NetwordId[NetwordId["Rinkeby"] = 4] = "Rinkeby";
     NetwordId[NetwordId["Ropsten"] = 3] = "Ropsten";
 })(NetwordId = exports.NetwordId || (exports.NetwordId = {}));
+var EventName;
+(function (EventName) {
+    EventName["Loading"] = "loading";
+    EventName["EthereumInitialized"] = "ethereumInitialized";
+    EventName["EthereumNetworkIdInitialized"] = "ethereumNetworkIdInitialized";
+    EventName["ZeroExInitialized"] = "zeroExInitialized";
+    EventName["TokensInitialized"] = "tokensInitialized";
+    EventName["AccountInitialized"] = "accountInitialized";
+    EventName["TradeInitialized"] = "tradeInitialized";
+    EventName["MarketsInitialized"] = "marketsInitialized";
+    EventName["TransactionPending"] = "transactionPending";
+    EventName["TransactionComplete"] = "transactionComplete";
+    EventName["AddressChanged"] = "addressChanged";
+})(EventName = exports.EventName || (exports.EventName = {}));
+var SdkError;
+(function (SdkError) {
+    SdkError["InvalidOrMissingEndpoints"] = "INVALID_OR_MISSING_RADAR_RELAY_ENDPOINTS";
+    SdkError["WebSocketDisconnected"] = "WEBSOCKET_DISCONNECTED";
+    SdkError["UnableToRetrieveAccount"] = "UNABLE_TO_RETRIEVE_ACCOUNT";
+})(SdkError = exports.SdkError || (exports.SdkError = {}));

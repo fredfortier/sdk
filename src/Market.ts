@@ -31,7 +31,7 @@ export class Market<T extends BaseAccount> {
   private _endpoint: string;
   private _wsEndpoint: string;
   private _trade: Trade<T>;
-  private _wsClient: any;
+  private _wsClient: WebsocketClient;
 
   constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>) {
     // setup config
@@ -83,8 +83,8 @@ export class Market<T extends BaseAccount> {
   /**
    * subscribe to a socket topic for this market
    *
-   * @param {string}                 topic  market topic
-   * @param {WebsocketRequestTopic}  topic
+   * @param {WebsocketRequestTopic}  topic  The market topic
+   * @param {(message: any) => void}  handlerFunc The subscription handler
    */
   public async subscribeAsync(
     topic: WebsocketRequestTopic,
@@ -95,7 +95,7 @@ export class Market<T extends BaseAccount> {
     unsubscribe: () => void
   }> {
     if (!this._wsClient.connected) {
-      await this._wsClient.connect(this._wsEndpoint);
+      await this._wsClient.connect();
     }
     return this._wsClient.subscribe({
        type: WebsocketRequestType.SUBSCRIBE,
@@ -109,7 +109,7 @@ export class Market<T extends BaseAccount> {
    *
    * @param {UserOrderType} type   Order type of BUY|SELL
    * @param {BigNumber}     amount Amount in base token
-   * @param {Opts}          opts   Optional transaction options
+   * @param {Opts}          [opts]   Optional transaction options
    */
   public async marketOrderAsync(
     type: UserOrderType,
@@ -148,7 +148,7 @@ export class Market<T extends BaseAccount> {
    * Cancel an order
    *
    * @param {SignedOrder}  order SignedOrder to cancel
-   * @param {Opts}         opts  Optional transaction options
+   * @param {Opts}         [opts]  Optional transaction options
    */
   public async cancelOrderAsync(
     order: SignedOrder,

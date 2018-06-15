@@ -5,10 +5,7 @@ export declare class InjectedAccount extends BaseAccount {
     /**
      * Instantiate an InjectedAccount
      *
-     * @param {Ethereum} ethereum
-     * @param {ZeroEx} zeroEx
-     * @param {string} endpoint
-     * @param {TSMap<string, RadarToken>} tokens
+     * @param {AccountParams} params The account parameters
      */
     constructor(params: AccountParams);
     /**

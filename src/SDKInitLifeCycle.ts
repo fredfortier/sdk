@@ -1,5 +1,6 @@
 
 import { EventEmitter } from 'events';
+import { EventName } from './types';
 
 export interface InitPriorityItem {
   // the event that is triggered
@@ -90,7 +91,7 @@ export class SDKInitLifeCycle {
     this._current = (current >= this._current) ? current : this._current;
 
     const progressPerc = Math.floor((this._current / this._last) * 100);
-    this._events.emit('loading', {
+    this._events.emit(EventName.Loading, {
       progress: progressPerc || 0,
       elapsedTime: (new Date().getTime() - this._startTime),
       source: this.constructor.name + ':' + event
