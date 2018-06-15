@@ -55,17 +55,25 @@ enum ExchangeContractErrs {
 // Human Readable Çontract Wrapper Errors
 export const contractWrappersErrorToHumanReadableError: { [error: string]: string } = {
   [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
+  [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
   [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-  [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
-    'TokenTransferProxy contract does not exist',
+  [ContractWrappersError.TokenTransferProxyContractDoesNotExist]: 'TokenTransferProxy contract does not exist',
   [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
   [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
-  [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
-  [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
-  [OrderError.InvalidSignature]: 'Order signature is not valid',
   [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+  [ContractWrappersError.InsufficientAllowanceForTransfer]: 'Insufficient allowance for transfer',
+  [ContractWrappersError.InsufficientBalanceForTransfer]: 'Insufficient balance for transfer',
+  [ContractWrappersError.InsufficientEthBalanceForDeposit]: 'Insufficient ETH balance for deposit',
+  [ContractWrappersError.InsufficientWEthBalanceForWithdrawal]: 'Insufficient WETH balance for withdrawal',
   [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
   [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
+  [ContractWrappersError.SubscriptionNotFound]: 'Subscription not found',
+  [ContractWrappersError.SubscriptionAlreadyPresent]: 'Subscription already present',
+  [OrderError.InvalidSignature]: 'Order signature is not valid',
+  [BlockchainCallErrs.ContractDoesNotExist]: 'Contract does not exist',
+  [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
+  [BlockchainCallErrs.UnhandledError]: 'Unhandled Error',
+  [BlockchainCallErrs.TokenAddressIsInvalid]: 'Token address is invalid',
 };
 
 // Human Readable Exchange Çontract Errors
@@ -76,21 +84,19 @@ export const exchangeContractErrorToHumanReadableError: { [error: string]: strin
   [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]: 'This order has already been completely filled or cancelled',
   [ExchangeContractErrs.OrderFillAmountZero]: 'Order fill amount can\'t be 0',
   [ExchangeContractErrs.OrderRemainingFillAmountZero]: 'This order has already been completely filled or cancelled',
-  [ExchangeContractErrs.OrderFillRoundingError]:
-    'Rounding error will occur when filling this order. Please try filling a different amount.',
+  [ExchangeContractErrs.OrderFillRoundingError]: 'Rounding error will occur when filling this order. Please try filling a different amount.',
   [ExchangeContractErrs.InsufficientTakerBalance]: 'Taker no longer has a sufficient balance to complete this order',
-  [ExchangeContractErrs.InsufficientTakerAllowance]:
-    'Taker no longer has a sufficient allowance to complete this order',
-  [ExchangeContractErrs.InsufficientMakerBalance]:
-    'Maker no longer has a sufficient balance to complete this order',
-  [ExchangeContractErrs.InsufficientMakerAllowance]:
-    'Maker no longer has a sufficient allowance to complete this order',
+  [ExchangeContractErrs.InsufficientTakerAllowance]: 'Taker no longer has a sufficient allowance to complete this order',
+  [ExchangeContractErrs.InsufficientMakerBalance]: 'Maker no longer has a sufficient balance to complete this order',
+  [ExchangeContractErrs.InsufficientMakerAllowance]: 'Maker no longer has a sufficient allowance to complete this order',
   [ExchangeContractErrs.InsufficientTakerFeeBalance]: 'Taker no longer has a sufficient balance to pay fees',
-  [ExchangeContractErrs.InsufficientTakerFeeAllowance]:
-    'Taker no longer has a sufficient allowance to pay fees',
+  [ExchangeContractErrs.InsufficientTakerFeeAllowance]: 'Taker no longer has a sufficient allowance to pay fees',
   [ExchangeContractErrs.InsufficientMakerFeeBalance]: 'Maker no longer has a sufficient balance to pay fees',
-  [ExchangeContractErrs.InsufficientMakerFeeAllowance]:
-    'Maker no longer has a sufficient allowance to pay fees',
+  [ExchangeContractErrs.InsufficientMakerFeeAllowance]: 'Maker no longer has a sufficient allowance to pay fees',
   [ExchangeContractErrs.TransactionSenderIsNotFillOrderTaker]: `This order can only be filled by the specified taker`,
+  [ExchangeContractErrs.MultipleMakersInSingleCancelBatchDisallowed]: 'Multiple makes in a single cancel batch are disallowed',
   [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
+  [ExchangeContractErrs.MultipleTakerTokensInFillUpToDisallowed]: 'Multiple taker tokens in a fill up to call are disallowed',
+  [ExchangeContractErrs.BatchOrdersMustHaveSameExchangeAddress]: 'Batch orders must have the same exchange address',
+  [ExchangeContractErrs.BatchOrdersMustHaveAtLeastOneItem]: 'Batch orders cannot by empty',
 };
