@@ -42,7 +42,7 @@ var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
 var typescript_map_1 = require("typescript-map");
 // SDK Classes
-var SDKInitLifeCycle_1 = require("./SDKInitLifeCycle");
+var SdkInitLifeCycle_1 = require("./SdkInitLifeCycle");
 var Ethereum_1 = require("./Ethereum");
 var Market_1 = require("./Market");
 var Trade_1 = require("./Trade");
@@ -61,7 +61,7 @@ var RadarRelay = /** @class */ (function () {
         /**
          * The load priority list maintains the function call
          * priority for each init method in the RadarRelaySDK class.
-         * It is utilized by the SDKInitLifeCycle
+         * It is utilized by the SdkInitLifeCycle
          *
          * This list is configurable if additional init methods are necessary
          */
@@ -98,7 +98,7 @@ var RadarRelay = /** @class */ (function () {
         // instantiate ethereum class
         this._ethereum = new Ethereum_1.Ethereum();
         // setup the _lifecycle
-        this._lifecycle = new SDKInitLifeCycle_1.SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeoutMs);
+        this._lifecycle = new SdkInitLifeCycle_1.SdkInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeoutMs);
         this._lifecycle.setup(this);
     }
     /**
@@ -113,6 +113,8 @@ var RadarRelay = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this._ethereum.setProvider(this._walletType, this._config)];
                     case 1:
                         _a.sent();
+                        // Allow access to web3 object
+                        this.web3 = this._ethereum.web3;
                         return [4 /*yield*/, this.setEndpointOrThrowAsync()];
                     case 2:
                         _a.sent();

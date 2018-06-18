@@ -1,7 +1,7 @@
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
+import { LightWallet } from '@radarrelay/wallet-manager';
 import { WalletType, Config } from './types';
-import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
 /**
  * Ethereum
  */

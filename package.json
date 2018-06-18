@@ -1,6 +1,6 @@
 {
   "name": "@radarrelay/sdk",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A library for interacting with Radar Relay in the browser and Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -48,7 +48,7 @@
     "0x.js": "^0.33.6",
     "@radarrelay/subproviders": "^0.5.3",
     "@radarrelay/types": "^0.1.0",
-    "@radarrelay/wallet-manager": "^0.3.0",
+    "@radarrelay/wallet-manager": "^0.3.2",
     "@radarrelay/web3-builder": "^0.2.0",
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",

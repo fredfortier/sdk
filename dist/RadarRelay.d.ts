@@ -2,6 +2,7 @@ import { ZeroEx } from '0x.js';
 import { RadarToken } from '@radarrelay/types';
 import { WalletType, Config, AccountParams } from './types';
 import { TSMap } from 'typescript-map';
+import Web3 = require('web3');
 import { EventBus } from './EventEmitter';
 import { Market } from './Market';
 import { BaseAccount } from './accounts/BaseAccount';
@@ -14,6 +15,7 @@ export declare class RadarRelay<T extends BaseAccount> {
     tokens: TSMap<string, RadarToken>;
     markets: TSMap<string, Market<T>>;
     zeroEx: ZeroEx;
+    web3: Web3;
     private _trade;
     private _ethereum;
     private _networkId;
@@ -26,7 +28,7 @@ export declare class RadarRelay<T extends BaseAccount> {
     /**
      * The load priority list maintains the function call
      * priority for each init method in the RadarRelaySDK class.
-     * It is utilized by the SDKInitLifeCycle
+     * It is utilized by the SdkInitLifeCycle
      *
      * This list is configurable if additional init methods are necessary
      */

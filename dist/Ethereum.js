@@ -42,7 +42,6 @@ var wallet_manager_1 = require("@radarrelay/wallet-manager");
 var web3_builder_1 = require("@radarrelay/web3-builder");
 var subproviders_1 = require("@radarrelay/subproviders");
 var types_1 = require("./types");
-var types_2 = require("@radarrelay/wallet-manager/dist/types");
 /**
  * Ethereum
  */
@@ -210,7 +209,7 @@ var Ethereum = /** @class */ (function () {
                         return [3 /*break*/, 6];
                     case 2:
                         err_1 = _a.sent();
-                        if (!(err_1.message === types_2.WalletError.NoWalletFound)) return [3 /*break*/, 4];
+                        if (!(err_1.message === wallet_manager_1.WalletError.NoWalletFound)) return [3 /*break*/, 4];
                         return [4 /*yield*/, wallet_manager_1.LightWalletManager.createWalletAsync(config.wallet)];
                     case 3:
                         // create a new light wallet

@@ -13,9 +13,10 @@ import {
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
+import Web3 = require('web3');
 
 // SDK Classes
-import { SDKInitLifeCycle, InitPriorityItem } from './SDKInitLifeCycle';
+import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
 import { EventBus } from './EventEmitter';
 import { Ethereum } from './Ethereum';
 import { Market } from './Market';
@@ -35,13 +36,14 @@ export class RadarRelay<T extends BaseAccount> {
   public tokens: TSMap<string, RadarToken>;
   public markets: TSMap<string, Market<T>>;
   public zeroEx: ZeroEx;
+  public web3: Web3;
 
   private _trade: Trade<T>;
   private _ethereum: Ethereum;
   private _networkId: number;
   private _prevApiEndpoint: string;
   private _markets: RadarMarket[];
-  private _lifecycle: SDKInitLifeCycle;
+  private _lifecycle: SdkInitLifeCycle;
   private _wallet: new (params: AccountParams) => T;
   private _config: Config;
   private _walletType: WalletType;
@@ -49,7 +51,7 @@ export class RadarRelay<T extends BaseAccount> {
   /**
    * The load priority list maintains the function call
    * priority for each init method in the RadarRelaySDK class.
-   * It is utilized by the SDKInitLifeCycle
+   * It is utilized by the SdkInitLifeCycle
    *
    * This list is configurable if additional init methods are necessary
    */
@@ -95,7 +97,7 @@ export class RadarRelay<T extends BaseAccount> {
     this._ethereum = new Ethereum();
 
     // setup the _lifecycle
-    this._lifecycle = new SDKInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeoutMs);
+    this._lifecycle = new SdkInitLifeCycle(this.events, this.loadPriorityList, config.sdkInitializationTimeoutMs);
     this._lifecycle.setup(this);
   }
 
@@ -106,6 +108,10 @@ export class RadarRelay<T extends BaseAccount> {
    */
   public async initializeAsync(): Promise<RadarRelay<T>> {
     await this._ethereum.setProvider(this._walletType, this._config);
+
+    // Allow access to web3 object
+    this.web3 = this._ethereum.web3;
+
     await this.setEndpointOrThrowAsync();
     await this.getCallback(EventName.EthereumInitialized, this._ethereum);
 

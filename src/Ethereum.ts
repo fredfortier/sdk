@@ -1,7 +1,7 @@
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import { promisify } from 'es6-promisify';
-import { LightWalletManager } from '@radarrelay/wallet-manager';
+import { LightWalletManager, LightWallet, WalletError } from '@radarrelay/wallet-manager';
 import { Web3Builder } from '@radarrelay/web3-builder';
 import { EthLightwalletSubprovider, InjectedWeb3Subprovider } from '@radarrelay/subproviders';
 import {
@@ -12,8 +12,6 @@ import {
   Config,
   SdkError,
 } from './types';
-import { WalletError } from '@radarrelay/wallet-manager/dist/types';
-import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
 
 /**
  * Ethereum
