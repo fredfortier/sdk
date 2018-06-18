@@ -19,7 +19,7 @@ export class BaseAccount {
 
   /**
    * Instantiate a new BaseAccount
-   * 
+   *
    * @param {AccountParams} params The account parameters
    */
   constructor(params: AccountParams) {
