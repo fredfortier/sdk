@@ -1,6 +1,6 @@
 import { BaseAccount } from './BaseAccount';
 import { WalletType, AccountParams } from '../types';
-import { LightWallet } from '@radarrelay/wallet-manager/dist/wallets/lightwallet';
+import { LightWallet } from '@radarrelay/wallet-manager';
 
 export class LocalAccount extends BaseAccount {
   public readonly type = WalletType.Local;

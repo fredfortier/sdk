@@ -185,9 +185,9 @@
     "@0xproject/types" "^0.6.0"
     bignumber.js "^5.0.0"
 
-"@radarrelay/wallet-manager@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@radarrelay/wallet-manager/-/wallet-manager-0.3.0.tgz#854159ba0fa07440378bed987575bf09163aff5b"
+"@radarrelay/wallet-manager@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@radarrelay/wallet-manager/-/wallet-manager-0.3.2.tgz#162ff1ae643c57311f73751fe13d9b23622ab476"
   dependencies:
     eth-lightwallet "^3.0.1"
     lodash "^4.17.10"
