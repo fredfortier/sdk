@@ -5,7 +5,7 @@ export interface InitPriorityItem {
     func: any;
     args?: any[];
 }
-export declare class SDKInitLifeCycle {
+export declare class SdkInitLifeCycle {
     private _priorityList;
     private _events;
     private _priority;

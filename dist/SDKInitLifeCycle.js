@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("./types");
-var SDKInitLifeCycle = /** @class */ (function () {
-    function SDKInitLifeCycle(events, priorityList, timeout) {
+var SdkInitLifeCycle = /** @class */ (function () {
+    function SdkInitLifeCycle(events, priorityList, timeout) {
         if (timeout === void 0) { timeout = 10000; }
         this._priority = {};
         this._priorityList = priorityList;
@@ -25,7 +25,7 @@ var SDKInitLifeCycle = /** @class */ (function () {
     //
     // The scope is the class that the
     // functions belong to.
-    SDKInitLifeCycle.prototype.setup = function (scope) {
+    SdkInitLifeCycle.prototype.setup = function (scope) {
         var _a;
         for (var _i = 0, _b = this._priorityList; _i < _b.length; _i++) {
             var item = _b[_i];
@@ -39,7 +39,7 @@ var SDKInitLifeCycle = /** @class */ (function () {
             }
         }
     };
-    SDKInitLifeCycle.prototype.promise = function (event) {
+    SdkInitLifeCycle.prototype.promise = function (event) {
         var _this = this;
         if (this._runInterval)
             return Promise.resolve(true);
@@ -49,7 +49,7 @@ var SDKInitLifeCycle = /** @class */ (function () {
             _this._runInterval = setInterval(_this.checkEventProgress.bind(_this, resolve, reject), 100);
         });
     };
-    SDKInitLifeCycle.prototype.checkEventProgress = function (resolve, reject) {
+    SdkInitLifeCycle.prototype.checkEventProgress = function (resolve, reject) {
         var now = new Date().getTime();
         if (now - this._startTime >= this._timeout) {
             clearInterval(this._runInterval);
@@ -62,7 +62,7 @@ var SDKInitLifeCycle = /** @class */ (function () {
             return resolve(true);
         }
     };
-    SDKInitLifeCycle.prototype.handleEvent = function (event) {
+    SdkInitLifeCycle.prototype.handleEvent = function (event) {
         var current = this._priority[event];
         this._current = (current >= this._current) ? current : this._current;
         var progressPerc = Math.floor((this._current / this._last) * 100);
@@ -72,6 +72,6 @@ var SDKInitLifeCycle = /** @class */ (function () {
             source: this.constructor.name + ':' + event
         });
     };
-    return SDKInitLifeCycle;
+    return SdkInitLifeCycle;
 }());
-exports.SDKInitLifeCycle = SDKInitLifeCycle;
+exports.SdkInitLifeCycle = SdkInitLifeCycle;

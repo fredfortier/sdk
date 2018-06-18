@@ -15,7 +15,7 @@ export interface InitPriorityItem {
   args?: any[];
 }
 
-export class SDKInitLifeCycle {
+export class SdkInitLifeCycle {
 
   private _priorityList: InitPriorityItem[];
   private _events: EventEmitter;

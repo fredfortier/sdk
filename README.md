@@ -255,11 +255,11 @@ parity --jsonrpc-hosts=all \
 The Ethereum and 0x.js application loading lifecycle is difficult to manage, especially when designing for optimized state changes. Specifically, changing RPC Networks, switching accounts, and updating API endpoints. To manage the lifecycle more efficiently, the Radar Relay SDK utilizes a combination of the following:
 
 * [`EventEmitter`](https://nodejs.org/api/events.html)
-* [`SDKInitLifeCycle `](https://github.com/RadarRelay/radar-relay-sdk/blob/beta/src/sdk-init-lifecycle.ts)
+* [`SdkInitLifeCycle`](https://github.com/RadarRelay/radar-relay-sdk/blob/beta/src/sdk-init-lifecycle.ts)
 
 --- 
 
-The `SDKInitLifeCycle` class works as follows:
+The `SdkInitLifeCycle` class works as follows:
 
 Define an array that consists of: 
 
@@ -268,7 +268,7 @@ Define an array that consists of:
 
 Once all events have fired the promise will resolve. If an error occurs along the lifecycle, the timeout will occur after 10s and reject the promise.
 
-Each init method must trigger an event on the `EventEmitter`, which indicates the method is done as well as return the `SDKInitLifeCycle.promise()`
+Each init method must trigger an event on the `EventEmitter`, which indicates the method is done as well as return the `SdkInitLifeCycle.promise()`
 
 ### Life Cycle
 
