@@ -24,22 +24,9 @@ describe.skip('RadarRelay.Ws', () => {
         password: 'password'
       },
       dataRpcUrl: 'https://kovan.infura.io',
-      radarRestEndpoint: 'https://api-beta.rrdev.io/v0',
-      radarWebsocketEndpoint: 'wss://ws-beta.rrdev.io/ws'
+      radarRestEndpoint: 'https://api.kovan.radarrelay.com/v0',
+      radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/ws'
     });
-
-    // TODO use websocket mock
-    // rrsdk = new RadarRelay({
-    //   endpoint: 'http://localhost:8080/v0',
-    //   websocketEndpoint: 'ws://ws.radarrelay.com'
-    // });
-    // await rrsdk.initialize({
-    //   wallet: {
-    //     password: 'password' // ,
-    //     seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
-    //   },
-    //   dataRpcUrl: 'http://localhost:8545'
-    // });
   });
 
   // TODO need to overwrite socket with mock-socket
