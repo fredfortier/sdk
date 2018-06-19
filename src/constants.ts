@@ -4,13 +4,13 @@ export const RADAR_RELAY_ENDPOINTS = (network: NetwordId): EndpointConfig => {
   switch (network) {
     case NetwordId.Mainnet:
       return {
-        radarRestEndpoint: 'https://api-stage.rrdev.io/v0/',
-        radarWebsocketEndpoint: 'wss://api-stage.rrdev.io/ws'
+        radarRestEndpoint: 'https://api.radarrelay.com/v0/',
+        radarWebsocketEndpoint: 'wss://ws.radarrelay.com/ws'
       };
     case NetwordId.Kovan:
       return {
-        radarRestEndpoint: 'https://api-beta.rrdev.io/v0',
-        radarWebsocketEndpoint: 'wss://api-beta.rrdev.io/ws',
+        radarRestEndpoint: 'https://api.kovan.radarrelay.com/v0',
+        radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/ws',
       };
     default:
       throw new Error(`Unsupported Network: ${NetwordId[network] || 'Unknown'}`);

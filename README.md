@@ -6,7 +6,7 @@ The Radar Relay SDK is a software development kit that simplifies the interactio
 [![CircleCI](https://circleci.com/gh/RadarRelay/sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/sdk/tree/beta)
 
 ## SDK Reference
-For a full SDK reference see: [docs.radarrelay.com/sdk-reference](https://docs.radarrelay.com/sdk-reference).
+For a full SDK reference see: [developers.radarrelay.com/sdk-reference](https://developers.radarrelay.com/sdk-reference).
 
 ## Usage
 
