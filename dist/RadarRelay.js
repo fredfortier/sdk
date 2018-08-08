@@ -203,10 +203,12 @@ var RadarRelay = /** @class */ (function () {
                 switch (_d.label) {
                     case 0:
                         if (!(this._prevApiEndpoint !== this._config.radarRestEndpoint)) return [3 /*break*/, 2];
+                        // TODO lazy load these!
                         _a = this;
                         _c = (_b = JSON).parse;
-                        return [4 /*yield*/, request.get(this._config.radarRestEndpoint + "/markets")];
+                        return [4 /*yield*/, request.get(this._config.radarRestEndpoint + "/markets?per_page=500")];
                     case 1:
+                        // TODO lazy load these!
                         _a._markets = _c.apply(_b, [_d.sent()]);
                         _d.label = 2;
                     case 2:
