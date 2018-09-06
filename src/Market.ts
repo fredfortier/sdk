@@ -1,4 +1,4 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
+import { SignedOrder, Order } from '0x.js';
 import { Trade } from './Trade';
 import { WebsocketClient } from './WebsocketClient';
 import { Opts } from './types';
@@ -12,6 +12,7 @@ import {
   WebsocketRequestTopic,
   WebsocketRequestType
 } from '@radarrelay/types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { ErrorFormatter } from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');

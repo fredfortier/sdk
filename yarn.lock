@@ -2398,7 +2398,7 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereum-types@^1.0.6:
+ethereum-types@^1.0.4, ethereum-types@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-1.0.6.tgz#9e8fd73895e9f0a4941b384a3d0c8244dedc2a64"
   dependencies:

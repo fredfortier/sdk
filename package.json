@@ -52,6 +52,7 @@
     "@radarrelay/web3-builder": "^0.2.0",
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",
+    "ethereum-types": "^1.0.4",
     "mock-socket": "^7.1.0",
     "promisify": "0.0.3",
     "request": "^2.83.0",
