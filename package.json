@@ -45,9 +45,9 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x.js": "^1.0.1-rc.6",
-    "@0xproject/contract-wrappers": "^1.0.1-rc.5",
-    "@0xproject/order-utils": "^1.0.1-rc.6",
+    "0x.js": "^1.0.1",
+    "@0xproject/contract-wrappers": "^1.0.1",
+    "@0xproject/order-utils": "^1.0.1",
     "@0xproject/web3-wrapper": "^2.0.1",
     "@0xproject/types": "^1.0.1-rc.6",
     "@radarrelay/subproviders": "^0.5.3",

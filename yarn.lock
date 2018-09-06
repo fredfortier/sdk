@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"0x.js@^1.0.1-rc.6":
+"0x.js@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-1.0.1.tgz#a7cdb81c60b3e29395137602cb74a0315166b372"
   dependencies:
@@ -51,7 +51,7 @@
     ethers "3.0.22"
     lodash "^4.17.5"
 
-"@0xproject/contract-wrappers@^1.0.1", "@0xproject/contract-wrappers@^1.0.1-rc.5":
+"@0xproject/contract-wrappers@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-1.0.1.tgz#a2a75fcfd64f12f4509130e573bddd91a31d7a33"
   dependencies:
@@ -104,7 +104,7 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0xproject/order-utils@^1.0.1", "@0xproject/order-utils@^1.0.1-rc.6":
+"@0xproject/order-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-1.0.1.tgz#d64c1eb61d08a50ee2b24cab0a5f6d2127d40cf8"
   dependencies:

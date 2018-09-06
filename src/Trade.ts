@@ -61,11 +61,10 @@ export class Trade<T extends BaseAccount> {
       txHash = await this._zeroEx.exchange.fillOrderAsync(
         marketResponse.orders[0],
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
-        true,
         this._account.address,
         opts.transactionOpts);
     } else {
-      txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
+      txHash = await this._zeroEx.exchange.fillOrdersUpTo(
         marketResponse.orders,
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
         true,
@@ -110,8 +109,8 @@ export class Trade<T extends BaseAccount> {
     // sign order
     const prefix = (this._account.type === WalletType.Local);
     const orderHash = ZeroEx.getOrderHashHex(order);
-    const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
-    (order as SignedOrder).ecSignature = ecSignature;
+    const signature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
+    (order as SignedOrder).signature = signature;
 
     // POST order to API
     // HACK for local dev order seeding
@@ -138,7 +137,7 @@ export class Trade<T extends BaseAccount> {
       opts = {};
     }
 
-    const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
+    const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, opts.transactionOpts);
     this._events.emit(EventName.TransactionPending, txHash);
 
     if (!opts.awaitTransactionMined) {

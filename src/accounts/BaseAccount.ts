@@ -121,7 +121,7 @@ export class BaseAccount {
    * @param {string} tokenAddress The token address
    */
   public async getTokenBalanceAsync(tokenAddress: string): Promise<BigNumber> {
-    const balance = await this._zeroEx.token.getBalanceAsync(tokenAddress, this.address);
+    const balance = await this._zeroEx.erc20Token.getBalanceAsync(tokenAddress, this.address);
     return ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals);
   }
 
@@ -141,7 +141,7 @@ export class BaseAccount {
     }
 
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-    const txHash = await this._zeroEx.token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
@@ -154,7 +154,7 @@ export class BaseAccount {
    * @param {string} tokenAddress The token address
    */
   public async getTokenAllowanceAsync(tokenAddress: string): Promise<BigNumber> {
-    const baseUnitallowance = await this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, this.address);
+    const baseUnitallowance = await this._zeroEx.erc20Token.getProxyAllowanceAsync(tokenAddress, this.address);
     return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals);
   }
 
@@ -173,7 +173,7 @@ export class BaseAccount {
     }
 
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-    const txHash = await this._zeroEx.token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
@@ -193,7 +193,7 @@ export class BaseAccount {
       opts = {};
     }
 
-    const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
