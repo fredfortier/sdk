@@ -1,7 +1,9 @@
 import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { WalletType, Opts, EventName } from './types';
-import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
+import { Order, SignedOrder, ECSignature } from '0x.js';
+import { ZeroEx } from './zero-ex';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');

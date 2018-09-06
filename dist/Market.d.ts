@@ -1,4 +1,5 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
+import { SignedOrder, Order } from '0x.js';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { Trade } from './Trade';
 import { Opts } from './types';
 import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from '@radarrelay/types';

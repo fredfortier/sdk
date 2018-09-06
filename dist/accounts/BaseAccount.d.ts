@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { Ethereum } from '../Ethereum';
-import { TransactionReceiptWithDecodedLogs } from '0x.js';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import BigNumber from 'bignumber.js';
 import { Opts, AccountParams, WalletType } from '../types';
 import { RadarFill, RadarSignedOrder } from '@radarrelay/types';
