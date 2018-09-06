@@ -45,9 +45,9 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x.js": "^0.33.6",
+    "0x.js": "^1.0.1-rc.6",
     "@radarrelay/subproviders": "^0.5.3",
-    "@radarrelay/types": "^0.1.0",
+    "@radarrelay/types": "^1.1.0",
     "@radarrelay/wallet-manager": "^0.3.2",
     "@radarrelay/web3-builder": "^0.2.0",
     "bignumber.js": "^4.1.0",
