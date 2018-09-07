@@ -4,7 +4,7 @@ import { WalletType, Opts, EventName } from './types';
 import { Order, SignedOrder, SignerType } from '0x.js';
 import { ZeroEx } from './ZeroEx';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { RadarToken, UserOrderType } from '@radarrelay/types';
+import { RadarToken, UserOrderType, RadarMarketOrderResponse } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
@@ -41,7 +41,7 @@ export class Trade<T extends BaseAccount> {
       opts = {};
     }
 
-    const marketResponse = await request.post({
+    const marketResponse: RadarMarketOrderResponse = await request.post({
       url: `${this._endpoint}/markets/${market.id}/order/market`,
       json: {
         type,
@@ -50,9 +50,9 @@ export class Trade<T extends BaseAccount> {
     });
 
     marketResponse.orders.forEach((order, i) => {
-      marketResponse.orders[i].takerTokenAmount = new BigNumber(order.takerTokenAmount);
-      marketResponse.orders[i].makerTokenAmount = new BigNumber(order.makerTokenAmount);
-      marketResponse.orders[i].expirationUnixTimestampSec = new BigNumber(order.expirationUnixTimestampSec);
+      marketResponse.orders[i].takerAssetAmount = new BigNumber(order.takerAssetAmount);
+      marketResponse.orders[i].makerAssetAmount = new BigNumber(order.makerAssetAmount);
+      marketResponse.orders[i].expirationTimeSeconds = new BigNumber(order.expirationTimeSeconds);
     });
 
     let txHash: string;
@@ -65,10 +65,10 @@ export class Trade<T extends BaseAccount> {
         opts.transactionOpts);
     } else {
       // TODO: use marketBuyOrdersAsync and/or marketSellOrdersAsync
-      txHash = await this._zeroEx.exchange.fillOrdersUpTo(
+      const fn = type === UserOrderType.BUY ? 'marketBuyOrdersAsync' : 'marketSellOrdersAsync';
+      txHash = await this._zeroEx.exchange[fn](
         marketResponse.orders,
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
-        true,
         this._account.address,
         opts.transactionOpts);
     }
