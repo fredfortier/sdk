@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import { ZeroEx } from '../src/zero-ex';
+import { ZeroEx } from '../src/ZeroEx';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import { SdkManager } from '../src/index';

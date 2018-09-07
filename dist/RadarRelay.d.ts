@@ -1,4 +1,4 @@
-import { ZeroEx } from '../src/zero-ex';
+import { ZeroEx } from '../src/ZeroEx';
 import { RadarToken } from '@radarrelay/types';
 import { WalletType, Config, AccountParams } from './types';
 import { TSMap } from 'typescript-map';

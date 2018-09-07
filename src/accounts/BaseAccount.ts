@@ -1,7 +1,7 @@
 import { Ethereum } from '../Ethereum';
 import { promisify } from 'util';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { ZeroEx } from '../zero-ex';
+import { ZeroEx } from '../ZeroEx';
 import BigNumber from 'bignumber.js';
 import { Opts, AccountParams, WalletType } from '../types';
 import * as request from 'request-promise';

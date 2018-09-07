@@ -112,6 +112,19 @@ export class ZeroEx {
   }
 
   /**
+   * A unit amount is defined as the amount of a token above the specified decimal places (integer part).
+   * E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
+   * to 1 unit.
+   * @param   amount      The amount in baseUnits that you would like converted to units.
+   * @param   decimals    The number of decimal places the unit amount has.
+   * @return  The amount in units.
+   */
+  public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
+    const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+    return unitAmount;
+  }
+
+  /**
    * Convert to Base Unit Amount
    * A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
    * is the amount expressed in the smallest denomination.

@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { Opts } from './types';
 import { Order, SignedOrder } from '0x.js';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { ZeroEx } from '../src/zero-ex';
+import { ZeroEx } from '../src/ZeroEx';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import { TSMap } from 'typescript-map';

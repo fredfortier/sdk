@@ -2,7 +2,7 @@ import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { WalletType, Opts, EventName } from './types';
 import { Order, SignedOrder, ECSignature } from '0x.js';
-import { ZeroEx } from './zero-ex';
+import { ZeroEx } from './ZeroEx';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
@@ -64,6 +64,7 @@ export class Trade<T extends BaseAccount> {
         this._account.address,
         opts.transactionOpts);
     } else {
+      // TODO: use marketBuyOrdersAsync and/or marketSellOrdersAsync
       txHash = await this._zeroEx.exchange.fillOrdersUpTo(
         marketResponse.orders,
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),

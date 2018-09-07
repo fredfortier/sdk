@@ -1,5 +1,5 @@
 
-import { ZeroEx } from './zero-ex';
+import { ZeroEx } from './ZeroEx';
 import { EventEmitter } from 'events';
 import { RadarToken, RadarMarket } from '@radarrelay/types';
 import {

@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { TransactionOpts } from '0x.js';
-import { ZeroEx } from '../src/zero-ex';
+import { ZeroEx } from '../src/ZeroEx';
 import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 import { LocalAccount } from './accounts/LocalAccount';
