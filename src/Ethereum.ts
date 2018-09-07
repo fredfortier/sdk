@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { promisify } from 'es6-promisify';
 import { LightWalletManager, LightWallet, WalletError } from '@radarrelay/wallet-manager';
 import { Web3Builder } from '@radarrelay/web3-builder';
-import { EthLightwalletSubprovider, InjectedWeb3Subprovider } from '@radarrelay/subproviders';
+import { EthLightwalletSubprovider, SignerSubprovider } from '@0xproject/subproviders';
 import {
   WalletType,
   LightWalletConfig,
@@ -136,7 +136,7 @@ export class Ethereum {
 
     this.wallet = wallet;
     this.web3 = Web3Builder.createWeb3(new EthLightwalletSubprovider(
-      wallet.signing, wallet.keystore, wallet.pwDerivedKey
+      wallet.keystore, wallet.pwDerivedKey
     ), config.dataRpcUrl, true);
   }
 
@@ -153,7 +153,7 @@ export class Ethereum {
       this.web3 = config.web3 || defaultWeb3;
     } else {
       this.web3 = Web3Builder.createWeb3(
-        new InjectedWeb3Subprovider(config.web3.currentProvider),
+        new SignerSubprovider(config.web3.currentProvider),
         config.dataRpcUrl, true);
     }
   }
