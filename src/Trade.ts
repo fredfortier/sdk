@@ -1,7 +1,7 @@
 import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { WalletType, Opts, EventName } from './types';
-import { Order, SignedOrder, ECSignature } from '0x.js';
+import { Order, SignedOrder, SignerType } from '0x.js';
 import { ZeroEx } from './ZeroEx';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
@@ -108,9 +108,9 @@ export class Trade<T extends BaseAccount> {
     order.maker = this._account.address;
 
     // sign order
-    const prefix = (this._account.type === WalletType.Local);
+    const prefix: SignerType = (this._account.type === WalletType.Injected) ? SignerType.Metamask : SignerType.Default;
     const orderHash = ZeroEx.getOrderHashHex(order);
-    const signature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
+    const signature = await this._zeroEx.ecSignOrderHashAsync(orderHash, this._account.address, prefix);
     (order as SignedOrder).signature = signature;
 
     // POST order to API
