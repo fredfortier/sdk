@@ -24,8 +24,8 @@ describe.skip('RadarRelay.Ws', () => {
         password: 'password'
       },
       dataRpcUrl: 'https://kovan.infura.io',
-      radarRestEndpoint: 'https://api.kovan.radarrelay.com/v0',
-      radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/ws'
+      radarRestEndpoint: 'https://api.kovan.radarrelay.com/v2',
+      radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/v2'
     });
   });
 

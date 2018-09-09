@@ -18,8 +18,8 @@ describe('RadarRelay', async () => {
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
       dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'http://localhost:8080/v0',
-      radarWebsocketEndpoint: 'ws://ws.radarrelay.com'
+      radarRestEndpoint: 'http://localhost:8080/v2',
+      radarWebsocketEndpoint: 'wss://ws.radarrelay.com/v2'
     });
 
   mockRequests();

@@ -1,18 +1,19 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import { SdkManager } from '../src';
+import { SdkManager, RadarRelay } from '../src';
 import { mockRequests } from './lib/mockRequests';
 import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
-import { UserOrderType } from '@radarrelay/types';
+import { UserOrderType, SignedOrder } from '@radarrelay/types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 const expect = chai.expect;
 
 describe('RadarRelay.Market', () => {
 
-  let rrsdk: any; // RadarRelay<LocalAccount>;
-  let signedOrder;
+  let rrsdk: RadarRelay<any>; // RadarRelay<LocalAccount>;
+  let signedOrder: SignedOrder;
   let wethAddr;
   let zrxAddr;
 
@@ -25,8 +26,8 @@ describe('RadarRelay.Market', () => {
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
       dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'http://localhost:8080/v0',
-      radarWebsocketEndpoint: 'ws://ws.radarrelay.com',
+      radarRestEndpoint: 'https://localhost:8080/v2',
+      radarWebsocketEndpoint: 'wss://localhost:8081/v2',
       defaultGasPrice: new BigNumber(2)
     });
 
@@ -62,6 +63,16 @@ describe('RadarRelay.Market', () => {
     expect(ticker).to.not.be.empty;
   });
 
+  it('getStatsAsync', async () => {
+    const stats = await rrsdk.markets.get('ZRX-WETH').getStatsAsync();
+    expect(stats).to.not.be.empty;
+  });
+
+  it('getHistoryAsync', async () => {
+    const stats = await rrsdk.markets.get('ZRX-WETH').getHistoryAsync();
+    expect(stats).to.not.be.empty;
+  });
+
   it('limitOrderAsync', async () => {
     signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync(UserOrderType.BUY,
       new BigNumber(String(0.01)),
@@ -70,9 +81,9 @@ describe('RadarRelay.Market', () => {
     );
 
     // add BigNumber back
-    signedOrder.takerTokenAmount = new BigNumber(signedOrder.takerTokenAmount);
-    signedOrder.makerTokenAmount = new BigNumber(signedOrder.makerTokenAmount);
-    signedOrder.expirationUnixTimestampSec = new BigNumber(signedOrder.expirationUnixTimestampSec);
+    signedOrder.takerAssetAmount = new BigNumber(signedOrder.takerAssetAmount);
+    signedOrder.makerAssetAmount = new BigNumber(signedOrder.makerAssetAmount);
+    signedOrder.expirationTimeSeconds = new BigNumber(signedOrder.expirationTimeSeconds);
 
     // verify valid signedOrder
     await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
@@ -85,14 +96,14 @@ describe('RadarRelay.Market', () => {
     const receipt = await rrsdk.markets.get('ZRX-WETH').marketOrderAsync(UserOrderType.BUY,
       new BigNumber(0.001), { awaitTransactionMined: true } // awaitTxMined
     );
-    expect(receipt.status).to.be.eq(1);
+    expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
   });
 
   it('cancelOrderAsync', async () => {
     const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(
       signedOrder, { awaitTransactionMined: true } // awaitTxMined
     );
-    expect(receipt.status).to.be.eq(1);
+    expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
     await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
   });
 

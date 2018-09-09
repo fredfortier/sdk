@@ -64,7 +64,6 @@ export class Trade<T extends BaseAccount> {
         this._account.address,
         opts.transactionOpts);
     } else {
-      // TODO: use marketBuyOrdersAsync and/or marketSellOrdersAsync
       const fn = type === UserOrderType.BUY ? 'marketBuyOrdersAsync' : 'marketSellOrdersAsync';
       txHash = await this._zeroEx.exchange[fn](
         marketResponse.orders,
@@ -78,7 +77,6 @@ export class Trade<T extends BaseAccount> {
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
-
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
@@ -91,7 +89,7 @@ export class Trade<T extends BaseAccount> {
     quantity: BigNumber, // base token quantity
     price: BigNumber, // price (in quote)
     expiration: BigNumber // expiration in seconds from now
-  ): Promise<Order> {
+  ): Promise<SignedOrder> {
 
     const order = await request.post({
       url: `${this._endpoint}/markets/${market.id}/order/limit`,
@@ -104,8 +102,7 @@ export class Trade<T extends BaseAccount> {
     });
 
     // add missing data
-    order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();
-    order.maker = this._account.address;
+    order.makerAddress = this._account.address;
 
     // sign order
     const prefix: SignerType = (this._account.type === WalletType.Injected) ? SignerType.Metamask : SignerType.Default;
