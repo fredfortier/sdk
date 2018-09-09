@@ -310,9 +310,9 @@
     "@0xproject/types" "^1.0.1-rc.3"
     bignumber.js "^5.0.0"
 
-"@radarrelay/wallet-manager@^0.3.2":
+"@radarrelay/wallet-manager@git://github.com/RadarRelay/wallet-manager.git#iks-update-eth-lightwallet-types":
   version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@radarrelay/wallet-manager/-/wallet-manager-0.3.2.tgz#162ff1ae643c57311f73751fe13d9b23622ab476"
+  resolved "git://github.com/RadarRelay/wallet-manager.git#87272986370aa32300b1a576624c972bd0a9ac92"
   dependencies:
     eth-lightwallet "^3.0.1"
     lodash "^4.17.10"
@@ -640,7 +640,7 @@ async-eventemitter@^0.2.2:
   dependencies:
     async "^2.4.0"
 
-"async-eventemitter@github:ahultgren/async-eventemitter#fa06e39e56786ba541c180061dbf2c0a5bbf951c":
+async-eventemitter@ahultgren/async-eventemitter#fa06e39e56786ba541c180061dbf2c0a5bbf951c:
   version "0.2.3"
   resolved "https://codeload.github.com/ahultgren/async-eventemitter/tar.gz/fa06e39e56786ba541c180061dbf2c0a5bbf951c"
   dependencies:
