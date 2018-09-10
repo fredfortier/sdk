@@ -1,7 +1,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-implicit-dependencies */
 
-import { SdkManager, RadarRelay } from '../src';
+import { SdkManager, RadarRelay, LocalAccount } from '../src';
 import { mockRequests } from './lib/mockRequests';
 import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
@@ -12,7 +12,7 @@ const expect = chai.expect;
 
 describe('RadarRelay.Market', () => {
 
-  let rrsdk: RadarRelay<any>; // RadarRelay<LocalAccount>;
+  let rrsdk: RadarRelay<LocalAccount>;
   let signedOrder: SignedOrder;
   let wethAddr;
   let zrxAddr;

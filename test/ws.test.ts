@@ -4,7 +4,7 @@
 import { ZeroEx } from '../src/ZeroEx';
 import * as mocha from 'mocha';
 import * as chai from 'chai';
-import { SdkManager } from '../src/index';
+import { SdkManager, RadarRelay, LocalAccount } from '../src';
 import { mockRequests } from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
 import { WebSocket } from 'mock-socket';
@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 describe.skip('RadarRelay.Ws', () => {
 
-  let rrsdk;
+  let rrsdk: RadarRelay<LocalAccount>;
   let order;
 
   before(async () => {
