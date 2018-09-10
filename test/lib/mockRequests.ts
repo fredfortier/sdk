@@ -3,7 +3,8 @@ import { Server } from 'mock-socket';
 import { WebsocketEvent, WebsocketAction, RadarNewOrder, RadarSignedOrder } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 
-const endpoint = 'https://localhost:8080/v2';
+const RADAR_ENPOINT = 'https://localhost:8080/v2';
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 let mockServer;
 
@@ -14,7 +15,7 @@ export function mockRequests() {
     mockServer = new Server('ws://ws.radarrelay.com');
   }
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/tokens')
     .reply(200, [
       {
@@ -41,7 +42,7 @@ export function mockRequests() {
       }
     ]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets?per_page=500')
     .reply(200, [{
       id: 'ZRX-WETH',
@@ -55,7 +56,7 @@ export function mockRequests() {
       maxOrderSize: '1'
     }]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/book')
     .reply(200, {
       baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
@@ -64,15 +65,15 @@ export function mockRequests() {
       asks: [{}]
     });
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/fills')
     .reply(200, [{}]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/candles')
     .reply(200, [{}]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/ticker')
     .reply(200, {
       transactionHash: '0xd78e7edb5e4feaf1b0236006d6918dc1f1167eeb842a3a3a044088416d475b1a', // last trade tx hash
@@ -84,7 +85,7 @@ export function mockRequests() {
       timestamp: new BigNumber('0.0007') // last trade time in unix time (seconds)
     });
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/stats')
     .reply(200, {
       numBidsWithinRange: 5, // Number of bids within a defined range (Example: Within 20% of the best bid)
@@ -95,7 +96,7 @@ export function mockRequests() {
       percentChange24Hour: new BigNumber(0), // 24 hour price change percentage
     });
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/history')
     .reply(200, {
       price24Hour: [
@@ -103,36 +104,36 @@ export function mockRequests() {
       ]
     });
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .post('/markets/ZRX-WETH/order/limit', order => {
       return true;
     })
     .reply(200, {
-      senderAddress: '0x0000000000000000000000000000000000000000',
+      senderAddress: NULL_ADDRESS,
       makerAddress: 'SET',
-      takerAddress: '0x0000000000000000000000000000000000000000',
+      takerAddress: NULL_ADDRESS,
       makerFee: new BigNumber(0),
       takerFee: new BigNumber(0),
       makerAssetAmount: new BigNumber(10).pow(14),
       takerAssetAmount: new BigNumber(10).pow(14),
       makerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
       takerAssetData: '0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570',
-      salt: '1536516727297',
+      salt: new BigNumber('1536516727297'),
       exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
       feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
       expirationTimeSeconds: '1536559895',
       signature: 'SET',
     });
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/fills?page=1&per_page=100')
     .reply(200, [{}]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/orders?page=1&per_page=100')
     .reply(200, [{}]);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .post('/orders', order => {
       // Send websocket event
       const newOrder: RadarNewOrder = {
@@ -149,14 +150,14 @@ export function mockRequests() {
       return true;
     }).reply(201);
 
-  nock(endpoint)
+  nock(RADAR_ENPOINT)
     .post('/markets/ZRX-WETH/order/market')
     .reply(200, {
       orders: [{
         exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
-        senderAddress: '0x0000000000000000000000000000000000000000',
+        senderAddress: NULL_ADDRESS,
         makerAddress: '0x01901cd100a7c612594a7594fd50149a5eb3d309',
-        takerAddress: '0x0000000000000000000000000000000000000000',
+        takerAddress: NULL_ADDRESS,
         makerAssetData: '0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570',
         takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
         feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
