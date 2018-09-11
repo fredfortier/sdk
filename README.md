@@ -107,7 +107,7 @@ interface RpcWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
 }
 ```
 
-### Events
+## Events
 Anything that triggers state changes (like changing the network, or a fill)
 fires an event that you can listen to via the `events` object.
 
@@ -129,10 +129,10 @@ rr.events.on(
 rr.events.emit('see_above' | 'or emit anything', ...withSomeData)
 ```
 
-### Account
-Obtain account information for the current loaded wallet
+## Account Methods
+Obtain account information for the current loaded wallet.
 
-#### Wallet methods
+### Wallet methods
 
 `exportSeedPhraseAsync`
 
@@ -160,7 +160,7 @@ Export a wallet address private key.
 
 **Returns:** `Promise<string>`
 
-#### Account information
+### Account information
 
 ```javascript
 getAvailableAddressesAsync(): Promise<string[]>
@@ -192,7 +192,7 @@ rr.account.getTokenAllowanceAsync
 rr.account.setTokenAllowanceAsync
 rr.account.transferTokenAsync
 ```
-### Markets
+## Market methods
 Markets are marketId mapped Market classes with all
 the same methods and the following instance vars:
 
