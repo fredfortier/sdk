@@ -49,11 +49,7 @@ export class Trade<T extends BaseAccount> {
       }
     });
 
-    marketResponse.orders.forEach((order, i) => {
-      marketResponse.orders[i].takerAssetAmount = new BigNumber(order.takerAssetAmount);
-      marketResponse.orders[i].makerAssetAmount = new BigNumber(order.makerAssetAmount);
-      marketResponse.orders[i].expirationTimeSeconds = new BigNumber(order.expirationTimeSeconds);
-    });
+    marketResponse.orders.forEach((order, i) => this.hydrateSignedOrder(order));
 
     let txHash: string;
     if (marketResponse.orders.length === 1) {
@@ -101,6 +97,9 @@ export class Trade<T extends BaseAccount> {
       }
     });
 
+    // turn into BigNumbers
+    this.hydrateSignedOrder(order);
+
     // add missing data
     order.makerAddress = this._account.address;
 
@@ -145,6 +144,21 @@ export class Trade<T extends BaseAccount> {
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
+  }
+
+  /**
+   * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a 
+   * correct hashing and signature.
+   * @param order a signedOrder from DB or user input, that have strings instead of BigNumbers
+   */
+  public hydrateSignedOrder(order: SignedOrder): SignedOrder {
+    order.salt = new BigNumber(order.salt);
+    order.makerFee = new BigNumber(order.makerFee);
+    order.takerFee = new BigNumber(order.takerFee);
+    order.makerAssetAmount = new BigNumber(order.makerAssetAmount);
+    order.takerAssetAmount = new BigNumber(order.takerAssetAmount);
+    order.expirationTimeSeconds = new BigNumber(order.expirationTimeSeconds);
+    return order;
   }
 
 }
