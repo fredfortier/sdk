@@ -142,9 +142,9 @@ Export an account wallet seed phrase.
 
 **Parameters:**
 
-| Name             | Type        | Description                                 |
-| ---------------- | ----------- | ------------------------------------------- |
-| `password`       | `string`    | The plaintext password                      |
+| Name             | Type        | Description                                                                         |
+| ---------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `password`       | `string`    | The plaintext password                                                              |
 
 **Returns:** `Promise<string>`
 
@@ -156,9 +156,9 @@ Export a wallet address private key.
 
 **Parameters:**
 
-| Name             | Type        | Description                                 |
-| ---------------- | ----------- | ------------------------------------------- |
-| `password`       | `string`    | The plaintext password                      |
+| Name             | Type        | Description                                                                         |
+| ---------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `password`       | `string`    | The plaintext password                                                              |
 
 **Returns:** `Promise<string>`
 
@@ -176,15 +176,15 @@ Get available addresses for this account.
 
 ---
 
-`setAddressAsync`
+`setAddressAsync(address)`
 
 Set the current address in use.
 
 **Parameters:**
 
-| Name             | Type               | Description                          |
-| ---------------- | ------------------ | ------------------------------------ |
-| `address`        | `string\|number`    | The address or address index         |
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string\|number`    | The address or address index                                                |
 
 **Returns:** `Promise<void>`
 
@@ -196,10 +196,10 @@ Get fills for the selected address that have been executed on Radar.
 
 **Parameters:**
 
-| Name             | Type               | Description                               |
-| ---------------- | ------------------ | ----------------------------------------- |
-| `page`           | `number`           | _[Optional]_ The page to fetch            |
-| `perPage`        | `number`           | _[Optional]_ The number of fills per page |
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch                                               |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page                                    |
 
 **Returns:** `Promise<RadarFill>`
 
@@ -211,10 +211,10 @@ Get orders for the selected address that have been placed on Radar.
 
 **Parameters:**
 
-| Name             | Type               | Description                               |
-| ---------------- | ------------------ | ----------------------------------------- |
-| `page`           | `number`           | _[Optional]_ The page to fetch            |
-| `perPage`        | `number`           | _[Optional]_ The number of fills per page |
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch                                               |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page                                    |
 
 **Returns:** `Promise<RadarSignedOrder[]>`
 
@@ -238,26 +238,109 @@ Transfer ETH to another address.
 
 **Parameters:**
 
-| Name             | Type               | Description                               |
-| ---------------- | ------------------ | ----------------------------------------- |
-| `toAddress`      | `string`           | The address to transfer to                |
-| `amount`         | `number`           | The amount of ETH to transfer             |
-| `opts`           | `Opts`             | _[Optional]_ The transaction options      |
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `toAddress`      | `string`           | The address to transfer to                                                   |
+| `amount`         | `number`           | The amount of ETH to transfer                                                |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
 
 **Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
 
+---
 
-```javascript
+`wrapEthAsync(amount, opts?)`
 
-// ETH / token utilities
-rr.account.wrapEthAsync
-rr.account.unwrapEthAsync
-rr.account.getTokenBalanceAsync
-rr.account.getTokenAllowanceAsync
-rr.account.setTokenAllowanceAsync
-rr.account.transferTokenAsync
-```
+Wrap ETH to convert it to WETH.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `amount`         | `number`           | The amount of ETH to wrap                                                    |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`unwrapEthAsync(amount, opts?)`
+
+Unwrap WETH to convert it to ETH.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `amount`         | `number`           | The amount of ETH to unwrap                                                  |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`getTokenBalanceAsync(tokenAddress)`
+
+Get balance of a token for the current selected address.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string`           | The token address                                                            |
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`getTokenAllowanceAsync(tokenAddress)`
+
+Get a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string`           | The token address                                                            |
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`setTokenAllowanceAsync(tokenAddress, amount, opts?)`
+
+Set a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `tokenAddress`   | `string`           | The token address                                                            |
+| `amount`         | `number`           | The allowance amount                                                         |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`transferTokenAsync(tokenAddress, toAddress, amount, opts?)`
+
+Set a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `tokenAddress`   | `string`           | The token address                                                            |
+| `toAddress`      | `string`           | The address to transfer to                                                   |
+| `amount`         | `number`           | The amount of token to transfer                                              |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
 ## Market methods
+
 Markets are marketId mapped Market classes with all
 the same methods and the following instance vars:
 
