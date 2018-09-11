@@ -3,7 +3,8 @@ import { Server } from 'mock-socket';
 import { WebsocketEvent, WebsocketAction, RadarNewOrder, RadarSignedOrder } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 
-const RADAR_ENPOINT = 'https://localhost:8080/v2';
+export const RADAR_ENPOINT = 'http://localhost:8080/v2';
+export const RADAR_WS_ENPOINT = 'wss://localhost:8081/v2'; // 'ws://ws.radarrelay.com';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 let mockServer;
@@ -12,7 +13,7 @@ let mockServer;
 export function mockRequests() {
 
   if (!mockServer) {
-    mockServer = new Server('ws://ws.radarrelay.com');
+    mockServer = new Server(RADAR_WS_ENPOINT);
   }
 
   nock(RADAR_ENPOINT)

@@ -2,7 +2,7 @@
 /* tslint:disable:no-implicit-dependencies */
 
 import { SdkManager, RadarRelay, LocalAccount } from '../src';
-import { mockRequests } from './lib/mockRequests';
+import { mockRequests, RADAR_ENPOINT, RADAR_WS_ENPOINT } from './lib/mockRequests';
 import * as chai from 'chai';
 import BigNumber from 'bignumber.js';
 import { UserOrderType, SignedOrder } from '@radarrelay/types';
@@ -26,8 +26,8 @@ describe('RadarRelay.Market', () => {
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
       dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'https://localhost:8080/v2',
-      radarWebsocketEndpoint: 'wss://localhost:8081/v2',
+      radarRestEndpoint: RADAR_ENPOINT,
+      radarWebsocketEndpoint: RADAR_WS_ENPOINT,
       defaultGasPrice: new BigNumber(2)
     });
 

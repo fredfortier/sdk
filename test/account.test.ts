@@ -3,7 +3,7 @@
 
 import * as chai from 'chai';
 import { SdkManager, RadarRelay, LocalAccount } from '../src';
-import { mockRequests } from './lib/mockRequests';
+import { mockRequests, RADAR_ENPOINT, RADAR_WS_ENPOINT } from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-protocol';
 
@@ -25,21 +25,21 @@ describe('RadarRelay.Account', () => {
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
       dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'http://localhost:8080/v2',
-      radarWebsocketEndpoint: 'wss://localhost:8081/v2'
+      radarRestEndpoint: RADAR_ENPOINT,
+      radarWebsocketEndpoint: RADAR_WS_ENPOINT,
     });
 
-    // set addr for later use
-    zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
-    wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
+      // set addr for later use
+      zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
+      wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
 
-    // get available addresses
-    addresses = await rrsdk.account.getAvailableAddressesAsync();
-    if (addresses.length === 1) {
-      rrsdk.account.addNewAddresses(1);
+      // get available addresses
       addresses = await rrsdk.account.getAvailableAddressesAsync();
-    }
-    console.log('[addresses]', addresses);
+      if (addresses.length === 1) {
+        rrsdk.account.addNewAddresses(1);
+        addresses = await rrsdk.account.getAvailableAddressesAsync();
+      }
+      console.log('[addresses]', addresses);
   });
 
   it('getOrdersAsync', async () => {
