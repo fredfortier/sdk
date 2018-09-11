@@ -114,27 +114,48 @@ fires an event that you can listen to via the `events` object.
 ```javascript
 
 rr.events.on(
-  EventName.Loading
-  EventName.EthereumInitialized
-  EventName.EthereumNetworkIdInitialized
-  EventName.ZeroExInitialized
-  EventName.TokensInitialized
-  EventName.AccountInitialized
-  EventName.TradeInitialized
-  EventName.MarketsInitialized
-  EventName.TransactionPending
-  EventName.TransactionComplete
+  EventName.Loading |
+  EventName.EthereumInitialized |
+  EventName.EthereumNetworkIdInitialized |
+  EventName.ZeroExInitialized |
+  EventName.TokensInitialized |
+  EventName.AccountInitialized |
+  EventName.TradeInitialized |
+  EventName.MarketsInitialized |
+  EventName.TransactionPending |
+  EventName.TransactionComplete |
   EventName.AddressChanged
 )
-rr.events.emit('see_above' | 'or emit anything', with, some, data)
+rr.events.emit('see_above' | 'or emit anything', ...withSomeData)
 ```
 
 ### Account
 Obtain account information for the current loaded wallet
 
+#### Wallet methods
+
+```javascript
+async exportSeedPhraseAsync(password: string): Promise<string>
+```
+
+Export an account wallet seed phrase.
+
+| Parameter        | Type        | Description                                 |
+| ---------------- | ----------- | ------------------------------------------- |
+| `password`       | `string`    | The plaintext password                      |
+
+```javascript
+async exportAddressPrivateKeyAsync(password: string): Promise<string>
+```
+
+Export a wallet address private key.
+
+| Parameter        | Type        | Description                                 |
+| ---------------- | ----------- | ------------------------------------------- |
+| `password`       | `string`    | The plaintext password                      |
+
 ```javascript
 // wallet methods
-rr.account.exportSeedPhraseAsync
 rr.account.exportAddressPrivateKeyAsync
 
 // account information
