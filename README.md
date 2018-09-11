@@ -40,30 +40,30 @@ const rr = SdkManager.Setup(Config); // Radar API and Wallet Configuration
 Initializing sets the desired Ethereum wallet configuration. The SDK can be initialized with three different wallet types: `LightWallet`, `InjectedWallet`, and an `RpcWallet`. See the below types for more information.
 
 ```javascript
-await SdkManager.InitializeAsync(rr); 
+await SdkManager.InitializeAsync(rr);
 ```
 
 Or directly on the SDK instance:
 
 ```javascript
-await rr.initializeAsync(); 
+await rr.initializeAsync();
 ```
 
 #### Wallet Configuration Types
-```javascript 
+```javascript
 interface SdkConfig {
   sdkInitializationTimeoutMs?: number;
 }
 ```
 
-```javascript 
+```javascript
 interface EndpointConfig {
   radarRestEndpoint: string;
   radarWebsocketEndpoint: string;
 }
 ```
 
-```javascript 
+```javascript
 // Injected Wallets do not require an endpoint argument if using the wallet's connection to the Ethereum network
 export interface OptionalEndpointConfig {
   radarRestEndpoint?: string;
@@ -71,13 +71,13 @@ export interface OptionalEndpointConfig {
 }
 ```
 
-```javascript 
+```javascript
 interface EthereumConfig {
   defaultGasPrice?: BigNumber;
 }
 ```
 
-```javascript 
+```javascript
 interface LightWalletOptions {
   password: string;
   seedPhrase?: string;
@@ -86,14 +86,14 @@ interface LightWalletOptions {
 }
 ```
 
-```javascript 
+```javascript
 interface LightWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   wallet: LightWalletOptions; // Wallet options for a local HD wallet
   dataRpcUrl: string;  // The rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
 
-```javascript 
+```javascript
 interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, EthereumConfig {
   type: InjectedWalletType;
   web3?: Web3; // Injected web3 object (Default: window.web3)
@@ -101,7 +101,7 @@ interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, Ethere
 }
 ```
 
-```javascript 
+```javascript
 interface RpcWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   rpcUrl: string; // The RPC connection to an unlocked node
 }
@@ -154,11 +154,11 @@ rr.account.setTokenAllowanceAsync
 rr.account.transferTokenAsync
 ```
 ### Markets
-Markets are marketId mapped Market classes with all 
+Markets are marketId mapped Market classes with all
 the same methods and the following instance vars:
 
 ```javascript
-rr.markets.get('ZRX-WETH') 
+rr.markets.get('ZRX-WETH')
 {
   id: string;
   baseTokenAddress: string;
@@ -182,6 +182,8 @@ rr.markets.get('REP-WETH').cancelOrderAsync
 rr.markets.get('ZRX-WETH').getFillsAsync
 rr.markets.get('ZRX-WETH').getCandlesAsync
 rr.markets.get('ZRX-WETH').getTickerAsync
+rr.markets.get('ZRX-WETH').getHistoryAsync
+rr.markets.get('ZRX-WETH').getStatsAsync
 rr.markets.get('ZRX-WETH').getOrderBookAsync
 
 // Subscriptions
@@ -257,11 +259,11 @@ The Ethereum and 0x.js application loading lifecycle is difficult to manage, esp
 * [`EventEmitter`](https://nodejs.org/api/events.html)
 * [`SdkInitLifeCycle`](https://github.com/RadarRelay/sdk/blob/master/src/SdkInitLifeCycle.ts)
 
---- 
+---
 
 The `SdkInitLifeCycle` class works as follows:
 
-Define an array that consists of: 
+Define an array that consists of:
 
    1. `event`, which when triggered will then call the defined
    2. `func` the function that is called when this event is triggered (ideally the next in priority)
