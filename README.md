@@ -359,29 +359,131 @@ rr.markets.get('ZRX-WETH')
 }
 ```
 
-Markets expose the following methods:
+---
+
+### Market class methods
+
+`limitOrderAsync(type, quantity, price, expiration)`
+
+Place a limit order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `type`           | `UserOrderType`    | Order type of 'BUY'|'SELL'                                                   |
+| `quantity`       | `BigNumber`        | Amount in base token                                                         |
+| `price`          | `BigNumber`        | Price in quote                                                               |
+| `expiration`     | `BigNumber`        | Order expiration time in seconds                                             |
+
+**Returns:** `Promise<Order>`
+
+---
+
+`marketOrderAsync(type, amount, opts?)`
+
+Execute a market order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `type`           | `UserOrderType`    | Order type of 'BUY'|'SELL'                                                   |
+| `amount`         | `BigNumber`        | Amount in base token                                                         |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`cancelOrderAsync(order, opts?)`
+
+Cancel an order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `order`          | `SignedOrder`      | SignedOrder to cancel                                                        |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`getFillsAsync()`
+
+Get fills for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarFill[]>`
+
+---
+
+`getCandlesAsync()`
+
+Get candles for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarCandle[]>`
+
+---
+
+`getTickerAsync()`
+
+Get ticker for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarTicker>`
+
+---
+
+`getHistoryAsync()`
+
+Get history for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarHistory>`
+
+---
+
+`getStatsAsync()`
+
+Get stats for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarStats>`
+
+---
+
+`subscribeAsync(topic, handlerFunc)`
+
+**Parameters:**
+
+| Name             | Type                     | Description                                                            |
+| ---------------- | ------------------------ | ---------------------------------------------------------------------- |
+| `topic`          | `WebsocketRequestTopic`  | The market topic                                                       |
+| `handlerFunc`    | `(message: any) => void` | The subscription handler                                               |
+
+**Returns:**
 
 ```javascript
-// market class methods
-rr.markets.get('ZRX-WETH').limitOrderAsync
-rr.markets.get('REP-WETH').marketOrderAsync
-rr.markets.get('REP-WETH').cancelOrderAsync
-rr.markets.get('ZRX-WETH').getFillsAsync
-rr.markets.get('ZRX-WETH').getCandlesAsync
-rr.markets.get('ZRX-WETH').getTickerAsync
-rr.markets.get('ZRX-WETH').getHistoryAsync
-rr.markets.get('ZRX-WETH').getStatsAsync
-rr.markets.get('ZRX-WETH').getOrderBookAsync
+Promise<{
+  requestId: number,
+  subscriptionHandler: (message: any) => void,
+  unsubscribe: () => void
+}>
+```
 
-// Subscriptions
-// NOTE: CANDLE and TICKER topics are not yet supported.
-const subscription = await rr.markets.get('ZRX-WETH').subscribeAsync(
-  WebsocketRequestTopic.BOOK, handlerFunction
-);
+You can unsubscribe from any previously created subscriptions like so:
 
-// Unsubscribe to a previously created subscription
+```javascript
 subscription.unsubscribe();
-
 ```
 
 ## Setting up an Ethereum Node
