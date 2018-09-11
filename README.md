@@ -136,7 +136,7 @@ Obtain account information for the current loaded wallet.
 
 ### Wallet methods
 
-`exportSeedPhraseAsync`
+`exportSeedPhraseAsync(password)`
 
 Export an account wallet seed phrase.
 
@@ -150,7 +150,7 @@ Export an account wallet seed phrase.
 
 ---
 
-`exportAddressPrivateKeyAsync`
+`exportAddressPrivateKeyAsync(password)`
 
 Export a wallet address private key.
 
@@ -166,7 +166,7 @@ Export a wallet address private key.
 
 ### Account information
 
-`getAvailableAddressesAsync`
+`getAvailableAddressesAsync(address)`
 
 Get available addresses for this account.
 
@@ -184,13 +184,13 @@ Set the current address in use.
 
 | Name             | Type               | Description                          |
 | ---------------- | ------------------ | ------------------------------------ |
-| `address`        | `string|number`    | The address or address index         |
+| `address`        | `string\|number`    | The address or address index         |
 
 **Returns:** `Promise<void>`
 
 ---
 
-`getFillsAsync`
+`getFillsAsync(page?, perPage?)`
 
 Get fills for the selected address that have been executed on Radar.
 
@@ -205,17 +205,51 @@ Get fills for the selected address that have been executed on Radar.
 
 ---
 
+`getOrdersAsync(page?, perPage?)`
 
+Get orders for the selected address that have been placed on Radar.
+
+**Parameters:**
+
+| Name             | Type               | Description                               |
+| ---------------- | ------------------ | ----------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch            |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page |
+
+**Returns:** `Promise<RadarSignedOrder[]>`
+
+---
+
+### ETH / token utilities
+
+`getEthBalanceAsync()`
+
+Get ETH balance for the current selected address.
+
+**_No parameters._**
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`transferEthAsync(toAddress, perPage, opts?)`
+
+Transfer ETH to another address.
+
+**Parameters:**
+
+| Name             | Type               | Description                               |
+| ---------------- | ------------------ | ----------------------------------------- |
+| `toAddress`      | `string`           | The address to transfer to                |
+| `amount`         | `number`           | The amount of ETH to transfer             |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options      |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
 
 
 ```javascript
 
-// account information
-rr.account.getOrdersAsync
-
 // ETH / token utilities
-rr.account.getEthBalanceAsync
-rr.account.transferEthAsync
 rr.account.wrapEthAsync
 rr.account.unwrapEthAsync
 rr.account.getTokenBalanceAsync
