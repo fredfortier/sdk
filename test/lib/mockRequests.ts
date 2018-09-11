@@ -78,12 +78,12 @@ export function mockRequests() {
     .get('/markets/ZRX-WETH/ticker')
     .reply(200, {
       transactionHash: '0xd78e7edb5e4feaf1b0236006d6918dc1f1167eeb842a3a3a044088416d475b1a', // last trade tx hash
-      price: new BigNumber('0.0007'), // last trade price
-      size: new BigNumber('10'), // last trade size (in quote)
-      bid: new BigNumber('0.0007'), // best bid
-      ask: new BigNumber('0.00069'), // best ask
-      volume: new BigNumber('100'), // 24hr volume of market in quote
-      timestamp: new BigNumber('0.0007') // last trade time in unix time (seconds)
+      price: '0.0007', // last trade price
+      size: '10', // last trade size (in quote)
+      bid: '0.0007', // best bid
+      ask: '0.00069', // best ask
+      volume: '100', // 24hr volume of market in quote
+      timestamp: '0.0007' // last trade time in unix time (seconds)
     });
 
   nock(RADAR_ENPOINT)
@@ -91,10 +91,10 @@ export function mockRequests() {
     .reply(200, {
       numBidsWithinRange: 5, // Number of bids within a defined range (Example: Within 20% of the best bid)
       numAsksWithinRange: 3, // Number of asks within a defined range (Example: Within 20% of the best ask)
-      baseTokenAvailable: new BigNumber(0), // Amount of base token available on the book
-      quoteTokenAvailable: new BigNumber(0), // Amount of quote token available on the book
-      volume24Hour: new BigNumber('0.00033727'), // 24 hour volume
-      percentChange24Hour: new BigNumber(0), // 24 hour price change percentage
+      baseTokenAvailable: '0', // Amount of base token available on the book
+      quoteTokenAvailable: '0', // Amount of quote token available on the book
+      volume24Hour: '0.00033727', // 24 hour volume
+      percentChange24Hour: '0', // 24 hour price change percentage
     });
 
   nock(RADAR_ENPOINT)
@@ -113,13 +113,13 @@ export function mockRequests() {
       senderAddress: NULL_ADDRESS,
       makerAddress: 'SET',
       takerAddress: NULL_ADDRESS,
-      makerFee: new BigNumber(0),
-      takerFee: new BigNumber(0),
-      makerAssetAmount: new BigNumber(10).pow(14),
-      takerAssetAmount: new BigNumber(10).pow(14),
+      makerFee: '0',
+      takerFee: '0',
+      makerAssetAmount: new BigNumber(10).pow(14).toString(),
+      takerAssetAmount: new BigNumber(10).pow(14).toString(),
       makerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
       takerAssetData: '0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570',
-      salt: new BigNumber('1536516727297'),
+      salt: '1536516727297',
       exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
       feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
       expirationTimeSeconds: '1536559895',
@@ -162,13 +162,13 @@ export function mockRequests() {
         makerAssetData: '0xf47261b00000000000000000000000006ff6c0ff1d68b964901f986d4c9fa3ac68346570',
         takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
         feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
-        makerAssetAmount: new BigNumber('1000000000000000000'),
-        takerAssetAmount: new BigNumber('3100000000000000'),
-        makerFee: new BigNumber('0'),
-        takerFee: new BigNumber('0'),
-        expirationTimeSeconds: new BigNumber('1538924603'),
+        makerAssetAmount: '1000000000000000000',
+        takerAssetAmount: '3100000000000000',
+        makerFee: '0',
+        takerFee: '0',
+        expirationTimeSeconds: '1538924603',
         signature: '0x1bf82125462d93d7ed06a5160a8903f79152855bb2b78d56e0f3eb3098dfb61d7940c4c7d7ebe1a6aa5a9d102283e41d318753216e3de358bf1307adfec82d930103',
-        salt: new BigNumber('1536332603630')
+        salt: '1536332603630'
       }]
     });
 

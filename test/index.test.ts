@@ -6,24 +6,13 @@
 
 import * as chai from 'chai';
 import { SdkManager, EventName } from '../src/index';
-import { mockRequests } from './lib/mockRequests';
+import { mockRequests, RADAR_ENPOINT, RADAR_WS_ENPOINT } from './lib/mockRequests';
 
 const expect = chai.expect;
 
 describe('RadarRelay', async () => {
 
-  const rrsdk = await SdkManager.Setup({
-      wallet: {
-        password: 'password',
-        seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
-      },
-      dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'http://localhost:8080/v2',
-      radarWebsocketEndpoint: 'wss://ws.radarrelay.com/v2'
-    });
-
-  mockRequests();
-
+  let rrsdk;
   let ethereumInitialized = false;
   let ethereumNetworkIdInitialized = false;
   let tokensInitialized = false;
@@ -32,26 +21,40 @@ describe('RadarRelay', async () => {
   let marketsInitialized = false;
   let tradeInitialized = false;
 
-  rrsdk.events.on(EventName.EthereumInitialized, () => {
-    ethereumInitialized = true;
-  });
-  rrsdk.events.on(EventName.EthereumNetworkIdInitialized, () => {
-    ethereumNetworkIdInitialized = true;
-  });
-  rrsdk.events.on(EventName.TokensInitialized, () => {
-    tokensInitialized = true;
-  });
-  rrsdk.events.on(EventName.AccountInitialized, () => {
-    accountInitialized = true;
-  });
-  rrsdk.events.on(EventName.ZeroExInitialized, () => {
-    zeroExInitialized = true;
-  });
-  rrsdk.events.on(EventName.TradeInitialized, () => {
-    tradeInitialized = true;
-  });
-  rrsdk.events.on(EventName.MarketsInitialized, () => {
-    marketsInitialized = true;
+  before(async () => {
+    mockRequests();
+
+    rrsdk = await SdkManager.Setup({
+        wallet: {
+          password: 'password',
+          seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
+        },
+        dataRpcUrl: 'http://localhost:8545',
+        radarRestEndpoint: RADAR_ENPOINT,
+        radarWebsocketEndpoint: RADAR_WS_ENPOINT
+      });
+
+    rrsdk.events.on(EventName.EthereumInitialized, () => {
+      ethereumInitialized = true;
+    });
+    rrsdk.events.on(EventName.EthereumNetworkIdInitialized, () => {
+      ethereumNetworkIdInitialized = true;
+    });
+    rrsdk.events.on(EventName.TokensInitialized, () => {
+      tokensInitialized = true;
+    });
+    rrsdk.events.on(EventName.AccountInitialized, () => {
+      accountInitialized = true;
+    });
+    rrsdk.events.on(EventName.ZeroExInitialized, () => {
+      zeroExInitialized = true;
+    });
+    rrsdk.events.on(EventName.TradeInitialized, () => {
+      tradeInitialized = true;
+    });
+    rrsdk.events.on(EventName.MarketsInitialized, () => {
+      marketsInitialized = true;
+    });
   });
 
   beforeEach(() => {

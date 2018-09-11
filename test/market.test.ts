@@ -80,11 +80,6 @@ describe('RadarRelay.Market', () => {
       new BigNumber((new Date().getTime() / 1000) + 43200).floor()
     );
 
-    // add BigNumber back
-    signedOrder.takerAssetAmount = new BigNumber(signedOrder.takerAssetAmount);
-    signedOrder.makerAssetAmount = new BigNumber(signedOrder.makerAssetAmount);
-    signedOrder.expirationTimeSeconds = new BigNumber(signedOrder.expirationTimeSeconds);
-
     // verify valid signedOrder
     await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
   });
