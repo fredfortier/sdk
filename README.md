@@ -132,6 +132,8 @@ rr.events.emit('see_above' | 'or emit anything', ...withSomeData)
 ## Account Methods
 Obtain account information for the current loaded wallet.
 
+---
+
 ### Wallet methods
 
 `exportSeedPhraseAsync`
@@ -160,11 +162,11 @@ Export a wallet address private key.
 
 **Returns:** `Promise<string>`
 
+---
+
 ### Account information
 
-```javascript
-getAvailableAddressesAsync(): Promise<string[]>
-```
+`getAvailableAddressesAsync`
 
 Get available addresses for this account.
 
@@ -174,12 +176,41 @@ Get available addresses for this account.
 
 ---
 
+`setAddressAsync`
+
+Set the current address in use.
+
+**Parameters:**
+
+| Name             | Type               | Description                          |
+| ---------------- | ------------------ | ------------------------------------ |
+| `address`        | `string|number`    | The address or address index         |
+
+**Returns:** `Promise<void>`
+
+---
+
+`getFillsAsync`
+
+Get fills for the selected address that have been executed on Radar.
+
+**Parameters:**
+
+| Name             | Type               | Description                               |
+| ---------------- | ------------------ | ----------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch            |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page |
+
+**Returns:** `Promise<RadarFill>`
+
+---
+
+
+
 
 ```javascript
 
 // account information
-rr.account.setAddressAsync
-rr.account.getFillsAsync
 rr.account.getOrdersAsync
 
 // ETH / token utilities
