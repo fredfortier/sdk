@@ -134,32 +134,50 @@ Obtain account information for the current loaded wallet
 
 #### Wallet methods
 
-```javascript
-async exportSeedPhraseAsync(password: string): Promise<string>
-```
+`exportSeedPhraseAsync`
 
 Export an account wallet seed phrase.
 
-| Parameter        | Type        | Description                                 |
+**Parameters:**
+
+| Name             | Type        | Description                                 |
 | ---------------- | ----------- | ------------------------------------------- |
 | `password`       | `string`    | The plaintext password                      |
 
-```javascript
-async exportAddressPrivateKeyAsync(password: string): Promise<string>
-```
+**Returns:** `Promise<string>`
+
+---
+
+`exportAddressPrivateKeyAsync`
 
 Export a wallet address private key.
 
-| Parameter        | Type        | Description                                 |
+**Parameters:**
+
+| Name             | Type        | Description                                 |
 | ---------------- | ----------- | ------------------------------------------- |
 | `password`       | `string`    | The plaintext password                      |
 
+**Returns:** `Promise<string>`
+
+#### Account information
+
 ```javascript
-// wallet methods
-rr.account.exportAddressPrivateKeyAsync
+getAvailableAddressesAsync(): Promise<string[]>
+```
+
+Get available addresses for this account.
+
+**_No parameters._**
+
+**Returns:** `Promise<string[]>`
+
+---
+
+
+```javascript
 
 // account information
-rr.account.getAvailableAddressesAsync
 rr.account.setAddressAsync
 rr.account.getFillsAsync
 rr.account.getOrdersAsync
