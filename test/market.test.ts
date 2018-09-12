@@ -73,7 +73,7 @@ describe('RadarRelay.Market', () => {
     expect(stats).to.not.be.empty;
   });
 
-  it('limitOrderAsync', async () => {
+  it.skip('limitOrderAsync', async () => {
     signedOrder = await rrsdk.markets.get('ZRX-WETH').limitOrderAsync(UserOrderType.BUY,
       new BigNumber(String(0.01)),
       new BigNumber('0.007'),
@@ -84,7 +84,7 @@ describe('RadarRelay.Market', () => {
     await rrsdk.zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
   });
 
-  it('marketOrderAsync', async () => {
+  it.skip('marketOrderAsync', async () => {
     await rrsdk.account.setUnlimitedTokenAllowanceAsync(
       wethAddr, { awaitTransactionMined: true }
     );
@@ -94,7 +94,7 @@ describe('RadarRelay.Market', () => {
     expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
   });
 
-  it('cancelOrderAsync', async () => {
+  it.skip('cancelOrderAsync', async () => {
     const receipt = await rrsdk.markets.get('ZRX-WETH').cancelOrderAsync(
       signedOrder, { awaitTransactionMined: true } // awaitTxMined
     );

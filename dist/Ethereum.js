@@ -14,8 +14,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -40,7 +40,7 @@ var bignumber_js_1 = require("bignumber.js");
 var es6_promisify_1 = require("es6-promisify");
 var wallet_manager_1 = require("@radarrelay/wallet-manager");
 var web3_builder_1 = require("@radarrelay/web3-builder");
-var subproviders_1 = require("@radarrelay/subproviders");
+var subproviders_1 = require("@0xproject/subproviders");
 var types_1 = require("./types");
 /**
  * Ethereum
@@ -219,7 +219,7 @@ var Ethereum = /** @class */ (function () {
                     case 5: return [3 /*break*/, 6];
                     case 6:
                         this.wallet = wallet;
-                        this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet.signing, wallet.keystore, wallet.pwDerivedKey), config.dataRpcUrl, true);
+                        this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.EthLightwalletSubprovider(wallet.keystore, wallet.pwDerivedKey), config.dataRpcUrl, true);
                         return [2 /*return*/];
                 }
             });
@@ -237,7 +237,7 @@ var Ethereum = /** @class */ (function () {
             this.web3 = config.web3 || defaultWeb3;
         }
         else {
-            this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.InjectedWeb3Subprovider(config.web3.currentProvider), config.dataRpcUrl, true);
+            this.web3 = web3_builder_1.Web3Builder.createWeb3(new subproviders_1.SignerSubprovider(config.web3.currentProvider), config.dataRpcUrl, true);
         }
     };
     /**

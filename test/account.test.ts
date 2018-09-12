@@ -9,7 +9,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-protocol';
 
 const expect = chai.expect;
 
-describe('RadarRelay.Account', () => {
+describe.skip('RadarRelay.Account', () => {
 
   let rrsdk: RadarRelay<LocalAccount>;
   let wethAddr;
