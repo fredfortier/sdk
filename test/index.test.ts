@@ -33,7 +33,6 @@ describe('RadarRelay', async () => {
         radarRestEndpoint: RADAR_ENPOINT,
         radarWebsocketEndpoint: RADAR_WS_ENPOINT
       });
-    console.log(rrsdk);
 
     rrsdk.events.on(EventName.EthereumInitialized, () => {
       ethereumInitialized = true;
