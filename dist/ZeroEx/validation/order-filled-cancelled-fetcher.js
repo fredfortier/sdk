@@ -1,14 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -45,36 +35,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var BaseAccount_1 = require("./BaseAccount");
-var types_1 = require("../types");
-var InjectedAccount = /** @class */ (function (_super) {
-    __extends(InjectedAccount, _super);
-    /**
-     * Instantiate an InjectedAccount
-     *
-     * @param {AccountParams} params The account parameters
-     */
-    function InjectedAccount(params) {
-        var _this = _super.call(this, params) || this;
-        _this.type = types_1.WalletType.Injected;
-        _this._watchActiveAddress();
-        return _this;
+var OrderFilledCancelledFetcher = /** @class */ (function () {
+    function OrderFilledCancelledFetcher(exchange, stateLayer) {
+        this._exchange = exchange;
+        this._stateLayer = stateLayer;
     }
-    /**
-     * Watch the active address and update if necessary
-     */
-    InjectedAccount.prototype._watchActiveAddress = function () {
-        var _this = this;
-        setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
+    OrderFilledCancelledFetcher.prototype.getFilledTakerAmountAsync = function (orderHash) {
+        return __awaiter(this, void 0, void 0, function () {
+            var filledTakerAmount;
             return __generator(this, function (_a) {
-                if (this._ethereum.web3.eth.accounts[0] !== this.address) {
-                    this.address = this._ethereum.web3.eth.accounts[0];
-                    this._events.emit(types_1.EventName.AddressChanged, this.address);
-                }
-                return [2 /*return*/];
+                filledTakerAmount = this._exchange.getFilledTakerAssetAmountAsync(orderHash, {
+                    defaultBlock: this._stateLayer,
+                });
+                return [2 /*return*/, filledTakerAmount];
             });
-        }); }, 500);
+        });
     };
-    return InjectedAccount;
-}(BaseAccount_1.BaseAccount));
-exports.InjectedAccount = InjectedAccount;
+    OrderFilledCancelledFetcher.prototype.isOrderCancelledAsync = function (orderHash) {
+        return __awaiter(this, void 0, void 0, function () {
+            var isCancelled;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this._exchange.isCancelledAsync(orderHash)];
+                    case 1:
+                        isCancelled = _a.sent();
+                        return [2 /*return*/, isCancelled];
+                }
+            });
+        });
+    };
+    OrderFilledCancelledFetcher.prototype.getZRXAssetData = function () {
+        var zrxAssetData = this._exchange.getZRXAssetData();
+        return zrxAssetData;
+    };
+    return OrderFilledCancelledFetcher;
+}());
+exports.OrderFilledCancelledFetcher = OrderFilledCancelledFetcher;

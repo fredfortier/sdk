@@ -218,7 +218,7 @@ export class BaseAccount {
    * @param {number} page The page to fetch
    * @param {number} perPage The number of fills per page
    */
-  public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill> {
+  public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill[]> {
     return JSON.parse(await request.get(
       `${this._endpoint}/accounts/${this.address}/fills?page=${page}&per_page=${perPage}`
     ));

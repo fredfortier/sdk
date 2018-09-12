@@ -310,9 +310,9 @@
     "@0xproject/types" "^1.0.1-rc.3"
     bignumber.js "^5.0.0"
 
-"@radarrelay/wallet-manager@git://github.com/RadarRelay/wallet-manager.git#iks-update-eth-lightwallet-types":
-  version "0.3.2"
-  resolved "git://github.com/RadarRelay/wallet-manager.git#87272986370aa32300b1a576624c972bd0a9ac92"
+"@radarrelay/wallet-manager@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@radarrelay/wallet-manager/-/wallet-manager-0.3.3.tgz#e4e7d660d0a838a49f69ccc0b23d97b9abe94e83"
   dependencies:
     eth-lightwallet "^3.0.1"
     lodash "^4.17.10"
@@ -421,6 +421,12 @@
 "@types/mocha@^2.2.43":
   version "2.2.48"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.48.tgz#3523b126a0b049482e1c3c11877460f76622ffab"
+
+"@types/nock@^9.3.0":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@types/nock/-/nock-9.3.0.tgz#9d34358fdcc08afd07144e0784ac9e951d412dd4"
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*", "@types/node@^10.3.2":
   version "10.9.4"

@@ -98,6 +98,6 @@ export declare class BaseAccount {
      * @param {number} page The page to fetch
      * @param {number} perPage The number of fills per page
      */
-    getFillsAsync(page?: number, perPage?: number): Promise<RadarFill>;
+    getFillsAsync(page?: number, perPage?: number): Promise<RadarFill[]>;
     private _getWETHTokenAddress;
 }
