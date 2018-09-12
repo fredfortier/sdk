@@ -1,6 +1,6 @@
 {
   "name": "@radarrelay/sdk",
-  "version": "0.4.4",
+  "version": "2.0.0",
   "description": "A library for interacting with Radar Relay in the browser and Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/mocha": "^2.2.43",
+    "@types/nock": "^9.3.0",
     "@types/node": "^8.0.46",
     "@types/request-promise": "^4.1.41",
     "@types/websocket": "0.0.39",
@@ -45,13 +46,18 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x.js": "^0.33.6",
-    "@radarrelay/subproviders": "^0.5.3",
-    "@radarrelay/types": "^0.1.0",
-    "@radarrelay/wallet-manager": "^0.3.2",
+    "0x.js": "^1.0.1",
+    "@0xproject/contract-wrappers": "^1.0.1",
+    "@0xproject/order-utils": "^1.0.1",
+    "@0xproject/subproviders": "^2.0.2",
+    "@0xproject/types": "^1.0.1",
+    "@0xproject/web3-wrapper": "^2.0.1",
+    "@radarrelay/types": "git://github.com/RadarRelay/types.git#beta",
+    "@radarrelay/wallet-manager": "^0.3.3",
     "@radarrelay/web3-builder": "^0.2.0",
     "bignumber.js": "^4.1.0",
     "es6-promisify": "^6.0.0",
+    "ethereum-types": "^1.0.4",
     "mock-socket": "^7.1.0",
     "promisify": "0.0.3",
     "request": "^2.83.0",

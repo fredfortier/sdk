@@ -1,7 +1,7 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
 import { Trade } from './Trade';
 import { Opts } from './types';
-import { RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic } from '@radarrelay/types';
+import { SignedOrder, RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic, RadarStats, RadarHistory } from '@radarrelay/types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import BigNumber from 'bignumber.js';
 import { BaseAccount } from './accounts';
 export declare class Market<T extends BaseAccount> {
@@ -23,6 +23,8 @@ export declare class Market<T extends BaseAccount> {
     getFillsAsync(): Promise<RadarFill[]>;
     getCandlesAsync(): Promise<RadarCandle[]>;
     getTickerAsync(): Promise<RadarTicker>;
+    getStatsAsync(): Promise<RadarStats>;
+    getHistoryAsync(): Promise<RadarHistory>;
     /**
      * subscribe to a socket topic for this market
      *
@@ -50,7 +52,7 @@ export declare class Market<T extends BaseAccount> {
      * @param {BigNumber}     price      Price in quote
      * @param {BigNumber}     expiration Order expiration time in seconds
      */
-    limitOrderAsync(type: UserOrderType, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<Order>;
+    limitOrderAsync(type: UserOrderType, quantity: BigNumber, price: BigNumber, expiration: BigNumber): Promise<SignedOrder>;
     /**
      * Cancel an order
      *

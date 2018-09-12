@@ -2,15 +2,16 @@
 /* tslint:disable:no-implicit-dependencies */
 
 import * as chai from 'chai';
-import { SdkManager } from '../src';
-import { mockRequests } from './lib/mockRequests';
+import { SdkManager, RadarRelay, LocalAccount } from '../src';
+import { mockRequests, RADAR_ENPOINT, RADAR_WS_ENPOINT } from './lib/mockRequests';
 import BigNumber from 'bignumber.js';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-protocol';
 
 const expect = chai.expect;
 
 describe('RadarRelay.Account', () => {
 
-  let rrsdk;
+  let rrsdk: RadarRelay<LocalAccount>;
   let wethAddr;
   let zrxAddr;
   let addresses;
@@ -24,21 +25,21 @@ describe('RadarRelay.Account', () => {
         seedPhrase: 'concert load couple harbor equip island argue ramp clarify fence smart topic'
       },
       dataRpcUrl: 'http://localhost:8545',
-      radarRestEndpoint: 'http://localhost:8080/v0',
-      radarWebsocketEndpoint: 'ws://ws.radarrelay.com'
+      radarRestEndpoint: RADAR_ENPOINT,
+      radarWebsocketEndpoint: RADAR_WS_ENPOINT,
     });
 
-    // set addr for later use
-    zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
-    wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
+      // set addr for later use
+      zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
+      wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
 
-    // get available addresses
-    addresses = await rrsdk.account.getAvailableAddressesAsync();
-    if (addresses.length === 1) {
-      rrsdk.account.addNewAddresses(1);
+      // get available addresses
       addresses = await rrsdk.account.getAvailableAddressesAsync();
-    }
-    console.log('[addresses]', addresses);
+      if (addresses.length === 1) {
+        rrsdk.account.addNewAddresses(1);
+        addresses = await rrsdk.account.getAvailableAddressesAsync();
+      }
+      console.log('[addresses]', addresses);
   });
 
   it('getOrdersAsync', async () => {
@@ -62,7 +63,7 @@ describe('RadarRelay.Account', () => {
     const receipt = await rrsdk.account.transferEthAsync(
       addresses[1], new BigNumber('0.01'), { awaitTransactionMined: true }
     );
-    expect(receipt.status).to.be.eq(1);
+    expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
     await rrsdk.account.setAddressAsync(addresses[1]);
     const balance = await rrsdk.account.getEthBalanceAsync();
     expect(balance.toNumber()).to.be.gt(0);
@@ -72,7 +73,7 @@ describe('RadarRelay.Account', () => {
     const receipt = await rrsdk.account.wrapEthAsync(
       new BigNumber('0.02'), { awaitTransactionMined: true } // await
     );
-    expect(receipt.status).to.be.eq(1);
+    expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
     const wethBal = await rrsdk.account.getTokenBalanceAsync(wethAddr);
     expect(wethBal.toNumber()).to.be.gt(0);
   });
@@ -86,7 +87,7 @@ describe('RadarRelay.Account', () => {
         transactionOpts: { gasLimit: 4000000 } // TODO required on testrpc?
       }
     );
-    expect(receipt.status).to.be.eq(1);
+    expect((receipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
     const wethBalAfter = await rrsdk.account.getTokenBalanceAsync(wethAddr);
     expect(wethBalAfter.toString()).to.be.equal('0.01');
   });
@@ -100,11 +101,11 @@ describe('RadarRelay.Account', () => {
     const wethReceipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
       wethAddr, { awaitTransactionMined: true }
     );
-    expect(wethReceipt.status).to.be.eq(1);
+    expect((wethReceipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
     const zrxReceipt = await rrsdk.account.setUnlimitedTokenAllowanceAsync(
       zrxAddr, { awaitTransactionMined: true }
     );
-    expect(zrxReceipt.status).to.be.eq(1);
+    expect((zrxReceipt as TransactionReceiptWithDecodedLogs).status).to.be.eq(1);
   });
 
   it('getTokenAllowanceAsync', async () => {

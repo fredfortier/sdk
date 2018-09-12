@@ -1,5 +1,5 @@
 
-import { ZeroEx } from '0x.js';
+import { ZeroEx } from './ZeroEx';
 import { EventEmitter } from 'events';
 import { RadarToken, RadarMarket } from '@radarrelay/types';
 import {
@@ -152,7 +152,7 @@ export class RadarRelay<T extends BaseAccount> {
   private async initTokensAsync(): Promise<string | boolean> {
     // only fetch if not already fetched
     if (this._prevApiEndpoint !== this._config.radarRestEndpoint) {
-      const tokens = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/tokens`));
+      const tokens: RadarToken[] = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/tokens`));
       this.tokens = new TSMap();
       tokens.map(token => {
         this.tokens.set(token.address, token);

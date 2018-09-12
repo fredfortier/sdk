@@ -2,7 +2,9 @@
 import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { Opts } from './types';
-import { ZeroEx, Order, SignedOrder, TransactionReceiptWithDecodedLogs } from '0x.js';
+import { SignedOrder } from '0x.js';
+import { ZeroEx } from './ZeroEx';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { RadarToken, UserOrderType } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import { TSMap } from 'typescript-map';
@@ -18,6 +20,12 @@ export declare class Trade<T extends BaseAccount> {
     limitOrder(market: Market<T>, type: UserOrderType, // ask == sell, bid == buy
     quantity: BigNumber, // base token quantity
     price: BigNumber, // price (in quote)
-    expiration: BigNumber): Promise<Order>;
+    expiration: BigNumber): Promise<SignedOrder>;
     cancelOrderAsync(order: SignedOrder, opts?: Opts): Promise<TransactionReceiptWithDecodedLogs | string>;
+    /**
+     * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a
+     * correct hashing and signature.
+     * @param order a signedOrder from DB or user input, that have strings instead of BigNumbers
+     */
+    hydrateSignedOrder(order: SignedOrder): SignedOrder;
 }

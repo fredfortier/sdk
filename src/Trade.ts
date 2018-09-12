@@ -1,8 +1,10 @@
 import { Market } from './Market';
 import { EventEmitter } from 'events';
 import { WalletType, Opts, EventName } from './types';
-import { ZeroEx, Order, SignedOrder, ECSignature, TransactionReceiptWithDecodedLogs } from '0x.js';
-import { RadarToken, UserOrderType } from '@radarrelay/types';
+import { Order, SignedOrder, SignerType } from '0x.js';
+import { ZeroEx } from './ZeroEx';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { RadarToken, UserOrderType, RadarMarketOrderResponse } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { TSMap } from 'typescript-map';
@@ -39,7 +41,7 @@ export class Trade<T extends BaseAccount> {
       opts = {};
     }
 
-    const marketResponse = await request.post({
+    const marketResponse: RadarMarketOrderResponse = await request.post({
       url: `${this._endpoint}/markets/${market.id}/order/market`,
       json: {
         type,
@@ -47,11 +49,7 @@ export class Trade<T extends BaseAccount> {
       }
     });
 
-    marketResponse.orders.forEach((order, i) => {
-      marketResponse.orders[i].takerTokenAmount = new BigNumber(order.takerTokenAmount);
-      marketResponse.orders[i].makerTokenAmount = new BigNumber(order.makerTokenAmount);
-      marketResponse.orders[i].expirationUnixTimestampSec = new BigNumber(order.expirationUnixTimestampSec);
-    });
+    marketResponse.orders.forEach((order, i) => this.hydrateSignedOrder(order));
 
     let txHash: string;
     if (marketResponse.orders.length === 1) {
@@ -59,14 +57,13 @@ export class Trade<T extends BaseAccount> {
       txHash = await this._zeroEx.exchange.fillOrderAsync(
         marketResponse.orders[0],
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
-        true,
         this._account.address,
         opts.transactionOpts);
     } else {
-      txHash = await this._zeroEx.exchange.fillOrdersUpToAsync(
+      const fn = type === UserOrderType.BUY ? 'marketBuyOrdersAsync' : 'marketSellOrdersAsync';
+      txHash = await this._zeroEx.exchange[fn](
         marketResponse.orders,
         ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
-        true,
         this._account.address,
         opts.transactionOpts);
     }
@@ -76,7 +73,6 @@ export class Trade<T extends BaseAccount> {
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
-
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
@@ -89,7 +85,7 @@ export class Trade<T extends BaseAccount> {
     quantity: BigNumber, // base token quantity
     price: BigNumber, // price (in quote)
     expiration: BigNumber // expiration in seconds from now
-  ): Promise<Order> {
+  ): Promise<SignedOrder> {
 
     const order = await request.post({
       url: `${this._endpoint}/markets/${market.id}/order/limit`,
@@ -101,15 +97,17 @@ export class Trade<T extends BaseAccount> {
       }
     });
 
+    // turn into BigNumbers
+    this.hydrateSignedOrder(order);
+
     // add missing data
-    order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();
-    order.maker = this._account.address;
+    order.makerAddress = this._account.address;
 
     // sign order
-    const prefix = (this._account.type === WalletType.Local);
+    const prefix: SignerType = (this._account.type === WalletType.Injected) ? SignerType.Metamask : SignerType.Default;
     const orderHash = ZeroEx.getOrderHashHex(order);
-    const ecSignature: ECSignature = await this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix);
-    (order as SignedOrder).ecSignature = ecSignature;
+    const signature = await this._zeroEx.ecSignOrderHashAsync(orderHash, this._account.address, prefix);
+    (order as SignedOrder).signature = signature;
 
     // POST order to API
     // HACK for local dev order seeding
@@ -136,7 +134,7 @@ export class Trade<T extends BaseAccount> {
       opts = {};
     }
 
-    const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts);
+    const txHash = await this._zeroEx.exchange.cancelOrderAsync(order, opts.transactionOpts);
     this._events.emit(EventName.TransactionPending, txHash);
 
     if (!opts.awaitTransactionMined) {
@@ -146,6 +144,21 @@ export class Trade<T extends BaseAccount> {
     const receipt = await this._zeroEx.awaitTransactionMinedAsync(txHash);
     this._events.emit(EventName.TransactionComplete, receipt);
     return receipt;
+  }
+
+  /**
+   * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a
+   * correct hashing and signature.
+   * @param order a signedOrder from DB or user input, that have strings instead of BigNumbers
+   */
+  public hydrateSignedOrder(order: SignedOrder): SignedOrder {
+    order.salt = new BigNumber(order.salt);
+    order.makerFee = new BigNumber(order.makerFee);
+    order.takerFee = new BigNumber(order.takerFee);
+    order.makerAssetAmount = new BigNumber(order.makerAssetAmount);
+    order.takerAssetAmount = new BigNumber(order.takerAssetAmount);
+    order.expirationTimeSeconds = new BigNumber(order.expirationTimeSeconds);
+    return order;
   }
 
 }

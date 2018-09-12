@@ -1,8 +1,8 @@
-import { SignedOrder, TransactionReceiptWithDecodedLogs, Order } from '0x.js';
 import { Trade } from './Trade';
 import { WebsocketClient } from './WebsocketClient';
 import { Opts } from './types';
 import {
+  SignedOrder,
   RadarBook,
   RadarFill,
   RadarCandle,
@@ -10,8 +10,11 @@ import {
   UserOrderType,
   RadarMarket,
   WebsocketRequestTopic,
-  WebsocketRequestType
+  WebsocketRequestType,
+  RadarStats,
+  RadarHistory
 } from '@radarrelay/types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { ErrorFormatter } from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
@@ -80,6 +83,20 @@ export class Market<T extends BaseAccount> {
     return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
   }
 
+  /*
+   * Get this markets stats.
+   */
+  public async getStatsAsync(): Promise<RadarStats> {
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/stats`));
+  }
+
+  /*
+   * Get this markets history.
+   */
+  public async getHistoryAsync(): Promise<RadarHistory> {
+    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/history`));
+  }
+
   /**
    * subscribe to a socket topic for this market
    *
@@ -136,7 +153,7 @@ export class Market<T extends BaseAccount> {
     quantity: BigNumber,
     price: BigNumber,
     expiration: BigNumber
-  ): Promise<Order> {
+  ): Promise<SignedOrder> {
     try {
       return await this._trade.limitOrder(this, type, quantity, price, expiration);
     } catch (err) {

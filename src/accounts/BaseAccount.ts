@@ -1,6 +1,7 @@
 import { Ethereum } from '../Ethereum';
 import { promisify } from 'util';
-import { ZeroEx, TransactionReceiptWithDecodedLogs } from '0x.js';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { ZeroEx } from '../ZeroEx';
 import BigNumber from 'bignumber.js';
 import { Opts, AccountParams, WalletType } from '../types';
 import * as request from 'request-promise';
@@ -120,7 +121,7 @@ export class BaseAccount {
    * @param {string} tokenAddress The token address
    */
   public async getTokenBalanceAsync(tokenAddress: string): Promise<BigNumber> {
-    const balance = await this._zeroEx.token.getBalanceAsync(tokenAddress, this.address);
+    const balance = await this._zeroEx.erc20Token.getBalanceAsync(tokenAddress, this.address);
     return ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals);
   }
 
@@ -140,7 +141,7 @@ export class BaseAccount {
     }
 
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-    const txHash = await this._zeroEx.token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
@@ -153,7 +154,7 @@ export class BaseAccount {
    * @param {string} tokenAddress The token address
    */
   public async getTokenAllowanceAsync(tokenAddress: string): Promise<BigNumber> {
-    const baseUnitallowance = await this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, this.address);
+    const baseUnitallowance = await this._zeroEx.erc20Token.getProxyAllowanceAsync(tokenAddress, this.address);
     return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals);
   }
 
@@ -172,7 +173,7 @@ export class BaseAccount {
     }
 
     const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-    const txHash = await this._zeroEx.token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
@@ -192,7 +193,7 @@ export class BaseAccount {
       opts = {};
     }
 
-    const txHash = await this._zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts);
+    const txHash = await this._zeroEx.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
     }
@@ -217,7 +218,7 @@ export class BaseAccount {
    * @param {number} page The page to fetch
    * @param {number} perPage The number of fills per page
    */
-  public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill> {
+  public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill[]> {
     return JSON.parse(await request.get(
       `${this._endpoint}/accounts/${this.address}/fills?page=${page}&per_page=${perPage}`
     ));

@@ -14,8 +14,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -37,6 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("./types");
 var _0x_js_1 = require("0x.js");
+var ZeroEx_1 = require("./ZeroEx");
+var types_2 = require("@radarrelay/types");
 var bignumber_js_1 = require("bignumber.js");
 var request = require("request-promise");
 var Trade = /** @class */ (function () {
@@ -49,7 +51,8 @@ var Trade = /** @class */ (function () {
     }
     Trade.prototype.marketOrder = function (market, type, quantity, opts) {
         return __awaiter(this, void 0, void 0, function () {
-            var marketResponse, txHash, receipt;
+            var marketResponse, txHash, fn, receipt;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -65,18 +68,16 @@ var Trade = /** @class */ (function () {
                             })];
                     case 1:
                         marketResponse = _a.sent();
-                        marketResponse.orders.forEach(function (order, i) {
-                            marketResponse.orders[i].takerTokenAmount = new bignumber_js_1.default(order.takerTokenAmount);
-                            marketResponse.orders[i].makerTokenAmount = new bignumber_js_1.default(order.makerTokenAmount);
-                            marketResponse.orders[i].expirationUnixTimestampSec = new bignumber_js_1.default(order.expirationUnixTimestampSec);
-                        });
+                        marketResponse.orders.forEach(function (order, i) { return _this.hydrateSignedOrder(order); });
                         if (!(marketResponse.orders.length === 1)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this._zeroEx.exchange.fillOrderAsync(marketResponse.orders[0], _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
+                        return [4 /*yield*/, this._zeroEx.exchange.fillOrderAsync(marketResponse.orders[0], ZeroEx_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), this._account.address, opts.transactionOpts)];
                     case 2:
                         // Save gas by executing a fill order if only one order was returned
                         txHash = _a.sent();
                         return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, this._zeroEx.exchange.fillOrdersUpToAsync(marketResponse.orders, _0x_js_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), true, this._account.address, opts.transactionOpts)];
+                    case 3:
+                        fn = type === types_2.UserOrderType.BUY ? 'marketBuyOrdersAsync' : 'marketSellOrdersAsync';
+                        return [4 /*yield*/, this._zeroEx.exchange[fn](marketResponse.orders, ZeroEx_1.ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()), this._account.address, opts.transactionOpts)];
                     case 4:
                         txHash = _a.sent();
                         _a.label = 5;
@@ -102,7 +103,7 @@ var Trade = /** @class */ (function () {
     ) {
         if (market === void 0) { market = null; }
         return __awaiter(this, void 0, void 0, function () {
-            var order, prefix, orderHash, ecSignature, orderPostURL;
+            var order, prefix, orderHash, signature, orderPostURL;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, request.post({
@@ -116,15 +117,16 @@ var Trade = /** @class */ (function () {
                         })];
                     case 1:
                         order = _a.sent();
+                        // turn into BigNumbers
+                        this.hydrateSignedOrder(order);
                         // add missing data
-                        order.exchangeContractAddress = this._zeroEx.exchange.getContractAddress();
-                        order.maker = this._account.address;
-                        prefix = (this._account.type === types_1.WalletType.Local);
-                        orderHash = _0x_js_1.ZeroEx.getOrderHashHex(order);
-                        return [4 /*yield*/, this._zeroEx.signOrderHashAsync(orderHash, this._account.address, prefix)];
+                        order.makerAddress = this._account.address;
+                        prefix = (this._account.type === types_1.WalletType.Injected) ? _0x_js_1.SignerType.Metamask : _0x_js_1.SignerType.Default;
+                        orderHash = ZeroEx_1.ZeroEx.getOrderHashHex(order);
+                        return [4 /*yield*/, this._zeroEx.ecSignOrderHashAsync(orderHash, this._account.address, prefix)];
                     case 2:
-                        ecSignature = _a.sent();
-                        order.ecSignature = ecSignature;
+                        signature = _a.sent();
+                        order.signature = signature;
                         orderPostURL = process.env.RADAR_SDK_ORDER_URL
                             ? process.env.RADAR_SDK_ORDER_URL
                             : this._endpoint + "/orders";
@@ -151,7 +153,7 @@ var Trade = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, order.takerTokenAmount, opts.transactionOpts)];
+                        return [4 /*yield*/, this._zeroEx.exchange.cancelOrderAsync(order, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         this._events.emit(types_1.EventName.TransactionPending, txHash);
@@ -166,6 +168,20 @@ var Trade = /** @class */ (function () {
                 }
             });
         });
+    };
+    /**
+     * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a
+     * correct hashing and signature.
+     * @param order a signedOrder from DB or user input, that have strings instead of BigNumbers
+     */
+    Trade.prototype.hydrateSignedOrder = function (order) {
+        order.salt = new bignumber_js_1.default(order.salt);
+        order.makerFee = new bignumber_js_1.default(order.makerFee);
+        order.takerFee = new bignumber_js_1.default(order.takerFee);
+        order.makerAssetAmount = new bignumber_js_1.default(order.makerAssetAmount);
+        order.takerAssetAmount = new bignumber_js_1.default(order.takerAssetAmount);
+        order.expirationTimeSeconds = new bignumber_js_1.default(order.expirationTimeSeconds);
+        return order;
     };
     return Trade;
 }());

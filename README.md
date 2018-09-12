@@ -1,6 +1,6 @@
 # Radar Relay SDK
 
-The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://docs.radarrelay.com).
+The Radar Relay SDK is a software development kit that simplifies the interactions with [Radar Relay’s APIs](https://developers.radarrelay.com).
 
 [![npm version](https://badge.fury.io/js/%40radarrelay%2Fsdk.svg)](https://badge.fury.io/js/%40radarrelay%2Fsdk)
 [![CircleCI](https://circleci.com/gh/RadarRelay/sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/sdk/tree/beta)
@@ -40,30 +40,30 @@ const rr = SdkManager.Setup(Config); // Radar API and Wallet Configuration
 Initializing sets the desired Ethereum wallet configuration. The SDK can be initialized with three different wallet types: `LightWallet`, `InjectedWallet`, and an `RpcWallet`. See the below types for more information.
 
 ```javascript
-await SdkManager.InitializeAsync(rr); 
+await SdkManager.InitializeAsync(rr);
 ```
 
 Or directly on the SDK instance:
 
 ```javascript
-await rr.initializeAsync(); 
+await rr.initializeAsync();
 ```
 
 #### Wallet Configuration Types
-```javascript 
+```javascript
 interface SdkConfig {
   sdkInitializationTimeoutMs?: number;
 }
 ```
 
-```javascript 
+```javascript
 interface EndpointConfig {
   radarRestEndpoint: string;
   radarWebsocketEndpoint: string;
 }
 ```
 
-```javascript 
+```javascript
 // Injected Wallets do not require an endpoint argument if using the wallet's connection to the Ethereum network
 export interface OptionalEndpointConfig {
   radarRestEndpoint?: string;
@@ -71,13 +71,13 @@ export interface OptionalEndpointConfig {
 }
 ```
 
-```javascript 
+```javascript
 interface EthereumConfig {
   defaultGasPrice?: BigNumber;
 }
 ```
 
-```javascript 
+```javascript
 interface LightWalletOptions {
   password: string;
   seedPhrase?: string;
@@ -86,14 +86,14 @@ interface LightWalletOptions {
 }
 ```
 
-```javascript 
+```javascript
 interface LightWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   wallet: LightWalletOptions; // Wallet options for a local HD wallet
   dataRpcUrl: string;  // The rpc connection used to broadcast transactions and retreive Ethereum chain state
 }
 ```
 
-```javascript 
+```javascript
 interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, EthereumConfig {
   type: InjectedWalletType;
   web3?: Web3; // Injected web3 object (Default: window.web3)
@@ -101,64 +101,251 @@ interface InjectedWalletConfig extends SdkConfig, OptionalEndpointConfig, Ethere
 }
 ```
 
-```javascript 
+```javascript
 interface RpcWalletConfig extends SdkConfig, EndpointConfig, EthereumConfig {
   rpcUrl: string; // The RPC connection to an unlocked node
 }
 ```
 
-### Events
+## Events
 Anything that triggers state changes (like changing the network, or a fill)
 fires an event that you can listen to via the `events` object.
 
 ```javascript
 
 rr.events.on(
-  EventName.Loading
-  EventName.EthereumInitialized
-  EventName.EthereumNetworkIdInitialized
-  EventName.ZeroExInitialized
-  EventName.TokensInitialized
-  EventName.AccountInitialized
-  EventName.TradeInitialized
-  EventName.MarketsInitialized
-  EventName.TransactionPending
-  EventName.TransactionComplete
+  EventName.Loading |
+  EventName.EthereumInitialized |
+  EventName.EthereumNetworkIdInitialized |
+  EventName.ZeroExInitialized |
+  EventName.TokensInitialized |
+  EventName.AccountInitialized |
+  EventName.TradeInitialized |
+  EventName.MarketsInitialized |
+  EventName.TransactionPending |
+  EventName.TransactionComplete |
   EventName.AddressChanged
 )
-rr.events.emit('see_above' | 'or emit anything', with, some, data)
+rr.events.emit('see_above' | 'or emit anything', ...withSomeData)
 ```
 
-### Account
-Obtain account information for the current loaded wallet
+## Account Methods
+Obtain account information for the current loaded wallet.
 
-```javascript
-// wallet methods
-rr.account.exportSeedPhraseAsync
-rr.account.exportAddressPrivateKeyAsync
+---
 
-// account information
-rr.account.getAvailableAddressesAsync
-rr.account.setAddressAsync
-rr.account.getFillsAsync
-rr.account.getOrdersAsync
+### Wallet methods
 
-// ETH / token utilities
-rr.account.getEthBalanceAsync
-rr.account.transferEthAsync
-rr.account.wrapEthAsync
-rr.account.unwrapEthAsync
-rr.account.getTokenBalanceAsync
-rr.account.getTokenAllowanceAsync
-rr.account.setTokenAllowanceAsync
-rr.account.transferTokenAsync
-```
-### Markets
-Markets are marketId mapped Market classes with all 
+`exportSeedPhraseAsync(password)`
+
+Export an account wallet seed phrase.
+
+**Parameters:**
+
+| Name             | Type        | Description                                                                         |
+| ---------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `password`       | `string`    | The plaintext password                                                              |
+
+**Returns:** `Promise<string>`
+
+---
+
+`exportAddressPrivateKeyAsync(password)`
+
+Export a wallet address private key.
+
+**Parameters:**
+
+| Name             | Type        | Description                                                                         |
+| ---------------- | ----------- | ----------------------------------------------------------------------------------- |
+| `password`       | `string`    | The plaintext password                                                              |
+
+**Returns:** `Promise<string>`
+
+---
+
+### Account information
+
+`getAvailableAddressesAsync(address)`
+
+Get available addresses for this account.
+
+**_No parameters._**
+
+**Returns:** `Promise<string[]>`
+
+---
+
+`setAddressAsync(address)`
+
+Set the current address in use.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string\|number`    | The address or address index                                                |
+
+**Returns:** `Promise<void>`
+
+---
+
+`getFillsAsync(page?, perPage?)`
+
+Get fills for the selected address that have been executed on Radar.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch                                               |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page                                    |
+
+**Returns:** `Promise<RadarFill>`
+
+---
+
+`getOrdersAsync(page?, perPage?)`
+
+Get orders for the selected address that have been placed on Radar.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | _[Optional]_ The page to fetch                                               |
+| `perPage`        | `number`           | _[Optional]_ The number of fills per page                                    |
+
+**Returns:** `Promise<RadarSignedOrder[]>`
+
+---
+
+### ETH / token utilities
+
+`getEthBalanceAsync()`
+
+Get ETH balance for the current selected address.
+
+**_No parameters._**
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`transferEthAsync(toAddress, perPage, opts?)`
+
+Transfer ETH to another address.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `toAddress`      | `string`           | The address to transfer to                                                   |
+| `amount`         | `number`           | The amount of ETH to transfer                                                |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`wrapEthAsync(amount, opts?)`
+
+Wrap ETH to convert it to WETH.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `amount`         | `number`           | The amount of ETH to wrap                                                    |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`unwrapEthAsync(amount, opts?)`
+
+Unwrap WETH to convert it to ETH.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `amount`         | `number`           | The amount of ETH to unwrap                                                  |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`getTokenBalanceAsync(tokenAddress)`
+
+Get balance of a token for the current selected address.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string`           | The token address                                                            |
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`getTokenAllowanceAsync(tokenAddress)`
+
+Get a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `address`        | `string`           | The token address                                                            |
+
+**Returns:** `Promise<BigNumber>`
+
+---
+
+`setTokenAllowanceAsync(tokenAddress, amount, opts?)`
+
+Set a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `tokenAddress`   | `string`           | The token address                                                            |
+| `amount`         | `number`           | The allowance amount                                                         |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`transferTokenAsync(tokenAddress, toAddress, amount, opts?)`
+
+Set a token allowance.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `tokenAddress`   | `string`           | The token address                                                            |
+| `toAddress`      | `string`           | The address to transfer to                                                   |
+| `amount`         | `number`           | The amount of token to transfer                                              |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+## Market methods
+
+Markets are marketId mapped Market classes with all
 the same methods and the following instance vars:
 
 ```javascript
-rr.markets.get('ZRX-WETH') 
+rr.markets.get('ZRX-WETH')
 {
   id: string;
   baseTokenAddress: string;
@@ -172,27 +359,131 @@ rr.markets.get('ZRX-WETH')
 }
 ```
 
-Markets expose the following methods:
+---
+
+### Market class methods
+
+`limitOrderAsync(type, quantity, price, expiration)`
+
+Place a limit order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `type`           | `UserOrderType`    | Order type of 'BUY'|'SELL'                                                   |
+| `quantity`       | `BigNumber`        | Amount in base token                                                         |
+| `price`          | `BigNumber`        | Price in quote                                                               |
+| `expiration`     | `BigNumber`        | Order expiration time in seconds                                             |
+
+**Returns:** `Promise<Order>`
+
+---
+
+`marketOrderAsync(type, amount, opts?)`
+
+Execute a market order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `type`           | `UserOrderType`    | Order type of 'BUY'|'SELL'                                                   |
+| `amount`         | `BigNumber`        | Amount in base token                                                         |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`cancelOrderAsync(order, opts?)`
+
+Cancel an order.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `order`          | `SignedOrder`      | SignedOrder to cancel                                                        |
+| `opts`           | `Opts`             | _[Optional]_ The transaction options                                         |
+
+**Returns:** `Promise<TransactionReceiptWithDecodedLogs | string>`
+
+---
+
+`getFillsAsync()`
+
+Get fills for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarFill[]>`
+
+---
+
+`getCandlesAsync()`
+
+Get candles for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarCandle[]>`
+
+---
+
+`getTickerAsync()`
+
+Get ticker for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarTicker>`
+
+---
+
+`getHistoryAsync()`
+
+Get history for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarHistory>`
+
+---
+
+`getStatsAsync()`
+
+Get stats for this market.
+
+**_No parameters._**
+
+**Returns:** `Promise<RadarStats>`
+
+---
+
+`subscribeAsync(topic, handlerFunc)`
+
+**Parameters:**
+
+| Name             | Type                     | Description                                                            |
+| ---------------- | ------------------------ | ---------------------------------------------------------------------- |
+| `topic`          | `WebsocketRequestTopic`  | The market topic                                                       |
+| `handlerFunc`    | `(message: any) => void` | The subscription handler                                               |
+
+**Returns:**
 
 ```javascript
-// market class methods
-rr.markets.get('ZRX-WETH').limitOrderAsync
-rr.markets.get('REP-WETH').marketOrderAsync
-rr.markets.get('REP-WETH').cancelOrderAsync
-rr.markets.get('ZRX-WETH').getFillsAsync
-rr.markets.get('ZRX-WETH').getCandlesAsync
-rr.markets.get('ZRX-WETH').getTickerAsync
-rr.markets.get('ZRX-WETH').getOrderBookAsync
+Promise<{
+  requestId: number,
+  subscriptionHandler: (message: any) => void,
+  unsubscribe: () => void
+}>
+```
 
-// Subscriptions
-// NOTE: CANDLE and TICKER topics are not yet supported.
-const subscription = await rr.markets.get('ZRX-WETH').subscribeAsync(
-  WebsocketRequestTopic.BOOK, handlerFunction
-);
+You can unsubscribe from any previously created subscriptions like so:
 
-// Unsubscribe to a previously created subscription
+```javascript
 subscription.unsubscribe();
-
 ```
 
 ## Setting up an Ethereum Node
@@ -257,11 +548,11 @@ The Ethereum and 0x.js application loading lifecycle is difficult to manage, esp
 * [`EventEmitter`](https://nodejs.org/api/events.html)
 * [`SdkInitLifeCycle`](https://github.com/RadarRelay/sdk/blob/master/src/SdkInitLifeCycle.ts)
 
---- 
+---
 
 The `SdkInitLifeCycle` class works as follows:
 
-Define an array that consists of: 
+Define an array that consists of:
 
    1. `event`, which when triggered will then call the defined
    2. `func` the function that is called when this event is triggered (ideally the next in priority)

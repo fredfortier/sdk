@@ -5,12 +5,12 @@ exports.RADAR_RELAY_ENDPOINTS = function (network) {
     switch (network) {
         case types_1.NetwordId.Mainnet:
             return {
-                radarRestEndpoint: 'https://api.radarrelay.com/v0/',
-                radarWebsocketEndpoint: 'wss://ws.radarrelay.com/ws'
+                radarRestEndpoint: 'https://api-beta.rrdev.io/v2',
+                radarWebsocketEndpoint: 'wss://api-beta.rrdev.io/v2'
             };
         case types_1.NetwordId.Kovan:
             return {
-                radarRestEndpoint: 'https://api.kovan.radarrelay.com/v0',
+                radarRestEndpoint: 'https://api.kovan.radarrelay.com/v2',
                 radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/ws',
             };
         default:
