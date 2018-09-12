@@ -14,8 +14,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = require("util");
-var _0x_js_1 = require("0x.js");
+var ZeroEx_1 = require("../ZeroEx");
 var request = require("request-promise");
 var BaseAccount = /** @class */ (function () {
     /**
@@ -76,7 +76,7 @@ var BaseAccount = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this._ethereum.getEthBalanceAsync(this.address)];
                     case 1:
                         balance = _a.sent();
-                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, 18)];
+                        return [2 /*return*/, ZeroEx_1.ZeroEx.toUnitAmount(balance, 18)];
                 }
             });
         });
@@ -128,7 +128,7 @@ var BaseAccount = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                        return [4 /*yield*/, this._zeroEx.etherToken.depositAsync(this._getWETHTokenAddress(), ZeroEx_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -155,7 +155,7 @@ var BaseAccount = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), _0x_js_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
+                        return [4 /*yield*/, this._zeroEx.etherToken.withdrawAsync(this._getWETHTokenAddress(), ZeroEx_1.ZeroEx.toBaseUnitAmount(amount, 18), this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -177,10 +177,10 @@ var BaseAccount = /** @class */ (function () {
             var balance;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.getBalanceAsync(tokenAddress, this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.erc20Token.getBalanceAsync(tokenAddress, this.address)];
                     case 1:
                         balance = _a.sent();
-                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals)];
+                        return [2 /*return*/, ZeroEx_1.ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals)];
                 }
             });
         });
@@ -202,8 +202,8 @@ var BaseAccount = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts)];
+                        amt = ZeroEx_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+                        return [4 /*yield*/, this._zeroEx.erc20Token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -225,10 +225,10 @@ var BaseAccount = /** @class */ (function () {
             var baseUnitallowance;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._zeroEx.token.getProxyAllowanceAsync(tokenAddress, this.address)];
+                    case 0: return [4 /*yield*/, this._zeroEx.erc20Token.getProxyAllowanceAsync(tokenAddress, this.address)];
                     case 1:
                         baseUnitallowance = _a.sent();
-                        return [2 /*return*/, _0x_js_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals)];
+                        return [2 /*return*/, ZeroEx_1.ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals)];
                 }
             });
         });
@@ -249,8 +249,8 @@ var BaseAccount = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        amt = _0x_js_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
-                        return [4 /*yield*/, this._zeroEx.token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts)];
+                        amt = ZeroEx_1.ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+                        return [4 /*yield*/, this._zeroEx.erc20Token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {
@@ -277,7 +277,7 @@ var BaseAccount = /** @class */ (function () {
                         if (!opts) {
                             opts = {};
                         }
-                        return [4 /*yield*/, this._zeroEx.token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts)];
+                        return [4 /*yield*/, this._zeroEx.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, this.address, opts.transactionOpts)];
                     case 1:
                         txHash = _a.sent();
                         if (!opts.awaitTransactionMined) {

@@ -14,8 +14,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var _0x_js_1 = require("0x.js");
+var ZeroEx_1 = require("./ZeroEx");
 var events_1 = require("events");
 var types_1 = require("./types");
 var bignumber_js_1 = require("bignumber.js");
@@ -162,7 +162,7 @@ var RadarRelay = /** @class */ (function () {
         });
     };
     RadarRelay.prototype.initZeroEx = function () {
-        this.zeroEx = new _0x_js_1.ZeroEx(this._ethereum.web3.currentProvider, {
+        this.zeroEx = new ZeroEx_1.ZeroEx(this._ethereum.web3.currentProvider, {
             networkId: this._networkId
         });
         return this.getCallback(types_1.EventName.ZeroExInitialized, this.zeroEx);

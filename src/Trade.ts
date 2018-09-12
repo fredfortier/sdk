@@ -147,7 +147,7 @@ export class Trade<T extends BaseAccount> {
   }
 
   /**
-   * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a 
+   * Transform all BigNumber fields from string (request) to BigNumber. This is needed for a
    * correct hashing and signature.
    * @param order a signedOrder from DB or user input, that have strings instead of BigNumbers
    */
