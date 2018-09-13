@@ -1,7 +1,7 @@
 import { BaseAccount } from './BaseAccount';
-import { WalletType, AccountParams } from '../types';
+import { AccountParams } from '../types';
 export declare class LocalAccount extends BaseAccount {
-    readonly type: WalletType;
+    readonly type = WalletType.Local;
     private _wallet;
     /**
      * Instantiate a LocalAccount
