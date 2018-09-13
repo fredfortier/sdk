@@ -41,7 +41,7 @@
     "nock": "^9.3.2",
     "parcel-bundler": "^1.9.7",
     "sinon": "^5.0.4",
-    "tslint": "^5.9.1",
+    "tslint": "^5.11.0",
     "tslint-config-0xproject": "0.0.2",
     "typedoc": "^0.11.1",
     "typedoc-plugin-markdown": "^1.1.10"
@@ -64,7 +64,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "socket.io-client": "^2.0.4",
-    "typescript": "next",
+    "typescript": "3.0.3",
     "typescript-map": "^0.0.6",
     "web3": "0.20.0",
     "web3-provider-engine": "^14.0.5",

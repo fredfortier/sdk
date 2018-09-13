@@ -1,7 +1,7 @@
 import { BaseAccount } from './BaseAccount';
-import { AccountParams } from '../types';
+import { WalletType, AccountParams } from '../types';
 export declare class InjectedAccount extends BaseAccount {
-    readonly type = WalletType.Injected;
+    readonly type: WalletType;
     /**
      * Instantiate an InjectedAccount
      *
