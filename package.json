@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "tsc -p tsconfig.test.json && mocha dist-test/**/*.test.js --timeout 30000 -R spec",
-    "build": "tsc",
+    "build": "parcel build src/index.ts --target node --out-file dist/index.js --global RadarRelaySDK",
     "lint": "tslint -p tsconfig.json",
     "watch": "tsc --watch",
     "docs": "typedoc --out ./docs ./src/"
@@ -39,6 +39,7 @@
     "dotenv": "^4.0.0",
     "mocha": "^3.1.2",
     "nock": "^9.3.2",
+    "parcel-bundler": "^1.9.7",
     "sinon": "^5.0.4",
     "tslint": "^5.9.1",
     "tslint-config-0xproject": "0.0.2",
