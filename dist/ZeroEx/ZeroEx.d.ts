@@ -78,13 +78,13 @@ export declare class ZeroEx {
      * @param   timeoutMs         How long (in ms) to poll for transaction mined until aborting.
      * @return  Transaction receipt with decoded log args.
      */
-    awaitTransactionMinedAsync(txHash: string, pollingInterval?: number, timeoutMs?: number): Promise<import("../../../../../../Users/mike/Development/radar-relay-sdk/node_modules/ethereum-types").TransactionReceiptWithDecodedLogs>;
+    awaitTransactionMinedAsync(txHash: string, pollingInterval?: number, timeoutMs?: number): Promise<import("ethereum-types").TransactionReceiptWithDecodedLogs>;
     /**
      * Retrieves the transaction receipt for a given transaction hash
      * @param txHash Transaction hash
      * @returns The transaction receipt, including it's status (0: failed, 1: succeeded or undefined: not found)
      */
-    getTransactionReceiptAsync(txHash: string): Promise<import("../../../../../../Users/mike/Development/radar-relay-sdk/node_modules/ethereum-types").TransactionReceipt>;
+    getTransactionReceiptAsync(txHash: string): Promise<import("ethereum-types").TransactionReceipt>;
     /**
      * Signs an orderHash and returns it's elliptic curve signature and signature type.
      * This method currently supports TestRPC, Geth and Parity above and below V1.6.6
