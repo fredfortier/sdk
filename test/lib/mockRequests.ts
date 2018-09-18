@@ -44,7 +44,7 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
-    .get('/markets?per_page=500')
+    .get('/markets?perPage=100')
     .reply(200, [{
       id: 'ZRX-WETH',
       baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
@@ -127,11 +127,11 @@ export function mockRequests() {
     });
 
   nock(RADAR_ENPOINT)
-    .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/fills?page=1&per_page=100')
+    .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/fills?page=1&perPage=100')
     .reply(200, [{}]);
 
   nock(RADAR_ENPOINT)
-    .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/orders?page=1&per_page=100')
+    .get('/accounts/0x5409ed021d9299bf6814279a6a1411a7e866a631/orders?page=1&perPage=100')
     .reply(200, [{}]);
 
   nock(RADAR_ENPOINT)
