@@ -53,7 +53,7 @@
     "@0xproject/subproviders": "^2.0.2",
     "@0xproject/types": "^1.0.1",
     "@0xproject/web3-wrapper": "^2.0.1",
-    "@radarrelay/types": "git://github.com/RadarRelay/types.git#beta",
+    "@radarrelay/types": "^1.2.0",
     "@radarrelay/wallet-manager": "^0.3.3",
     "@radarrelay/web3-builder": "^0.2.0",
     "bignumber.js": "^4.1.0",
