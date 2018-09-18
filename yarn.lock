@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"0x.js@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-1.0.1.tgz#a7cdb81c60b3e29395137602cb74a0315166b372"
+"0x.js@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-1.0.2.tgz#81ed478af0c23eee5cbd21858b49bfac3d48f2f8"
   dependencies:
     "@0xproject/assert" "^1.0.8"
     "@0xproject/base-contract" "^2.0.2"
-    "@0xproject/contract-wrappers" "^1.0.1"
+    "@0xproject/contract-wrappers" "^1.0.2"
     "@0xproject/order-utils" "^1.0.1"
-    "@0xproject/order-watcher" "^1.0.1"
+    "@0xproject/order-watcher" "^1.0.2"
     "@0xproject/subproviders" "^2.0.2"
     "@0xproject/types" "^1.0.1"
     "@0xproject/typescript-typings" "^2.0.0"
@@ -51,9 +51,9 @@
     ethers "3.0.22"
     lodash "^4.17.5"
 
-"@0xproject/contract-wrappers@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-1.0.1.tgz#a2a75fcfd64f12f4509130e573bddd91a31d7a33"
+"@0xproject/contract-wrappers@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-1.0.2.tgz#5bb9bc745c76c845ac2150e9db0483c3203ed644"
   dependencies:
     "@0xproject/assert" "^1.0.8"
     "@0xproject/base-contract" "^2.0.2"
@@ -123,13 +123,13 @@
     ethers "3.0.22"
     lodash "^4.17.5"
 
-"@0xproject/order-watcher@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@0xproject/order-watcher/-/order-watcher-1.0.1.tgz#44f01cefaeb8f1e7788485f21fb6b96c9e4a503e"
+"@0xproject/order-watcher@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@0xproject/order-watcher/-/order-watcher-1.0.2.tgz#7a46cddf8fc4bccd5a6f96ecac51d5fa5cae5876"
   dependencies:
     "@0xproject/assert" "^1.0.8"
     "@0xproject/base-contract" "^2.0.2"
-    "@0xproject/contract-wrappers" "^1.0.1"
+    "@0xproject/contract-wrappers" "^1.0.2"
     "@0xproject/fill-scenarios" "^1.0.1"
     "@0xproject/json-schemas" "^1.0.1"
     "@0xproject/order-utils" "^1.0.1"
