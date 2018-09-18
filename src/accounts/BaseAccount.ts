@@ -208,7 +208,7 @@ export class BaseAccount {
    */
   public async getOrdersAsync(page: number = 1, perPage: number = 100): Promise<RadarSignedOrder[]> {
     return JSON.parse(await request.get(
-      `${this._endpoint}/accounts/${this.address}/orders?page=${page}&per_page=${perPage}`
+      `${this._endpoint}/accounts/${this.address}/orders?page=${page}&perPage=${perPage}`
     ));
   }
 
@@ -220,7 +220,7 @@ export class BaseAccount {
    */
   public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill[]> {
     return JSON.parse(await request.get(
-      `${this._endpoint}/accounts/${this.address}/fills?page=${page}&per_page=${perPage}`
+      `${this._endpoint}/accounts/${this.address}/fills?page=${page}&perPage=${perPage}`
     ));
   }
 

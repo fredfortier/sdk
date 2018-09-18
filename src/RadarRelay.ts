@@ -166,7 +166,7 @@ export class RadarRelay<T extends BaseAccount> {
     // only fetch if not already fetched
     if (this._prevApiEndpoint !== this._config.radarRestEndpoint) {
       // TODO lazy load these!
-      this._markets = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/markets?per_page=500`));
+      this._markets = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/markets?perPage=100`));
     }
     // TODO probably not the best place for this
     this._prevApiEndpoint = this._config.radarRestEndpoint;
