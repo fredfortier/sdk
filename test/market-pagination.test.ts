@@ -29,18 +29,18 @@ describe('RadarRelay.Market', () => {
 
   });
 
-  it('getPage', async () => {
-    const markets = await rrsdk.marketsPagination.getPage(1, 3);
+  it('getPageAsync', async () => {
+    const markets = await rrsdk.marketsPagination.getPageAsync(1, 3);
     expect(markets.size).to.be.eq(3);
   });
 
-  it('getNextPage', async () => {
+  it('getNextPageAsync', async () => {
     rrsdk.marketsPagination.perPage = 3;
 
-    const firstPageMarkets = await rrsdk.marketsPagination.getNextPage();
+    const firstPageMarkets = await rrsdk.marketsPagination.getNextPageAsync();
     expect(firstPageMarkets.size).to.be.eq(3);
 
-    const secondPageMarkets = await rrsdk.marketsPagination.getNextPage();
+    const secondPageMarkets = await rrsdk.marketsPagination.getNextPageAsync();
     expect(secondPageMarkets.size).to.be.eq(3);
 
     expect(rrsdk.marketsPagination.markets.size).to.be.eq(6);

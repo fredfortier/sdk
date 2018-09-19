@@ -102,7 +102,7 @@ export class RadarRelay<T extends BaseAccount> {
 
   // --- Instance methods --- //
 
-  public async getMarkets(marketIds: string[]) {
+  public async getMarketsAsync(marketIds: string[]) {
     const ids = marketIds.join(',');
 
     const response: RadarMarket[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/markets?ids=${ids}`));
@@ -114,7 +114,7 @@ export class RadarRelay<T extends BaseAccount> {
     return markets || new Map();
   }
 
-  public async getMarket(marketId: string) {
+  public async getMarketAsync(marketId: string) {
     try {
       const response = await request.get(`${this.config.radarRestEndpoint}/markets/${marketId}`);
       const market = JSON.parse(response);

@@ -9,6 +9,6 @@ export declare class MarketsPagination<T extends BaseAccount> {
     private _wsEndpoint;
     private _trade;
     constructor(initialPage: number, perPage: number, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>);
-    getPage(page: number, count: number): Promise<Map<string, Market<T>>>;
-    getNextPage(): Promise<Map<string, Market<T>>>;
+    getPageAsync(page: number, count: number): Promise<Map<string, Market<T>>>;
+    getNextPageAsync(): Promise<Map<string, Market<T>>>;
 }

@@ -32,7 +32,7 @@ export class MarketsPagination<T extends BaseAccount> {
     this.markets = new Map();
   }
 
-  public async getPage(page: number, count: number) {
+  public async getPageAsync(page: number, count: number) {
     const response: RadarMarket[] = JSON.parse(await request.get(`${this._endpoint}/markets?page=${page}&perPage=${count}`));
 
     const markets: Map<string, Market<T>> = new Map();
@@ -45,8 +45,8 @@ export class MarketsPagination<T extends BaseAccount> {
     return markets;
   }
 
-  public async getNextPage() {
-    const markets = await this.getPage(this.page, this.perPage);
+  public async getNextPageAsync() {
+    const markets = await this.getPageAsync(this.page, this.perPage);
     this.page++;
     return markets;
   }
