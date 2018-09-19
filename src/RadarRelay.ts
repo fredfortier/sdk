@@ -86,7 +86,7 @@ export class RadarRelay<T extends BaseAccount> {
    * @param {Config} config The wallet configuration
    */
   public async initializeAsync(): Promise<RadarRelay<T>> {
-    await this._ethereum.setProvider(this._walletType, this._config);
+    await this._ethereum.setProvider(this._walletType, this.config);
 
     // Allow access to web3 object
     this.web3 = this._ethereum.web3;
@@ -101,7 +101,7 @@ export class RadarRelay<T extends BaseAccount> {
 
   public async getMarket(marketId: string) {
     try {
-      const response = await request.get(`${this._config.radarRestEndpoint}/markets/${marketId}`);
+      const response = await request.get(`${this.config.radarRestEndpoint}/markets/${marketId}`);
       const market = JSON.parse(response);
       return new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade);
     } catch (e) {
@@ -123,7 +123,7 @@ export class RadarRelay<T extends BaseAccount> {
       ethereum: this._ethereum,
       events: this.events,
       zeroEx: this.zeroEx,
-      endpoint: this._config.radarRestEndpoint,
+      endpoint: this.config.radarRestEndpoint,
       tokens: this.tokens
     });
     return this.getCallback(EventName.AccountInitialized, this.account);
@@ -142,14 +142,14 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private initTrade(): Promise<string | boolean> {
-    this._trade = new Trade<T>(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events);
+    this._trade = new Trade<T>(this.zeroEx, this.config.radarRestEndpoint, this.account, this.events);
     return this.getCallback(EventName.TradeInitialized, this._trade);
   }
 
   private async initTokensAsync(): Promise<string | boolean> {
     // Only fetch if not already fetched
     if (!this.tokens || !this.tokens.size) {
-      const tokens: RadarToken[] = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/tokens`));
+      const tokens: RadarToken[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/tokens`));
 
       const entries = tokens.map(token => [token.address, token]);
       this.tokens = new Map(entries as any);
@@ -168,15 +168,15 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private async setEndpointOrThrowAsync() {
-    const walletConfig = this._config as InjectedWalletConfig;
+    const walletConfig = this.config as InjectedWalletConfig;
     if (this._walletType === WalletType.Injected && !walletConfig.dataRpcUrl) {
       // Set Radar Relay API Endpoints if using injected provider
       const { radarRestEndpoint, radarWebsocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
-      this._config.radarRestEndpoint = radarRestEndpoint;
-      this._config.radarWebsocketEndpoint = radarWebsocketEndpoint;
+      this.config.radarRestEndpoint = radarRestEndpoint;
+      this.config.radarWebsocketEndpoint = radarWebsocketEndpoint;
     }
 
-    if (!this._config.radarRestEndpoint || !this._config.radarWebsocketEndpoint) {
+    if (!this.config.radarRestEndpoint || !this.config.radarWebsocketEndpoint) {
       throw new Error(SdkError.InvalidOrMissingEndpoints);
     }
   }
