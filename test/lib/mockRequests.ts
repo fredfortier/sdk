@@ -45,7 +45,7 @@ export function mockRequests() {
 
   nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH')
-    .reply(200, [{
+    .reply(200, {
       id: 'ZRX-WETH',
       displayName: 'ZRX/WETH',
       baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
@@ -55,7 +55,7 @@ export function mockRequests() {
       quoteIncrement: '0.00000001',
       minOrderSize: '1',
       maxOrderSize: '1'
-    }]);
+    });
 
   nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/book')

@@ -150,7 +150,8 @@ export class RadarRelay<T extends BaseAccount> {
   private async initMarketsAsync(): Promise<string | boolean> {
     this.markets = new LoadableMap({
       getHandler: async ({ key }) => {
-        const market: RadarMarket = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/markets/${key}`));
+        const response = await request.get(`${this._config.radarRestEndpoint}/markets/${key}`);
+        const market: RadarMarket = JSON.parse(response);
         return new Market(market, this._config.radarRestEndpoint, this._config.radarWebsocketEndpoint, this._trade);
       }
     });

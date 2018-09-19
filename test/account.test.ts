@@ -31,7 +31,6 @@ describe('RadarRelay.Account', () => {
 
       // set addr for later use
       const market = await rrsdk.markets.get('ZRX-WETH');
-      console.log(await rrsdk.markets.has('ZRX-WETH'));
       zrxAddr = market.baseTokenAddress;
       wethAddr = market.quoteTokenAddress;
 

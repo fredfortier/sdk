@@ -1,11 +1,10 @@
 import { ZeroEx } from './ZeroEx';
 import { RadarToken } from '@radarrelay/types';
 import { WalletType, Config, AccountParams } from './types';
-import { TSMap } from 'typescript-map';
 import Web3 = require('web3');
 import { EventBus } from './EventEmitter';
 import { Market } from './Market';
-import { LazyMap } from './LazyMap';
+import { LoadableMap } from './LoadableMap';
 import { BaseAccount } from './accounts/BaseAccount';
 /**
  * RadarRelay main SDK singleton
@@ -13,8 +12,8 @@ import { BaseAccount } from './accounts/BaseAccount';
 export declare class RadarRelay<T extends BaseAccount> {
     events: EventBus;
     account: T;
-    tokens: TSMap<string, RadarToken>;
-    markets: LazyMap<string, Market<T>>;
+    tokens: LoadableMap<string, RadarToken>;
+    markets: LoadableMap<string, Market<T>>;
     zeroEx: ZeroEx;
     web3: Web3;
     private _trade;
