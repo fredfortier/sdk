@@ -16,7 +16,6 @@ import Web3 = require('web3');
 
 // SDK Classes
 import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
-import { EventBus } from './EventEmitter';
 import { Ethereum } from './Ethereum';
 import { Market } from './Market';
 import { LoadableMap } from './LoadableMap';
@@ -31,7 +30,7 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
  */
 export class RadarRelay<T extends BaseAccount> {
 
-  public events: EventBus;
+  public events: EventEmitter;
   public account: T;
   public tokens: LoadableMap<string, RadarToken>;
   public markets: LoadableMap<string, Market<T>>;
@@ -102,7 +101,7 @@ export class RadarRelay<T extends BaseAccount> {
     return this;
   }
 
-  // --- not user configurable below this line --- //
+  // --- Not user configurable below this line --- //
 
   private async initAccountAsync(address: string | number): Promise<string | boolean> {
     await this._ethereum.setDefaultAccount(address);

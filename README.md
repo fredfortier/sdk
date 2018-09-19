@@ -11,7 +11,12 @@ For a full SDK reference see: [developers.radarrelay.com/sdk-reference](https://
 ## Usage
 
 ### Installation
-`~ npm install @radarrelay/sdk` or `~ yarn add @radarrelay/sdk`
+
+#### Using `npm`
+`npm install @radarrelay/sdk`
+
+#### Using `yarn`
+`yarn add @radarrelay/sdk`
 
 ### Setup & Initialize
 **Setup** refers to the instantiation of the `RadarRelay` class and setup for the initialization lifecycle.
@@ -341,11 +346,13 @@ Set a token allowance.
 
 ## Market methods
 
-Markets are marketId mapped Market classes with all
+Markets are `marketId`-mapped Market classes with all
 the same methods and the following instance vars:
 
 ```javascript
-rr.markets.get('ZRX-WETH')
+// Markets are retrieved lazily and asynchronously.
+// Keep this in mind when iterating over the `markets` Map.
+await rr.markets.get('ZRX-WETH')
 {
   id: string;
   baseTokenAddress: string;
