@@ -44,14 +44,14 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
-    .get('/markets?perPage=100')
+    .get('/markets/ZRX-WETH')
     .reply(200, [{
       id: 'ZRX-WETH',
+      displayName: 'ZRX/WETH',
       baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
       quoteTokenAddress: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
       baseTokenDecimals: 18,
       quoteTokenDecimals: 18,
-      displayName: 'ZRX/WETH',
       quoteIncrement: '0.00000001',
       minOrderSize: '1',
       maxOrderSize: '1'
