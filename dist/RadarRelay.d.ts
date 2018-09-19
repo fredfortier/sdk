@@ -1,8 +1,9 @@
+/// <reference types="node" />
 import { ZeroEx } from './ZeroEx';
+import { EventEmitter } from 'events';
 import { RadarToken } from '@radarrelay/types';
 import { WalletType, Config, AccountParams } from './types';
 import Web3 = require('web3');
-import { EventBus } from './EventEmitter';
 import { Market } from './Market';
 import { LoadableMap } from './LoadableMap';
 import { BaseAccount } from './accounts/BaseAccount';
@@ -10,7 +11,7 @@ import { BaseAccount } from './accounts/BaseAccount';
  * RadarRelay main SDK singleton
  */
 export declare class RadarRelay<T extends BaseAccount> {
-    events: EventBus;
+    events: EventEmitter;
     account: T;
     tokens: LoadableMap<string, RadarToken>;
     markets: LoadableMap<string, Market<T>>;
