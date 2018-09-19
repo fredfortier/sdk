@@ -111,7 +111,7 @@ export class RadarRelay<T extends BaseAccount> {
       markets.set(market.id, new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade));
     });
 
-    return markets || [];
+    return markets || new Map();
   }
 
   public async fetchMarket(marketId: string) {
