@@ -31,7 +31,7 @@ describe('RadarRelay.Account', () => {
     });
 
     // set addr for later use
-    zrxWethMarket = await rrsdk.getMarket('ZRX-WETH');
+    zrxWethMarket = await rrsdk.fetchMarket('ZRX-WETH');
     zrxAddr = zrxWethMarket.baseTokenAddress;
     wethAddr = zrxWethMarket.quoteTokenAddress;
 

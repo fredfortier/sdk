@@ -44,6 +44,18 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
+    .get('/markets?page=1&perPage=3')
+    .reply(200, [{}, {}, {}]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?ids=ZRX-WETH,WETH-DAI')
+    .reply(200, [{
+      id: 'ZRX-WETH',
+    }, {
+      id: 'WETH-DAI',
+    }]);
+
+  nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH')
     .reply(200, {
       id: 'ZRX-WETH',

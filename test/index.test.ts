@@ -88,6 +88,17 @@ describe('RadarRelay', async () => {
     expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
   });
 
+  it('fetchMarket', async () => {
+    const market = await rrsdk.fetchMarket('ZRX-WETH');
+    expect(market.id).to.be.eq('ZRX-WETH');
+  });
+
+  it('fetchMarkets', async () => {
+    const market = await rrsdk.fetchMarkets(['ZRX-WETH', 'DAI-WETH']);
+    expect(market.id[0]).to.be.eq('ZRX-WETH');
+    expect(market.id[1]).to.be.eq('DAI-WETH');
+  });
+
   it.skip('properly handles setting invalid connection');
 
   it.skip('properly handles setting invalid account');

@@ -21,6 +21,7 @@ import { Market } from './Market';
 import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
+import { MarketsPagination } from './MarketsPagination';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
@@ -34,6 +35,7 @@ export class RadarRelay<T extends BaseAccount> {
   public tokens: Map<string, RadarToken>;
   public zeroEx: ZeroEx;
   public web3: Web3;
+  public marketsPagination: MarketsPagination<T>;
 
   private _trade: Trade<T>;
   private _ethereum: Ethereum;
@@ -56,7 +58,8 @@ export class RadarRelay<T extends BaseAccount> {
     { event: EventName.ZeroExInitialized, func: this.initTokensAsync },
     { event: EventName.TokensInitialized, func: this.initAccountAsync, args: [0] }, // Pass default account of 0 to setAccount(...)
     { event: EventName.AccountInitialized, func: this.initTrade },
-    { event: EventName.TradeInitialized, func: undefined },
+    { event: EventName.TradeInitialized, func: this.initMarketsAsync },
+    { event: EventName.MarketsInitialized, func: undefined}
   ];
 
   /**
@@ -69,10 +72,10 @@ export class RadarRelay<T extends BaseAccount> {
     this._walletType = walletType;
     this._config = config;
 
-    // instantiate event handler
+    // Instantiate event handler
     this.events = new EventEmitter();
 
-    // instantiate ethereum class
+    // Instantiate ethereum class
     this._ethereum = new Ethereum();
 
     // setup the _lifecycle
@@ -99,7 +102,18 @@ export class RadarRelay<T extends BaseAccount> {
 
   // --- Instance methods --- //
 
-  public async getMarket(marketId: string) {
+  public async fetchMarkets(query: string[]) {
+    const ids = query.join(',');
+
+    const response: RadarMarket[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/markets?ids=${ids}`));
+    const markets: Array<Market<T>> = response.map(market => {
+      return new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade);
+    });
+
+    return markets || [];
+  }
+
+  public async fetchMarket(marketId: string) {
     try {
       const response = await request.get(`${this.config.radarRestEndpoint}/markets/${marketId}`);
       const market = JSON.parse(response);
@@ -159,6 +173,19 @@ export class RadarRelay<T extends BaseAccount> {
 
     // TODO: index by address
     return this.getCallback(EventName.TokensInitialized, this.tokens);
+  }
+
+  private async initMarketsAsync(): Promise<string | boolean> {
+    // Instantiate markets pagination helper
+    this.marketsPagination = new MarketsPagination(
+      1, // Starting page
+      100, // Results per page
+      this.config.radarRestEndpoint,
+      this.config.radarWebsocketEndpoint,
+      this._trade
+    );
+
+    return this.getCallback(EventName.MarketsInitialized, this.marketsPagination.markets);
   }
 
   private getCallback(event, data): Promise<string | boolean> {
