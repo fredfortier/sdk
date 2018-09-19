@@ -394,7 +394,7 @@ Fetch the next 100 markets.
 
 `rr.marketsPagination.getPage(page, count)`
 
-Fetch a specific page markets.
+Fetch a specific page of markets.
 
 **Parameters:**
 
