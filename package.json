@@ -65,7 +65,6 @@
     "request-promise": "^4.2.2",
     "socket.io-client": "^2.0.4",
     "typescript": "3.0.3",
-    "typescript-map": "^0.0.6",
     "web3": "0.20.0",
     "web3-provider-engine": "^14.0.5",
     "websocket": "^1.0.26",

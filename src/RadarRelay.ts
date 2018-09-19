@@ -18,7 +18,6 @@ import Web3 = require('web3');
 import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
 import { Ethereum } from './Ethereum';
 import { Market } from './Market';
-import { LoadableMap } from './LoadableMap';
 import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
@@ -32,15 +31,13 @@ export class RadarRelay<T extends BaseAccount> {
 
   public events: EventEmitter;
   public account: T;
-  public tokens: LoadableMap<string, RadarToken>;
-  public markets: LoadableMap<string, Market<T>>;
+  public tokens: Map<string, RadarToken>;
   public zeroEx: ZeroEx;
   public web3: Web3;
 
   private _trade: Trade<T>;
   private _ethereum: Ethereum;
   private _networkId: number;
-  private _prevApiEndpoint: string;
   private _lifecycle: SdkInitLifeCycle;
   private _wallet: new (params: AccountParams) => T;
   private _config: Config;
@@ -59,8 +56,7 @@ export class RadarRelay<T extends BaseAccount> {
     { event: EventName.ZeroExInitialized, func: this.initTokensAsync },
     { event: EventName.TokensInitialized, func: this.initAccountAsync, args: [0] }, // Pass default account of 0 to setAccount(...)
     { event: EventName.AccountInitialized, func: this.initTrade },
-    { event: EventName.TradeInitialized, func: this.initMarketsAsync },
-    { event: EventName.MarketsInitialized, func: undefined }
+    { event: EventName.TradeInitialized, func: undefined },
   ];
 
   /**
@@ -101,7 +97,25 @@ export class RadarRelay<T extends BaseAccount> {
     return this;
   }
 
-  // --- Not user configurable below this line --- //
+  // --- Instance methods --- //
+
+  public async getMarket(marketId: string) {
+    try {
+      const response = await request.get(`${this._config.radarRestEndpoint}/markets/${marketId}`);
+      const market = JSON.parse(response);
+      return new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  // --- Getters/setters --- //
+
+  get config() {
+    return this._config;
+  }
+
+  // --- Initialization methods, not user configurable below this line --- //
 
   private async initAccountAsync(address: string | number): Promise<string | boolean> {
     await this._ethereum.setDefaultAccount(address);
@@ -134,28 +148,17 @@ export class RadarRelay<T extends BaseAccount> {
 
   private async initTokensAsync(): Promise<string | boolean> {
     // Only fetch if not already fetched
-    if (this._prevApiEndpoint !== this._config.radarRestEndpoint) {
+    if (!this.tokens || !this.tokens.size) {
       const tokens: RadarToken[] = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/tokens`));
-      this.tokens = new LoadableMap({
-        entries: tokens.map(token => [token.address, token]) as Array<[string, RadarToken]>,
-      });
+
+      const entries = tokens.map(token => [token.address, token]);
+      this.tokens = new Map(entries as any);
+
       tokens.map(token => this.tokens.set(token.address, token));
     }
 
     // TODO: index by address
     return this.getCallback(EventName.TokensInitialized, this.tokens);
-  }
-
-  private async initMarketsAsync(): Promise<string | boolean> {
-    this.markets = new LoadableMap({
-      getHandler: async ({ key }) => {
-        const response = await request.get(`${this._config.radarRestEndpoint}/markets/${key}`);
-        const market: RadarMarket = JSON.parse(response);
-        return new Market(market, this._config.radarRestEndpoint, this._config.radarWebsocketEndpoint, this._trade);
-      }
-    });
-
-    return this.getCallback(EventName.MarketsInitialized, this.markets);
   }
 
   private getCallback(event, data): Promise<string | boolean> {

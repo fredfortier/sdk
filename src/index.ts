@@ -5,6 +5,5 @@ export { Market } from './Market';
 export { Trade } from './Trade';
 export { WebsocketClient } from './WebsocketClient';
 export { ZeroEx } from './ZeroEx';
-export { LoadableMap } from './LoadableMap';
 export * from './accounts';
 export * from './types';

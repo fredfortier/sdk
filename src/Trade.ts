@@ -7,7 +7,6 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { RadarToken, UserOrderType, RadarMarketOrderResponse } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import { TSMap } from 'typescript-map';
 import { BaseAccount } from './accounts';
 
 export class Trade<T extends BaseAccount> {
@@ -17,11 +16,7 @@ export class Trade<T extends BaseAccount> {
   private _zeroEx: ZeroEx;
   private _events: EventEmitter;
 
-  constructor(
-    zeroEx: ZeroEx,
-    apiEndpoint: string,
-    account: T,
-    events: EventEmitter) {
+  constructor(zeroEx: ZeroEx, apiEndpoint: string, account: T, events: EventEmitter) {
     this._zeroEx = zeroEx;
     this._endpoint = apiEndpoint;
     this._account = account;
@@ -53,14 +48,14 @@ export class Trade<T extends BaseAccount> {
       // Save gas by executing a fill order if only one order was returned
       txHash = await this._zeroEx.exchange.fillOrderAsync(
         marketResponse.orders[0],
-        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
+        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals),
         this._account.address,
         opts.transactionOpts);
     } else {
       const fn = type === UserOrderType.BUY ? 'marketBuyOrdersAsync' : 'marketSellOrdersAsync';
       txHash = await this._zeroEx.exchange[fn](
         marketResponse.orders,
-        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals.toNumber()),
+        ZeroEx.toBaseUnitAmount(quantity, market.baseTokenDecimals),
         this._account.address,
         opts.transactionOpts);
     }

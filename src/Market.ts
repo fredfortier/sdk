@@ -12,7 +12,8 @@ import {
   WebsocketRequestTopic,
   WebsocketRequestType,
   RadarStats,
-  RadarHistory
+  RadarHistory,
+  RadarMarketBase
 } from '@radarrelay/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { ErrorFormatter } from './errors/ErrorFormatter';
@@ -20,39 +21,42 @@ import BigNumber from 'bignumber.js';
 import request = require('request-promise');
 import { BaseAccount } from './accounts';
 
-export class Market<T extends BaseAccount> {
+export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBase {
+
   public id: string;
   public baseTokenAddress: string;
   public quoteTokenAddress: string;
-  public baseTokenDecimals: BigNumber;
-  public quoteTokenDecimals: BigNumber;
+  public baseTokenDecimals: number;
+  public quoteTokenDecimals: number;
   public minOrderSize: BigNumber;
   public maxOrderSize: BigNumber;
-  public quoteIncrement: BigNumber;
+  public quoteIncrement: number;
   public displayName: string;
+  public score: number;
 
   private _endpoint: string;
   private _wsEndpoint: string;
   private _trade: Trade<T>;
   private _wsClient: WebsocketClient;
 
-  constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>) {
-    // setup config
+  constructor(market: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>) {
+    // Setup config
     this._endpoint = apiEndpoint;
     this._wsEndpoint = wsEndpoint;
     this._trade = trade;
     this._wsClient = new WebsocketClient(wsEndpoint);
 
-    // Setup instance vars
-    this.id = params.id;
-    this.baseTokenAddress = params.baseTokenAddress;
-    this.quoteTokenAddress = params.quoteTokenAddress;
-    this.baseTokenDecimals = new BigNumber(params.baseTokenDecimals);
-    this.quoteTokenDecimals = new BigNumber(params.quoteTokenDecimals);
-    this.minOrderSize = new BigNumber(params.minOrderSize);
-    this.maxOrderSize = new BigNumber(params.maxOrderSize);
-    this.quoteIncrement = new BigNumber(params.quoteIncrement);
-    this.displayName = params.displayName;
+    // Setup RadarMarket properties
+    this.id = market.id;
+    this.baseTokenAddress = market.baseTokenAddress;
+    this.quoteTokenAddress = market.quoteTokenAddress;
+    this.baseTokenDecimals = Number(market.baseTokenDecimals);
+    this.quoteTokenDecimals = Number(market.quoteTokenDecimals);
+    this.minOrderSize = new BigNumber(market.minOrderSize);
+    this.maxOrderSize = new BigNumber(market.maxOrderSize);
+    this.quoteIncrement = Number(market.quoteIncrement);
+    this.displayName = market.displayName;
+    this.score = market.score;
   }
 
   /*

@@ -8,7 +8,6 @@ import { InjectedAccount } from './accounts/InjectedAccount';
 import { Ethereum } from './Ethereum';
 import { EventEmitter } from 'events';
 import { RadarToken } from '@radarrelay/types';
-import { LoadableMap } from './LoadableMap';
 export * from '@radarrelay/types';
 
 export interface SdkConfig {
@@ -112,5 +111,5 @@ export interface AccountParams {
   events: EventEmitter;
   zeroEx: ZeroEx;
   endpoint: string;
-  tokens: LoadableMap<string, RadarToken>;
+  tokens: Map<string, RadarToken>;
 }

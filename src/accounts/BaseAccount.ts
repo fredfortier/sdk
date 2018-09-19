@@ -6,9 +6,7 @@ import BigNumber from 'bignumber.js';
 import { Opts, AccountParams, WalletType } from '../types';
 import * as request from 'request-promise';
 import { RadarFill, RadarSignedOrder, RadarToken } from '@radarrelay/types';
-import { TSMap } from 'typescript-map';
 import { EventEmitter } from 'events';
-import { LoadableMap } from '../LoadableMap';
 
 export class BaseAccount {
   public readonly type: WalletType;
@@ -17,7 +15,7 @@ export class BaseAccount {
   protected _events: EventEmitter;
   private _zeroEx: ZeroEx;
   private _endpoint: string;
-  private _tokens: LoadableMap<string, RadarToken>;
+  private _tokens: Map<string, RadarToken>;
 
   /**
    * Instantiate a new BaseAccount

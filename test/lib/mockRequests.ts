@@ -52,7 +52,7 @@ export function mockRequests() {
       quoteTokenAddress: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
       baseTokenDecimals: 18,
       quoteTokenDecimals: 18,
-      quoteIncrement: '0.00000001',
+      quoteIncrement: 8,
       minOrderSize: '1',
       maxOrderSize: '1'
     });

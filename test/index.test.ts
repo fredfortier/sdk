@@ -18,7 +18,6 @@ describe('RadarRelay', async () => {
   let tokensInitialized = false;
   let accountInitialized = false;
   let zeroExInitialized = false;
-  let marketsInitialized = false;
   let tradeInitialized = false;
 
   before(async () => {
@@ -52,9 +51,6 @@ describe('RadarRelay', async () => {
     rrsdk.events.on(EventName.TradeInitialized, () => {
       tradeInitialized = true;
     });
-    rrsdk.events.on(EventName.MarketsInitialized, () => {
-      marketsInitialized = true;
-    });
   });
 
   beforeEach(() => {
@@ -63,7 +59,6 @@ describe('RadarRelay', async () => {
     tokensInitialized = false;
     accountInitialized = false;
     zeroExInitialized = false;
-    marketsInitialized = false;
     tradeInitialized = false;
   });
 
@@ -78,7 +73,6 @@ describe('RadarRelay', async () => {
     expect(accountInitialized).to.be.true;
     expect(zeroExInitialized).to.be.true;
     expect(tradeInitialized).to.be.true;
-    expect(marketsInitialized).to.be.true;
   });
 
   it('SDK reloads properly when an account address is changed', async () => {
