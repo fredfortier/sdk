@@ -346,29 +346,89 @@ Set a token allowance.
 
 ## Market methods
 
-Markets are `marketId`-mapped Market classes with all
-the same methods and the following instance vars:
+### Fetching markets from the SDK instance
+
+The following utilities are exposed on the SDK instance:
+
+`rr.fetchMarket(marketId)`
+
+Fetch a single market by its ID.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `marketId`       | `string`           | Market ID in the format of {base}-{quote}. `e.g. 'ZRX-WETH'`                   |
+
+**Returns:** `Promise<Market>`
+
+---
+
+`rr.fetchMarkets(marketIds)`
+
+Fetch an arbitrary number of markets by their ID.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                           |
+| ---------------- | ------------------ | ------------------------------------------------------------------------------------- |
+| `marketIds`      | `string[]`         | A list of market IDs in the format of {base}-{quote}. `e.g. ['ZRX-WETH', 'DAI-WETH']` |
+
+**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+### Fetching markets using the `MarketsPagination` helper
+
+The following utilities are exposed on the SDK's `MarketsPagination` instance:
+
+`rr.marketsPagination.fetchNextPage()`
+
+Fetch the next 100 markets.
+
+**_No parameters._**
+
+**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+`rr.marketsPagination.fetchPage(page, count)`
+
+Fetch a specific page markets.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | The page to fetch.                                                           |
+| `count`           | `number`          | The number of results per page to query.                                     |
+
+**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+### Market class methods
+
+A `Market` exposes all the following instance vars:
 
 ```javascript
-// Markets are retrieved lazily and asynchronously.
-// Keep this in mind when iterating over the `markets` Map.
-await rr.markets.get('ZRX-WETH')
 {
   id: string;
+  displayName: string;
   baseTokenAddress: string;
   quoteTokenAddress: string;
-  baseTokenDecimals: BigNumber;
-  quoteTokenDecimals: BigNumber;
+  baseTokenDecimals: number;
+  quoteTokenDecimals: number;
   minOrderSize: BigNumber;
   maxOrderSize: BigNumber;
-  quoteIncrement: BigNumber;
-  displayName: string;
+  quoteIncrement: number;
+  score: number; // A measure of how active the market is.
 }
 ```
 
 ---
 
-### Market class methods
+A `Market` exposes all the following methods:
 
 `limitOrderAsync(type, quantity, price, expiration)`
 

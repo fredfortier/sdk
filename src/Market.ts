@@ -48,6 +48,7 @@ export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBa
 
     // Setup RadarMarket properties
     this.id = market.id;
+    this.displayName = market.displayName;
     this.baseTokenAddress = market.baseTokenAddress;
     this.quoteTokenAddress = market.quoteTokenAddress;
     this.baseTokenDecimals = Number(market.baseTokenDecimals);
@@ -55,7 +56,6 @@ export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBa
     this.minOrderSize = new BigNumber(market.minOrderSize);
     this.maxOrderSize = new BigNumber(market.maxOrderSize);
     this.quoteIncrement = Number(market.quoteIncrement);
-    this.displayName = market.displayName;
     this.score = market.score;
   }
 

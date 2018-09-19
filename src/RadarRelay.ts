@@ -106,8 +106,9 @@ export class RadarRelay<T extends BaseAccount> {
     const ids = marketIds.join(',');
 
     const response: RadarMarket[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/markets?ids=${ids}`));
-    const markets: Array<Market<T>> = response.map(market => {
-      return new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade);
+    const markets: Map<string, Market<T>> = new Map();
+    response.forEach(market => {
+      markets.set(market.id, new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade));
     });
 
     return markets || [];
