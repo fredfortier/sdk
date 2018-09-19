@@ -12,7 +12,6 @@ import {
 } from './types';
 import BigNumber from 'bignumber.js';
 import request = require('request-promise');
-import { TSMap } from 'typescript-map';
 import Web3 = require('web3');
 
 // SDK Classes
@@ -20,7 +19,7 @@ import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
 import { EventBus } from './EventEmitter';
 import { Ethereum } from './Ethereum';
 import { Market } from './Market';
-import { LazyMap } from './LazyMap';
+import { LoadableMap } from './LoadableMap';
 import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
@@ -34,8 +33,8 @@ export class RadarRelay<T extends BaseAccount> {
 
   public events: EventBus;
   public account: T;
-  public tokens: TSMap<string, RadarToken>;
-  public markets: LazyMap<string, Market<T>>;
+  public tokens: LoadableMap<string, RadarToken>;
+  public markets: LoadableMap<string, Market<T>>;
   public zeroEx: ZeroEx;
   public web3: Web3;
 
@@ -130,7 +129,7 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private initTrade(): Promise<string | boolean> {
-    this._trade = new Trade<T>(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events, this.tokens);
+    this._trade = new Trade<T>(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events);
     return this.getCallback(EventName.TradeInitialized, this._trade);
   }
 
@@ -138,7 +137,9 @@ export class RadarRelay<T extends BaseAccount> {
     // Only fetch if not already fetched
     if (this._prevApiEndpoint !== this._config.radarRestEndpoint) {
       const tokens: RadarToken[] = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/tokens`));
-      this.tokens = new TSMap();
+      this.tokens = new LoadableMap({
+        entries: tokens.map(token => [token.address, token]) as Array<[string, RadarToken]>,
+      });
       tokens.map(token => this.tokens.set(token.address, token));
     }
 
@@ -147,7 +148,7 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private async initMarketsAsync(): Promise<string | boolean> {
-    this.markets = new LazyMap({
+    this.markets = new LoadableMap({
       getHandler: async ({ key }) => {
         const market: RadarMarket = JSON.parse(await request.get(`${this._config.radarRestEndpoint}/markets/${key}`));
         return new Market(market, this._config.radarRestEndpoint, this._config.radarWebsocketEndpoint, this._trade);
