@@ -88,13 +88,13 @@ describe('RadarRelay', async () => {
     expect(((rrsdk as any)._trade as any)._account.address).to.be.eq(addresses[1]);
   });
 
-  it('fetchMarket', async () => {
-    const market = await rrsdk.fetchMarket('ZRX-WETH');
+  it('getMarket', async () => {
+    const market = await rrsdk.getMarket('ZRX-WETH');
     expect(market.id).to.be.eq('ZRX-WETH');
   });
 
-  it('fetchMarkets', async () => {
-    const markets = await rrsdk.fetchMarkets(['ZRX-WETH', 'DAI-WETH']);
+  it('getMarkets', async () => {
+    const markets = await rrsdk.getMarkets(['ZRX-WETH', 'DAI-WETH']);
     expect(markets.size).to.be.eq(2);
     expect(markets.get('ZRX-WETH').id).to.be.eq('ZRX-WETH');
     expect(markets.get('DAI-WETH').id).to.be.eq('DAI-WETH');

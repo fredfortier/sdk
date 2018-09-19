@@ -44,8 +44,8 @@ export declare class RadarRelay<T extends BaseAccount> {
      * @param {Config} config The wallet configuration
      */
     initializeAsync(): Promise<RadarRelay<T>>;
-    fetchMarkets(marketIds: string[]): Promise<Market<T>[]>;
-    fetchMarket(marketId: string): Promise<Market<T>>;
+    getMarkets(marketIds: string[]): Promise<Map<string, Market<T>>>;
+    getMarket(marketId: string): Promise<Market<T>>;
     readonly config: Config;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;

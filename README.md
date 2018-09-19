@@ -350,7 +350,7 @@ Set a token allowance.
 
 The following utilities are exposed on the SDK instance:
 
-`rr.fetchMarket(marketId)`
+`rr.getMarket(marketId)`
 
 Fetch a single market by its ID.
 
@@ -364,7 +364,7 @@ Fetch a single market by its ID.
 
 ---
 
-`rr.fetchMarkets(marketIds)`
+`rr.getMarkets(marketIds)`
 
 Fetch an arbitrary number of markets by their ID.
 
@@ -382,7 +382,7 @@ Fetch an arbitrary number of markets by their ID.
 
 The following utilities are exposed on the SDK's `MarketsPagination` instance:
 
-`rr.marketsPagination.fetchNextPage()`
+`rr.marketsPagination.getNextPage()`
 
 Fetch the next 100 markets.
 
@@ -392,7 +392,7 @@ Fetch the next 100 markets.
 
 ---
 
-`rr.marketsPagination.fetchPage(page, count)`
+`rr.marketsPagination.getPage(page, count)`
 
 Fetch a specific page markets.
 
