@@ -102,8 +102,8 @@ export class RadarRelay<T extends BaseAccount> {
 
   // --- Instance methods --- //
 
-  public async fetchMarkets(query: string[]) {
-    const ids = query.join(',');
+  public async fetchMarkets(marketIds: string[]) {
+    const ids = marketIds.join(',');
 
     const response: RadarMarket[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/markets?ids=${ids}`));
     const markets: Array<Market<T>> = response.map(market => {

@@ -6,6 +6,7 @@ import { WalletType, Config, AccountParams } from './types';
 import Web3 = require('web3');
 import { Market } from './Market';
 import { BaseAccount } from './accounts/BaseAccount';
+import { MarketsPagination } from './MarketsPagination';
 /**
  * RadarRelay main SDK singleton
  */
@@ -15,6 +16,7 @@ export declare class RadarRelay<T extends BaseAccount> {
     tokens: Map<string, RadarToken>;
     zeroEx: ZeroEx;
     web3: Web3;
+    marketsPagination: MarketsPagination<T>;
     private _trade;
     private _ethereum;
     private _networkId;
@@ -42,13 +44,15 @@ export declare class RadarRelay<T extends BaseAccount> {
      * @param {Config} config The wallet configuration
      */
     initializeAsync(): Promise<RadarRelay<T>>;
-    getMarket(marketId: string): Promise<Market<T>>;
+    fetchMarkets(marketIds: string[]): Promise<Market<T>[]>;
+    fetchMarket(marketId: string): Promise<Market<T>>;
     readonly config: Config;
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;
     private initTrade;
     private initTokensAsync;
+    private initMarketsAsync;
     private getCallback;
     private setEndpointOrThrowAsync;
 }
