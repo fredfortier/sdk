@@ -26,6 +26,8 @@ import { BaseAccount } from './accounts';
 
 export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBase {
 
+  // --- Properties --- //
+
   public id: string;
   public baseTokenAddress: string;
   public quoteTokenAddress: string;
@@ -41,6 +43,8 @@ export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBa
   private _wsEndpoint: string;
   private _trade: Trade<T>;
   private _wsClient: WebsocketClient;
+
+  // --- Constructor --- //
 
   constructor(market: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>) {
     // Setup config
@@ -61,6 +65,8 @@ export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBa
     this.quoteIncrement = Number(market.quoteIncrement);
     this.score = market.score;
   }
+
+  // --- Exposed methods --- //
 
   /*
    * Get book for this market

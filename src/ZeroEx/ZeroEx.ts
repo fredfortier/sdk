@@ -45,6 +45,8 @@ export class ZeroEx {
   private readonly _orderValidationUtils: OrderValidationUtils;
   private readonly _exchangeTransferSimulator: ExchangeTransferSimulator;
 
+  // --- Constructor --- //
+
   constructor(
     provider: Provider,
     config: ContractWrappersConfig,
@@ -78,6 +80,8 @@ export class ZeroEx {
     );
     this._exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
   }
+
+  // --- Exposed methods --- //
 
   /**
    * When creating an order without a specified taker or feeRecipient you must supply the Solidity
@@ -202,4 +206,5 @@ export class ZeroEx {
       this._zrxAssetData
     );
   }
+
 }

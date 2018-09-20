@@ -31,6 +31,8 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
  */
 export class RadarRelay<T extends BaseAccount> {
 
+  // --- Properties --- //
+
   public events: EventEmitter;
   public account: T;
   public tokens: Map<string, RadarToken>;
@@ -62,6 +64,8 @@ export class RadarRelay<T extends BaseAccount> {
     { event: EventName.TradeInitialized, func: this.initMarketsAsync },
     { event: EventName.MarketsInitialized, func: undefined}
   ];
+
+  // --- Constructor --- //
 
   /**
    * SDK instance
@@ -104,7 +108,7 @@ export class RadarRelay<T extends BaseAccount> {
   // --- Getters/setters --- //
 
   get config() {
-    return this._config;
+    return { ...this._config };
   }
 
   // --- Initialization methods, not user configurable below this line --- //

@@ -1,3 +1,4 @@
+// Vendor
 import { BlockParamLiteral, ExchangeWrapper } from '@0xproject/contract-wrappers';
 import { AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
 import { BigNumber } from 'bignumber.js';
@@ -16,7 +17,7 @@ export class OrderFilledCancelledFetcher implements AbstractOrderFilledCancelled
     this._stateLayer = stateLayer;
   }
 
-  // --- Business logic --- //
+  // --- Exposed methods --- //
 
   public async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber> {
     return this._exchange.getFilledTakerAssetAmountAsync(orderHash, {

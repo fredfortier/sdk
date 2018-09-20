@@ -14,10 +14,14 @@ import { BaseAccount } from './accounts';
 
 export class Trade<T extends BaseAccount> {
 
+  // --- Properties --- //
+
   private _endpoint: string;
   private _account: T;
   private _zeroEx: ZeroEx;
   private _events: EventEmitter;
+
+  // --- Constructor --- //
 
   constructor(zeroEx: ZeroEx, apiEndpoint: string, account: T, events: EventEmitter) {
     this._zeroEx = zeroEx;
@@ -25,6 +29,8 @@ export class Trade<T extends BaseAccount> {
     this._account = account;
     this._events = events;
   }
+
+  // --- Exposed methods --- //
 
   public async marketOrder(
     market: Market<T>,
