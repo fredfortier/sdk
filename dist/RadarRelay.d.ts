@@ -1,7 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
 import { RadarToken } from '@radarrelay/types';
-import BigNumber from 'bignumber.js';
 import Web3 = require('web3');
 import { WalletType, Config, AccountParams } from './types';
 import { ZeroEx } from './ZeroEx';
@@ -44,28 +43,6 @@ export declare class RadarRelay<T extends BaseAccount> {
      * @param {Config} config The wallet configuration
      */
     initializeAsync(): Promise<RadarRelay<T>>;
-    readonly config: {
-        type: InjectedWalletType;
-        web3?: Web3;
-        dataRpcUrl?: string;
-        sdkInitializationTimeoutMs?: number;
-        radarRestEndpoint?: string;
-        radarWebsocketEndpoint?: string;
-        defaultGasPrice?: BigNumber;
-    } | {
-        wallet: import("./types").LightWalletOptions;
-        dataRpcUrl: string;
-        sdkInitializationTimeoutMs?: number;
-        radarRestEndpoint: string;
-        radarWebsocketEndpoint: string;
-        defaultGasPrice?: BigNumber;
-    } | {
-        rpcUrl: string;
-        sdkInitializationTimeoutMs?: number;
-        radarRestEndpoint: string;
-        radarWebsocketEndpoint: string;
-        defaultGasPrice?: BigNumber;
-    };
     private initAccountAsync;
     private initEthereumNetworkIdAsync;
     private initZeroEx;

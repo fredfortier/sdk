@@ -1,7 +1,7 @@
 
 // Vendor
 import { EventEmitter } from 'events';
-import { RadarToken, RadarMarket } from '@radarrelay/types';
+import { RadarToken } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
 import axios, { AxiosResponse } from 'axios';
 import Web3 = require('web3');
@@ -18,7 +18,6 @@ import {
 import { ZeroEx } from './ZeroEx';
 import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
 import { Ethereum } from './Ethereum';
-import { Market } from './Market';
 import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
@@ -94,7 +93,7 @@ export class RadarRelay<T extends BaseAccount> {
    * @param {Config} config The wallet configuration
    */
   public async initializeAsync(): Promise<RadarRelay<T>> {
-    await this._ethereum.setProvider(this._walletType, this.config);
+    await this._ethereum.setProvider(this._walletType, this._config);
 
     // Allow access to web3 object
     this.web3 = this._ethereum.web3;
@@ -105,12 +104,6 @@ export class RadarRelay<T extends BaseAccount> {
     return this;
   }
 
-  // --- Getters/setters --- //
-
-  get config() {
-    return { ...this._config };
-  }
-
   // --- Initialization methods, not user configurable below this line --- //
 
   private async initAccountAsync(address: string | number): Promise<string | boolean> {
@@ -119,7 +112,7 @@ export class RadarRelay<T extends BaseAccount> {
       ethereum: this._ethereum,
       events: this.events,
       zeroEx: this.zeroEx,
-      endpoint: this.config.radarRestEndpoint,
+      endpoint: this._config.radarRestEndpoint,
       tokens: this.tokens
     });
     return this.getCallback(EventName.AccountInitialized, this.account);
@@ -138,14 +131,14 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private initTrade(): Promise<string | boolean> {
-    this._trade = new Trade<T>(this.zeroEx, this.config.radarRestEndpoint, this.account, this.events);
+    this._trade = new Trade<T>(this.zeroEx, this._config.radarRestEndpoint, this.account, this.events);
     return this.getCallback(EventName.TradeInitialized, this._trade);
   }
 
   private async initTokensAsync(): Promise<string | boolean> {
     // Only fetch if not already fetched
     if (!this.tokens || !this.tokens.size) {
-      const response: AxiosResponse<RadarToken[]> = await axios.get(`${this.config.radarRestEndpoint}/tokens`);
+      const response: AxiosResponse<RadarToken[]> = await axios.get(`${this._config.radarRestEndpoint}/tokens`);
       const tokens = response.data;
 
       const entries = tokens.map(token => [token.address, token]);
@@ -163,9 +156,9 @@ export class RadarRelay<T extends BaseAccount> {
     this.markets = new MarketsCache(
       1, // Starting page... TODO: make this configurable at the SDK-level
       100, // Results per page... TODO: make this configurable at the SDK-level
-      this.config.radarRestEndpoint,
-      this.config.radarWebsocketEndpoint,
-      `${this.config.radarRestEndpoint}/markets`,
+      this._config.radarRestEndpoint,
+      this._config.radarWebsocketEndpoint,
+      `${this._config.radarRestEndpoint}/markets`,
       this._trade
     );
 
@@ -182,15 +175,15 @@ export class RadarRelay<T extends BaseAccount> {
   }
 
   private async setEndpointOrThrowAsync() {
-    const walletConfig = this.config as InjectedWalletConfig;
+    const walletConfig = this._config as InjectedWalletConfig;
     if (this._walletType === WalletType.Injected && !walletConfig.dataRpcUrl) {
       // Set Radar Relay API Endpoints if using injected provider
       const { radarRestEndpoint, radarWebsocketEndpoint } = RADAR_RELAY_ENDPOINTS(await this._ethereum.getNetworkIdAsync());
-      this.config.radarRestEndpoint = radarRestEndpoint;
-      this.config.radarWebsocketEndpoint = radarWebsocketEndpoint;
+      this._config.radarRestEndpoint = radarRestEndpoint;
+      this._config.radarWebsocketEndpoint = radarWebsocketEndpoint;
     }
 
-    if (!this.config.radarRestEndpoint || !this.config.radarWebsocketEndpoint) {
+    if (!this._config.radarRestEndpoint || !this._config.radarWebsocketEndpoint) {
       throw new Error(SdkError.InvalidOrMissingEndpoints);
     }
   }
