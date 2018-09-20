@@ -43,7 +43,6 @@ describe('RadarRelay.Market', () => {
 
   it('getPageAsync', async () => {
     const markets = await rrsdk.markets.getPageAsync(1, 3);
-    console.log(markets);
     expect(markets.size).to.be.eq(3);
   });
 
