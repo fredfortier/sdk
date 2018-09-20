@@ -1,12 +1,11 @@
 /// <reference types="node" />
-import { Market } from './Market';
 import { EventEmitter } from 'events';
-import { Opts } from './types';
-import { SignedOrder } from '0x.js';
-import { ZeroEx } from './ZeroEx';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { UserOrderType } from '@radarrelay/types';
+import { UserOrderType, SignedOrder } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
+import { Market } from './Market';
+import { Opts } from './types';
+import { ZeroEx } from './ZeroEx';
 import { BaseAccount } from './accounts';
 export declare class Trade<T extends BaseAccount> {
     private _endpoint;

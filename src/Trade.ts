@@ -1,12 +1,15 @@
-import { Market } from './Market';
+// Vendor
 import { EventEmitter } from 'events';
-import { WalletType, Opts, EventName } from './types';
-import { Order, SignedOrder, SignerType } from '0x.js';
-import { ZeroEx } from './ZeroEx';
+import { SignerType } from '0x.js';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { RadarToken, UserOrderType, RadarMarketOrderResponse } from '@radarrelay/types';
+import { UserOrderType, RadarMarketOrderResponse, UnsignedOrder, SignedOrder } from '@radarrelay/types';
 import BigNumber from 'bignumber.js';
-import request = require('request-promise');
+import axios, { AxiosResponse } from 'axios';
+
+// Internal
+import { Market } from './Market';
+import { WalletType, Opts, EventName } from './types';
+import { ZeroEx } from './ZeroEx';
 import { BaseAccount } from './accounts';
 
 export class Trade<T extends BaseAccount> {
@@ -33,13 +36,14 @@ export class Trade<T extends BaseAccount> {
       opts = {};
     }
 
-    const marketResponse: RadarMarketOrderResponse = await request.post({
-      url: `${this._endpoint}/markets/${market.id}/order/market`,
-      json: {
+    const axiosResponse: AxiosResponse<RadarMarketOrderResponse> = await axios.post(
+      `${this._endpoint}/markets/${market.id}/order/market`, {
         type,
         quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
-      }
-    });
+      },
+    );
+
+    const marketResponse = axiosResponse.data;
 
     marketResponse.orders.forEach((order, i) => this.hydrateSignedOrder(order));
 
@@ -79,27 +83,28 @@ export class Trade<T extends BaseAccount> {
     expiration: BigNumber // expiration in seconds from now
   ): Promise<SignedOrder> {
 
-    const order = await request.post({
-      url: `${this._endpoint}/markets/${market.id}/order/limit`,
-      json: {
+    const axiosResponse: AxiosResponse<UnsignedOrder> = await axios.post(
+      `${this._endpoint}/markets/${market.id}/order/limit`, {
         type,
         quantity: quantity.toString(), // base token in unit amounts, which is what our interfaces use
         price: price.toString(),
-        expiration: expiration.toString()
-      }
-    });
+        expiration: expiration.toString(),
+      },
+    );
 
-    // turn into BigNumbers
+    const order: SignedOrder = axiosResponse.data;
+
+    // Transform BigNumbers
     this.hydrateSignedOrder(order);
 
-    // add missing data
+    // Add missing data
     order.makerAddress = this._account.address;
 
-    // sign order
+    // Sign order
     const prefix: SignerType = (this._account.type === WalletType.Injected) ? SignerType.Metamask : SignerType.Default;
     const orderHash = ZeroEx.getOrderHashHex(order);
     const signature = await this._zeroEx.ecSignOrderHashAsync(orderHash, this._account.address, prefix);
-    (order as SignedOrder).signature = signature;
+    order.signature = signature;
 
     // POST order to API
     // HACK for local dev order seeding
@@ -107,10 +112,7 @@ export class Trade<T extends BaseAccount> {
       ? process.env.RADAR_SDK_ORDER_URL
       : `${this._endpoint}/orders`;
 
-    await request.post({
-      url: orderPostURL,
-      json: order
-    });
+    await axios.post(orderPostURL, order);
 
     return order;
   }

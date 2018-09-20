@@ -1,8 +1,8 @@
-import { Trade } from './Trade';
-import { Opts } from './types';
 import { SignedOrder, RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic, RadarStats, RadarHistory, RadarMarketBase } from '@radarrelay/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import BigNumber from 'bignumber.js';
+import { Trade } from './Trade';
+import { Opts } from './types';
 import { BaseAccount } from './accounts';
 export declare class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBase {
     id: string;

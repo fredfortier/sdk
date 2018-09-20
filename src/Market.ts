@@ -1,6 +1,4 @@
-import { Trade } from './Trade';
-import { WebsocketClient } from './WebsocketClient';
-import { Opts } from './types';
+// Vendor
 import {
   SignedOrder,
   RadarBook,
@@ -16,9 +14,14 @@ import {
   RadarMarketBase
 } from '@radarrelay/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { ErrorFormatter } from './errors/ErrorFormatter';
 import BigNumber from 'bignumber.js';
-import request = require('request-promise');
+import axios, { AxiosResponse } from 'axios';
+
+// Internal
+import { Trade } from './Trade';
+import { WebsocketClient } from './WebsocketClient';
+import { Opts } from './types';
+import { ErrorFormatter } from './errors/ErrorFormatter';
 import { BaseAccount } from './accounts';
 
 export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBase {
@@ -63,42 +66,48 @@ export class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBa
    * Get book for this market
    */
   public async getBookAsync(): Promise<RadarBook> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/book`));
+    const response: AxiosResponse<RadarBook> = await axios.get(`${this._endpoint}/markets/${this.id}/book`);
+    return response.data;
   }
 
   /*
    * Get fills for this market
    */
   public async getFillsAsync(): Promise<RadarFill[]> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/fills`));
+    const response: AxiosResponse<RadarFill[]> = await axios.get(`${this._endpoint}/markets/${this.id}/fills`);
+    return response.data;
   }
 
   /*
    * Get candles for this market
    */
   public async getCandlesAsync(): Promise<RadarCandle[]> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/candles`));
+    const response: AxiosResponse<RadarCandle[]> = await axios.get(`${this._endpoint}/markets/${this.id}/candles`);
+    return response.data;
   }
 
   /*
    * Get this markets ticker
    */
   public async getTickerAsync(): Promise<RadarTicker> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/ticker`));
+    const response: AxiosResponse<RadarTicker> = await axios.get(`${this._endpoint}/markets/${this.id}/ticker`);
+    return response.data;
   }
 
   /*
    * Get this markets stats.
    */
   public async getStatsAsync(): Promise<RadarStats> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/stats`));
+    const response: AxiosResponse<RadarStats> = await axios.get(`${this._endpoint}/markets/${this.id}/stats`);
+    return response.data;
   }
 
   /*
    * Get this markets history.
    */
   public async getHistoryAsync(): Promise<RadarHistory> {
-    return JSON.parse(await request.get(`${this._endpoint}/markets/${this.id}/history`));
+    const response: AxiosResponse<RadarHistory> = await axios.get(`${this._endpoint}/markets/${this.id}/history`);
+    return response.data;
   }
 
   /**

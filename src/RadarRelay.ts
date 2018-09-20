@@ -1,7 +1,12 @@
 
-import { ZeroEx } from './ZeroEx';
+// Vendor
 import { EventEmitter } from 'events';
 import { RadarToken, RadarMarket } from '@radarrelay/types';
+import BigNumber from 'bignumber.js';
+import axios, { AxiosResponse } from 'axios';
+import Web3 = require('web3');
+
+// Internal
 import {
   InjectedWalletConfig,
   WalletType,
@@ -10,18 +15,14 @@ import {
   EventName,
   SdkError
 } from './types';
-import BigNumber from 'bignumber.js';
-import request = require('request-promise');
-import Web3 = require('web3');
-
-// SDK Classes
+import { ZeroEx } from './ZeroEx';
 import { SdkInitLifeCycle, InitPriorityItem } from './SdkInitLifeCycle';
 import { Ethereum } from './Ethereum';
 import { Market } from './Market';
 import { Trade } from './Trade';
 import { RADAR_RELAY_ENDPOINTS } from './constants';
 import { BaseAccount } from './accounts/BaseAccount';
-import { MarketsPagination } from './MarketsPagination';
+import { MarketsCache } from './pagination/MarketsCache';
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
@@ -35,7 +36,7 @@ export class RadarRelay<T extends BaseAccount> {
   public tokens: Map<string, RadarToken>;
   public zeroEx: ZeroEx;
   public web3: Web3;
-  public marketsPagination: MarketsPagination<T>;
+  public markets: MarketsCache<T>;
 
   private _trade: Trade<T>;
   private _ethereum: Ethereum;
@@ -100,30 +101,6 @@ export class RadarRelay<T extends BaseAccount> {
     return this;
   }
 
-  // --- Instance methods --- //
-
-  public async getMarketsAsync(marketIds: string[]) {
-    const ids = marketIds.join(',');
-
-    const response: RadarMarket[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/markets?ids=${ids}`));
-    const markets: Map<string, Market<T>> = new Map();
-    response.forEach(market => {
-      markets.set(market.id, new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade));
-    });
-
-    return markets || new Map();
-  }
-
-  public async getMarketAsync(marketId: string) {
-    try {
-      const response = await request.get(`${this.config.radarRestEndpoint}/markets/${marketId}`);
-      const market = JSON.parse(response);
-      return new Market(market, this.config.radarRestEndpoint, this.config.radarWebsocketEndpoint, this._trade);
-    } catch (e) {
-      throw e;
-    }
-  }
-
   // --- Getters/setters --- //
 
   get config() {
@@ -164,7 +141,8 @@ export class RadarRelay<T extends BaseAccount> {
   private async initTokensAsync(): Promise<string | boolean> {
     // Only fetch if not already fetched
     if (!this.tokens || !this.tokens.size) {
-      const tokens: RadarToken[] = JSON.parse(await request.get(`${this.config.radarRestEndpoint}/tokens`));
+      const response: AxiosResponse<RadarToken[]> = await axios.get(`${this.config.radarRestEndpoint}/tokens`);
+      const tokens = response.data;
 
       const entries = tokens.map(token => [token.address, token]);
       this.tokens = new Map(entries as any);
@@ -178,15 +156,18 @@ export class RadarRelay<T extends BaseAccount> {
 
   private async initMarketsAsync(): Promise<string | boolean> {
     // Instantiate markets pagination helper
-    this.marketsPagination = new MarketsPagination(
-      1, // Starting page
-      100, // Results per page
+    this.markets = new MarketsCache(
+      1, // Starting page... TODO: make this configurable at the SDK-level
+      100, // Results per page... TODO: make this configurable at the SDK-level
       this.config.radarRestEndpoint,
       this.config.radarWebsocketEndpoint,
       this._trade
     );
 
-    return this.getCallback(EventName.MarketsInitialized, this.marketsPagination.markets);
+    await this.markets.getAsync('ZRX-WETH');
+    await this.markets.getNextPageAsync();
+
+    return this.getCallback(EventName.MarketsInitialized, this.markets);
   }
 
   private getCallback(event, data): Promise<string | boolean> {
