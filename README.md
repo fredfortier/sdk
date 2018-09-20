@@ -346,43 +346,25 @@ Set a token allowance.
 
 ## Market methods
 
-### Fetching markets from the SDK instance
+### Fetching specific markets
 
-The following utilities are exposed on the SDK instance:
+`rr.markets.getAsync(marketId)`
 
-`rr.getMarketAsync(marketId)`
-
-Fetch a single market by its ID.
+Fetch a single market by its ID or a group of markets by passing a list of IDs.
 
 **Parameters:**
 
-| Name             | Type               | Description                                                                  |
-| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
-| `marketId`       | `string`           | Market ID in the format of {base}-{quote}. `e.g. 'ZRX-WETH'`                   |
+| Name             | Type                | Description                                                                                                      |
+| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `marketId`       | `string | string[]` | A market ID or list of market IDs in the format of {base}-{quote}. `e.g. 'ZRX-WETH' or ['ZRX-WETH', 'DAI-WETH']` |
 
-**Returns:** `Promise<Market>`
-
----
-
-`rr.getMarketsAsync(marketIds)`
-
-Fetch an arbitrary number of markets by their ID.
-
-**Parameters:**
-
-| Name             | Type               | Description                                                                           |
-| ---------------- | ------------------ | ------------------------------------------------------------------------------------- |
-| `marketIds`      | `string[]`         | A list of market IDs in the format of {base}-{quote}. `e.g. ['ZRX-WETH', 'DAI-WETH']` |
-
-**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+**Returns:** `Promise<Market | Map<string, Market>>` - The `Map` key is mapped to the market's ID.
 
 ---
 
-### Fetching markets using the `MarketsPagination` helper
+### Fetching pages of markets
 
-The following utilities are exposed on the SDK's `MarketsPagination` instance:
-
-`rr.marketsPagination.getNextPageAsync()`
+`rr.markets.getNextPageAsync()`
 
 Fetch the next 100 markets.
 
@@ -392,7 +374,7 @@ Fetch the next 100 markets.
 
 ---
 
-`rr.marketsPagination.getPageAsync(page, count)`
+`rr.markets.getPageAsync(page, perPage)`
 
 Fetch a specific page of markets.
 
@@ -401,7 +383,7 @@ Fetch a specific page of markets.
 | Name             | Type               | Description                                                                  |
 | ---------------- | ------------------ | ---------------------------------------------------------------------------- |
 | `page`           | `number`           | The page to fetch.                                                           |
-| `count`           | `number`          | The number of results per page to query.                                     |
+| `perPage`        | `number`          | The number of results per page to query.                                      |
 
 **Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
 
