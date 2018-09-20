@@ -1,3 +1,4 @@
+// Vendor
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
   Provider,
@@ -21,12 +22,14 @@ import {
   BalanceAndProxyAllowanceLazyStore,
 } from '@0xproject/order-utils';
 import BigNumber from 'bignumber.js';
+
+// Internal
 import { OrderFilledCancelledFetcher } from './validation/order-filled-cancelled-fetcher';
 import { AssetBalanceAndProxyAllowanceFetcher } from './validation/asset-balance-and-proxy-allowance-fetcher';
-/**
- * This class includes all the functionality related to 0x packages instantiation
- */
+
 export class ZeroEx {
+
+  // --- Properties --- //
 
   public exchange: ExchangeWrapper;
   public erc20Token: ERC20TokenWrapper;
@@ -34,7 +37,6 @@ export class ZeroEx {
   public erc20Proxy: ERC20ProxyWrapper;
   public erc721Token: ERC721TokenWrapper;
 
-  private _initialized = false;
   private readonly _provider: Provider;
   private readonly _contractWrappers: ContractWrappers;
   private readonly _web3WrapperInstance: Web3Wrapper;
@@ -43,36 +45,22 @@ export class ZeroEx {
   private readonly _orderValidationUtils: OrderValidationUtils;
   private readonly _exchangeTransferSimulator: ExchangeTransferSimulator;
 
-  /**
-   * Instantiate ZeroEx
-   * @public
-   * @param Provider  provider  Web3 Provider instance to use
-   * @param ContractWrappersConfig  config  Should contain for example desired networkId
-   */
+  // --- Constructor --- //
+
   constructor(
     provider: Provider,
     config: ContractWrappersConfig,
   ) {
-    if (this._initialized) {
-      return this;
-    }
-
-    this._initialized = true;
 
     this._provider = provider;
-
     this._web3WrapperInstance = new Web3Wrapper(provider);
 
+    // Create contract wrappers
     this._contractWrappers = new ContractWrappers(provider, config);
-
     this.exchange = this._contractWrappers.exchange;
-
     this.erc20Proxy = this._contractWrappers.erc20Proxy;
-
     this.erc20Token = this._contractWrappers.erc20Token;
-
     this.erc721Token = this._contractWrappers.erc721Token;
-
     this.etherToken = this._contractWrappers.etherToken;
 
     // Set contract address
@@ -91,9 +79,9 @@ export class ZeroEx {
       assetBalanceAndProxyAllowanceFetcher
     );
     this._exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
-
-    return this;
   }
+
+  // --- Exposed methods --- //
 
   /**
    * When creating an order without a specified taker or feeRecipient you must supply the Solidity
@@ -120,8 +108,7 @@ export class ZeroEx {
    * @return  The amount in units.
    */
   public static toUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-    const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
-    return unitAmount;
+    return Web3Wrapper.toUnitAmount(amount, decimals);
   }
 
   /**
@@ -167,7 +154,10 @@ export class ZeroEx {
    * @return  Transaction receipt with decoded log args.
    */
   public async awaitTransactionMinedAsync(txHash: string, pollingInterval?: number, timeoutMs?: number) {
-    return this._web3WrapperInstance.awaitTransactionMinedAsync(txHash, pollingInterval, timeoutMs);
+    // Additional logic here to workaround this issue: https://github.com/0xProject/0x-monorepo/issues/1076
+    const receipt = await this._web3WrapperInstance.awaitTransactionMinedAsync(txHash, pollingInterval, timeoutMs);
+    if (!receipt || (receipt && receipt.blockNumber === null)) return null;
+    return receipt;
   }
 
   /**
@@ -176,7 +166,10 @@ export class ZeroEx {
    * @returns The transaction receipt, including it's status (0: failed, 1: succeeded or undefined: not found)
    */
   public async getTransactionReceiptAsync(txHash: string) {
-    return this._web3WrapperInstance.getTransactionReceiptAsync(txHash);
+    // Additional logic here to workaround this issue: https://github.com/0xProject/0x-monorepo/issues/1076
+    const receipt = await this._web3WrapperInstance.getTransactionReceiptAsync(txHash);
+    if (!receipt || (receipt && receipt.blockNumber === null)) return null;
+    return receipt;
   }
 
   /**
@@ -213,4 +206,5 @@ export class ZeroEx {
       this._zrxAssetData
     );
   }
+
 }

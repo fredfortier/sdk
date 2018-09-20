@@ -1,3 +1,4 @@
+// Internal
 import { RadarRelay } from './RadarRelay';
 import { LocalAccount, RpcAccount, InjectedAccount } from './accounts';
 import {
@@ -10,10 +11,14 @@ import {
 
 export class SdkManager {
 
+  // --- Properties --- //
+
   // Setup method signatures
   public static Setup(config: LightWalletConfig): RadarRelay<LocalAccount>;
   public static Setup(config: RpcWalletConfig): RadarRelay<RpcAccount>;
   public static Setup(config: InjectedWalletConfig): RadarRelay<InjectedAccount>;
+
+  // --- Exposed static methods --- //
 
   /**
    * Create the SDK instance without starting the initialization lifecycle.

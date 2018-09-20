@@ -7,7 +7,6 @@ import { RpcAccount } from './accounts/RpcAccount';
 import { InjectedAccount } from './accounts/InjectedAccount';
 import { Ethereum } from './Ethereum';
 import { EventEmitter } from 'events';
-import { TSMap } from 'typescript-map';
 import { RadarToken } from '@radarrelay/types';
 export * from '@radarrelay/types';
 
@@ -112,5 +111,5 @@ export interface AccountParams {
   events: EventEmitter;
   zeroEx: ZeroEx;
   endpoint: string;
-  tokens: TSMap<string, RadarToken>;
+  tokens: Map<string, RadarToken>;
 }

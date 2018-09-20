@@ -1,3 +1,6 @@
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-implicit-dependencies */
+
 import * as nock from 'nock';
 import { Server } from 'mock-socket';
 import { WebsocketEvent, WebsocketAction, RadarNewOrder, RadarSignedOrder } from '@radarrelay/types';
@@ -6,6 +9,20 @@ import BigNumber from 'bignumber.js';
 export const RADAR_ENPOINT = 'http://localhost:8080/v2';
 export const RADAR_WS_ENPOINT = 'wss://localhost:8081/v2'; // 'ws://ws.radarrelay.com';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+const mockMarket = (id: string) => {
+  return {
+    id,
+    displayName: id.split('-').join('/'),
+    baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
+    quoteTokenAddress: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+    baseTokenDecimals: 18,
+    quoteTokenDecimals: 18,
+    quoteIncrement: 8,
+    minOrderSize: '1',
+    maxOrderSize: '1'
+  };
+};
 
 let mockServer;
 
@@ -44,18 +61,28 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
-    .get('/markets?perPage=100')
-    .reply(200, [{
-      id: 'ZRX-WETH',
-      baseTokenAddress: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
-      quoteTokenAddress: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
-      baseTokenDecimals: 18,
-      quoteTokenDecimals: 18,
-      displayName: 'ZRX/WETH',
-      quoteIncrement: '0.00000001',
-      minOrderSize: '1',
-      maxOrderSize: '1'
-    }]);
+    .get('/markets?page=1&perPage=3')
+    .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH'), mockMarket('REP-WETH')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?page=1&perPage=100')
+    .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH'), mockMarket('REP-WETH')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?page=2&perPage=100')
+    .reply(200, [mockMarket('WETH-ZRX'), mockMarket('WETH-DAI'), mockMarket('WETH-REP')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?page=3&perPage=100')
+    .reply(200, [mockMarket('ZRX-BAT'), mockMarket('DAI-ZRX'), mockMarket('DAI-REP')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?ids=ZRX-WETH,DAI-WETH')
+    .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets/ZRX-WETH')
+    .reply(200, mockMarket('ZRX-WETH'));
 
   nock(RADAR_ENPOINT)
     .get('/markets/ZRX-WETH/book')

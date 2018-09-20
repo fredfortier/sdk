@@ -12,6 +12,7 @@ const expect = chai.expect;
 describe('RadarRelay.Account', () => {
 
   let rrsdk: RadarRelay<LocalAccount>;
+  let zrxWethMarket;
   let wethAddr;
   let zrxAddr;
   let addresses;
@@ -29,17 +30,18 @@ describe('RadarRelay.Account', () => {
       radarWebsocketEndpoint: RADAR_WS_ENPOINT,
     });
 
-      // set addr for later use
-      zrxAddr = rrsdk.markets.get('ZRX-WETH').baseTokenAddress;
-      wethAddr = rrsdk.markets.get('ZRX-WETH').quoteTokenAddress;
+    // set addr for later use
+    zrxWethMarket = await rrsdk.markets.getAsync('ZRX-WETH');
+    zrxAddr = zrxWethMarket.baseTokenAddress;
+    wethAddr = zrxWethMarket.quoteTokenAddress;
 
-      // get available addresses
+    // get available addresses
+    addresses = await rrsdk.account.getAvailableAddressesAsync();
+    if (addresses.length === 1) {
+      rrsdk.account.addNewAddresses(1);
       addresses = await rrsdk.account.getAvailableAddressesAsync();
-      if (addresses.length === 1) {
-        rrsdk.account.addNewAddresses(1);
-        addresses = await rrsdk.account.getAvailableAddressesAsync();
-      }
-      console.log('[addresses]', addresses);
+    }
+    console.log('[addresses]', addresses);
   });
 
   it('getOrdersAsync', async () => {

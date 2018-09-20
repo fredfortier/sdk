@@ -17,6 +17,8 @@ export interface InitPriorityItem {
 
 export class SdkInitLifeCycle {
 
+  // --- Properties --- //
+
   private _priorityList: InitPriorityItem[];
   private _events: EventEmitter;
   private _priority: {} = {};
@@ -25,6 +27,8 @@ export class SdkInitLifeCycle {
   private _startTime: number;
   private _timeout: number;
   private _runInterval: any;
+
+  // --- Constructor --- //
 
   constructor(events: EventEmitter, priorityList: InitPriorityItem[], timeout: number = 10000) {
     this._priorityList = priorityList;
@@ -39,10 +43,12 @@ export class SdkInitLifeCycle {
       if (priorityList.hasOwnProperty(index)) {
         const item = priorityList[index];
         this._priority[item.event] = index;
-        this._events.on(item.event, this.handleEvent.bind(this, item.event));
+        this._events.on(item.event, this._handleEvent.bind(this, item.event));
       }
     }
   }
+
+  // --- Exposed methods --- //
 
   // Bind the function calls that will
   // get called in order of the priorityList.
@@ -67,11 +73,13 @@ export class SdkInitLifeCycle {
     this._current = this._priority[event];
     this._startTime = new Date().getTime();
     return new Promise((resolve, reject) => {
-      this._runInterval = setInterval(this.checkEventProgress.bind(this, resolve, reject), 100);
+      this._runInterval = setInterval(this._checkEventProgress.bind(this, resolve, reject), 100);
     });
   }
 
-  private checkEventProgress(resolve, reject): Promise<boolean | string> {
+  // --- Internal methods --- //
+
+  private _checkEventProgress(resolve, reject): Promise<boolean | string> {
     const now = new Date().getTime();
     if (now - this._startTime >= this._timeout) {
       clearInterval(this._runInterval);
@@ -86,7 +94,7 @@ export class SdkInitLifeCycle {
     }
   }
 
-  private handleEvent(event: string): void {
+  private _handleEvent(event: string): void {
     const current = this._priority[event];
     this._current = (current >= this._current) ? current : this._current;
 

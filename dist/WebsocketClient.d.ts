@@ -7,7 +7,6 @@ export declare class WebsocketClient {
     connected: boolean;
     private _client;
     private _connectPromise;
-    private _subscribePromise;
     private _wsEndpoint;
     private _subscriptions;
     private _curSubID;

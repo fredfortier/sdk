@@ -8,17 +8,23 @@ import { SdkError } from './types';
  */
 export class WebsocketClient {
 
+  // --- Properties --- //
+
   public connected: boolean;
+
   private _client: w3cwebsocket;
   private _connectPromise;
-  private _subscribePromise;
   private _wsEndpoint: string;
   private _subscriptions: {} = {};
   private _curSubID: number = 0;
 
+  // --- Constructor --- //
+
   constructor(wsEndpoint: string) {
     this._wsEndpoint = wsEndpoint;
   }
+
+  // --- Exposed methods --- //
 
   /**
    * Event listener for global connection events
@@ -78,6 +84,8 @@ export class WebsocketClient {
       };
     });
   }
+
+  // --- Internal methods --- //
 
   /**
    * Default connection handler

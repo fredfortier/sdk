@@ -1,17 +1,27 @@
+// Vendor
 import { BlockParamLiteral, ERC20TokenWrapper, ERC721TokenWrapper } from '@0xproject/contract-wrappers';
 import { AbstractBalanceAndProxyAllowanceFetcher, assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from 'bignumber.js';
 
 export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndProxyAllowanceFetcher {
+
+  // --- Properties --- //
+
   private readonly _erc20Token: ERC20TokenWrapper;
   private readonly _erc721Token: ERC721TokenWrapper;
   private readonly _stateLayer: BlockParamLiteral;
+
+  // --- Constructor --- //
+
   constructor(erc20Token: ERC20TokenWrapper, erc721Token: ERC721TokenWrapper, stateLayer: BlockParamLiteral) {
     this._erc20Token = erc20Token;
     this._erc721Token = erc721Token;
     this._stateLayer = stateLayer;
   }
+
+  // --- Exposed methods --- //
+
   public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
     if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
@@ -33,6 +43,7 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
       return balance;
     }
   }
+
   public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
     if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
@@ -70,4 +81,5 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
       }
     }
   }
+
 }

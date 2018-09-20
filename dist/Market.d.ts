@@ -1,24 +1,25 @@
-import { Trade } from './Trade';
-import { Opts } from './types';
-import { SignedOrder, RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic, RadarStats, RadarHistory } from '@radarrelay/types';
+import { SignedOrder, RadarBook, RadarFill, RadarCandle, RadarTicker, UserOrderType, RadarMarket, WebsocketRequestTopic, RadarStats, RadarHistory, RadarMarketBase } from '@radarrelay/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import BigNumber from 'bignumber.js';
+import { Trade } from './Trade';
+import { Opts } from './types';
 import { BaseAccount } from './accounts';
-export declare class Market<T extends BaseAccount> {
+export declare class Market<T extends BaseAccount> implements RadarMarket, RadarMarketBase {
     id: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    baseTokenDecimals: BigNumber;
-    quoteTokenDecimals: BigNumber;
+    baseTokenDecimals: number;
+    quoteTokenDecimals: number;
     minOrderSize: BigNumber;
     maxOrderSize: BigNumber;
-    quoteIncrement: BigNumber;
+    quoteIncrement: number;
     displayName: string;
+    score: number;
     private _endpoint;
     private _wsEndpoint;
     private _trade;
     private _wsClient;
-    constructor(params: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>);
+    constructor(market: RadarMarket, apiEndpoint: string, wsEndpoint: string, trade: Trade<T>);
     getBookAsync(): Promise<RadarBook>;
     getFillsAsync(): Promise<RadarFill[]>;
     getCandlesAsync(): Promise<RadarCandle[]>;

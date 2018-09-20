@@ -1,25 +1,34 @@
-import { Ethereum } from '../Ethereum';
+// Vendor
 import { promisify } from 'util';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { ZeroEx } from '../ZeroEx';
 import BigNumber from 'bignumber.js';
-import { Opts, AccountParams, WalletType } from '../types';
-import * as request from 'request-promise';
+import axios, { AxiosResponse } from 'axios';
 import { RadarFill, RadarSignedOrder, RadarToken } from '@radarrelay/types';
-import { TSMap } from 'typescript-map';
 import { EventEmitter } from 'events';
 
+// Internal
+import { Ethereum } from '../Ethereum';
+import { ZeroEx } from '../ZeroEx';
+import { Opts, AccountParams, WalletType } from '../types';
+
 export class BaseAccount {
+
+  // --- Properties --- //
+
   public readonly type: WalletType;
   public address: string;
+
   protected _ethereum: Ethereum;
   protected _events: EventEmitter;
+
   private _zeroEx: ZeroEx;
   private _endpoint: string;
-  private _tokens: TSMap<string, RadarToken>;
+  private _tokens: Map<string, RadarToken>;
+
+  // --- Constructor --- //
 
   /**
-   * Instantiate a new BaseAccount
+   * Instantiate a BaseAccount.
    *
    * @param {AccountParams} params The account parameters
    */
@@ -32,15 +41,17 @@ export class BaseAccount {
     this.address = this._ethereum.defaultAccount;
   }
 
+  // --- Exposed methods --- //
+
   /**
-   * Get available addresses for this account
+   * Get available addresses for this account.
    */
   public async getAvailableAddressesAsync(): Promise<string[]> {
     return await promisify(this._ethereum.web3.eth.getAccounts)();
   }
 
   /**
-   * Get ETH balance for the current selected address
+   * Get ETH balance for the current selected address.
    */
   public async getEthBalanceAsync(): Promise<BigNumber> {
     const balance = await this._ethereum.getEthBalanceAsync(this.address);
@@ -48,11 +59,11 @@ export class BaseAccount {
   }
 
   /**
-   * Transfer ETH to another address
+   * Transfer ETH to another address.
    *
-   * @param {string} toAddress The address to transfer to
-   * @param {BigNumber} amount The amount of ETH to transfer
-   * @param {Opts} [opts] The transaction options
+   * @param {string} toAddress The address to transfer to.
+   * @param {BigNumber} amount The amount of ETH to transfer.
+   * @param {Opts} [opts] The transaction options.
    */
   public async transferEthAsync(
     toAddress: string, amount: BigNumber, opts?: Opts
@@ -73,10 +84,10 @@ export class BaseAccount {
   }
 
   /**
-   * Wrap ETH to convert it to WETH
+   * Wrap ETH to convert it to WETH.
    *
-   * @param {BigNumber} amount The amount of ETH to wrap
-   * @param {Opts} [opts] The transaction options
+   * @param {BigNumber} amount The amount of ETH to wrap.
+   * @param {Opts} [opts] The transaction options.
    */
   public async wrapEthAsync(
     amount: BigNumber, opts?: Opts
@@ -95,10 +106,10 @@ export class BaseAccount {
   }
 
   /**
-   * Unwrap WETH to convert it to ETH
+   * Unwrap WETH to convert it to ETH.
    *
-   * @param {BigNumber} amount The amount of WETH to unwrap
-   * @param {Opts} [opts] The transaction options
+   * @param {BigNumber} amount The amount of WETH to unwrap.
+   * @param {Opts} [opts] The transaction options.
    */
   public async unwrapEthAsync(
     amount: BigNumber, opts?: Opts
@@ -116,22 +127,22 @@ export class BaseAccount {
   }
 
   /**
-   * Get balance of a token for the current selected address
+   * Get balance of a token for the current selected address.
    *
-   * @param {string} tokenAddress The token address
+   * @param {string} tokenAddress The token address.
    */
   public async getTokenBalanceAsync(tokenAddress: string): Promise<BigNumber> {
     const balance = await this._zeroEx.erc20Token.getBalanceAsync(tokenAddress, this.address);
-    return ZeroEx.toUnitAmount(balance, this._tokens.get(tokenAddress).decimals);
+    return ZeroEx.toUnitAmount(balance, (await this._tokens.get(tokenAddress)).decimals);
   }
 
   /**
-   * Transfer tokens to another address
+   * Transfer tokens to another address.
    *
-   * @param {string} tokenAddress The token address
-   * @param {string} toAddress The address to transfer to
-   * @param {BigNumber} amount The amount of token to transfer
-   * @param {Opts} [opts] The transaction options
+   * @param {string} tokenAddress The token address.
+   * @param {string} toAddress The address to transfer to.
+   * @param {BigNumber} amount The amount of token to transfer.
+   * @param {Opts} [opts] The transaction options.
    */
   public async transferTokenAsync(
     tokenAddress: string, toAddress: string, amount: BigNumber, opts?: Opts
@@ -140,7 +151,7 @@ export class BaseAccount {
       opts = {};
     }
 
-    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+    const amt = ZeroEx.toBaseUnitAmount(amount, (await this._tokens.get(tokenAddress)).decimals);
     const txHash = await this._zeroEx.erc20Token.transferAsync(tokenAddress, this.address, toAddress, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
@@ -149,21 +160,21 @@ export class BaseAccount {
   }
 
   /**
-   * Get a token allowance
+   * Get a token allowance.
    *
-   * @param {string} tokenAddress The token address
+   * @param {string} tokenAddress The token address.
    */
   public async getTokenAllowanceAsync(tokenAddress: string): Promise<BigNumber> {
     const baseUnitallowance = await this._zeroEx.erc20Token.getProxyAllowanceAsync(tokenAddress, this.address);
-    return ZeroEx.toUnitAmount(baseUnitallowance, this._tokens.get(tokenAddress).decimals);
+    return ZeroEx.toUnitAmount(baseUnitallowance, (await this._tokens.get(tokenAddress)).decimals);
   }
 
   /**
-   * Set a token allowance
+   * Set a token allowance.
    *
-   * @param {string} tokenAddress The token address
-   * @param {BigNumber} amount The allowance amount
-   * @param {Opts} [opts] The transaction options
+   * @param {string} tokenAddress The token address.
+   * @param {BigNumber} amount The allowance amount.
+   * @param {Opts} [opts] The transaction options.
    */
   public async setTokenAllowanceAsync(
     tokenAddress: string, amount: BigNumber, opts?: Opts
@@ -172,7 +183,7 @@ export class BaseAccount {
       opts = {};
     }
 
-    const amt = ZeroEx.toBaseUnitAmount(amount, this._tokens.get(tokenAddress).decimals);
+    const amt = ZeroEx.toBaseUnitAmount(amount, (await this._tokens.get(tokenAddress)).decimals);
     const txHash = await this._zeroEx.erc20Token.setProxyAllowanceAsync(tokenAddress, this.address, amt, opts.transactionOpts);
     if (!opts.awaitTransactionMined) {
       return txHash;
@@ -181,10 +192,10 @@ export class BaseAccount {
   }
 
   /**
-   * Set unlimited token allowance
+   * Set unlimited token allowance.
    *
-   * @param {string} tokenAddress The token address
-   * @param {Opts} [opts] The transaction options
+   * @param {string} tokenAddress The token address.
+   * @param {Opts} [opts] The transaction options.
    */
   public async setUnlimitedTokenAllowanceAsync(
     tokenAddress: string, opts?: Opts
@@ -201,28 +212,38 @@ export class BaseAccount {
   }
 
   /**
-   * Get orders for the selected address that have been placed on Radar
+   * Get orders for the selected address that have been placed on Radar.
    *
-   * @param {number} page The page to fetch
-   * @param {number} perPage The number of orders per page
+   * @param {number} page The page to fetch.
+   * @param {number} perPage The number of orders per page.
    */
   public async getOrdersAsync(page: number = 1, perPage: number = 100): Promise<RadarSignedOrder[]> {
-    return JSON.parse(await request.get(
-      `${this._endpoint}/accounts/${this.address}/orders?page=${page}&perPage=${perPage}`
-    ));
+    const response: AxiosResponse<RadarSignedOrder[]> = await axios.get(
+      `${this._endpoint}/accounts/${this.address}/orders`, {
+        params: { page, perPage },
+      }
+    );
+
+    return response.data;
   }
 
   /**
-   * Get fills for the selected address that have been executed on Radar
+   * Get fills for the selected address that have been executed on Radar.
    *
-   * @param {number} page The page to fetch
-   * @param {number} perPage The number of fills per page
+   * @param {number} page The page to fetch.
+   * @param {number} perPage The number of fills per page.
    */
   public async getFillsAsync(page: number = 1, perPage: number = 100): Promise<RadarFill[]> {
-    return JSON.parse(await request.get(
-      `${this._endpoint}/accounts/${this.address}/fills?page=${page}&perPage=${perPage}`
-    ));
+    const response: AxiosResponse<RadarFill[]> = await axios.get(
+      `${this._endpoint}/accounts/${this.address}/fills`, {
+        params: { page, perPage },
+      }
+    );
+
+    return response.data;
   }
+
+  // --- Internal methods --- //
 
   private _getWETHTokenAddress(): string {
     let token;

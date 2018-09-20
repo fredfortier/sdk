@@ -1,9 +1,12 @@
+// Vendor
 import Web3 = require('web3');
 import BigNumber from 'bignumber.js';
 import { promisify } from 'es6-promisify';
 import { LightWalletManager, LightWallet, WalletError } from '@radarrelay/wallet-manager';
 import { Web3Builder } from '@radarrelay/web3-builder';
 import { EthLightwalletSubprovider, SignerSubprovider } from '@0xproject/subproviders';
+
+// Internal
 import {
   WalletType,
   LightWalletConfig,
@@ -18,12 +21,16 @@ import {
  */
 export class Ethereum {
 
+  // --- Properties --- //
+
   public wallet: LightWallet;
   public walletType: WalletType;
   public networkId: number;
   public web3: Web3;
 
   private _config: Config;
+
+  // --- Exposed methods --- //
 
   /**
    * Set the provider
@@ -81,7 +88,7 @@ export class Ethereum {
     if (opts.gas) {
       params.gas = opts.gas;
     }
-    return await promisify(cb => this.web3.eth.sendTransaction(params, cb))();
+    return promisify(cb => this.web3.eth.sendTransaction(params, cb))();
   }
 
   /**
@@ -114,6 +121,8 @@ export class Ethereum {
       if (!found) throw new Error(SdkError.UnableToRetrieveAccount);
     }
   }
+
+  // --- Internal methods --- //
 
   /**
    * Set the local LightWallet Provider
@@ -167,4 +176,5 @@ export class Ethereum {
     const provider = new Web3.providers.HttpProvider(config.rpcUrl);
     this.web3 = new Web3(provider);
   }
+
 }

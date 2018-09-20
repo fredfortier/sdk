@@ -6,12 +6,17 @@ The Radar Relay SDK is a software development kit that simplifies the interactio
 [![CircleCI](https://circleci.com/gh/RadarRelay/sdk/tree/beta.svg?style=svg&circle-token=5455f6ae9c40e32054b1b54c6caec01af6806754)](https://circleci.com/gh/RadarRelay/sdk/tree/beta)
 
 ## SDK Reference
-For a full SDK reference see: [developers.radarrelay.com/sdk-reference](https://developers.radarrelay.com/sdk-reference).
+For a full SDK reference see: [developers.radarrelay.com/sdk](https://developers.radarrelay.com/sdk/v2).
 
 ## Usage
 
 ### Installation
-`~ npm install @radarrelay/sdk` or `~ yarn add @radarrelay/sdk`
+
+#### Using `npm`
+`npm install @radarrelay/sdk`
+
+#### Using `yarn`
+`yarn add @radarrelay/sdk`
 
 ### Setup & Initialize
 **Setup** refers to the instantiation of the `RadarRelay` class and setup for the initialization lifecycle.
@@ -341,27 +346,71 @@ Set a token allowance.
 
 ## Market methods
 
-Markets are marketId mapped Market classes with all
-the same methods and the following instance vars:
+### Fetching specific markets
+
+`rr.markets.getAsync(marketId)`
+
+Fetch a single market by its ID or a group of markets by passing a list of IDs.
+
+**Parameters:**
+
+| Name             | Type                | Description                                                                                                      |
+| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `marketId`       | `string | string[]` | A market ID or list of market IDs in the format of {base}-{quote}. `e.g. 'ZRX-WETH' or ['ZRX-WETH', 'DAI-WETH']` |
+
+**Returns:** `Promise<Market | Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+### Fetching pages of markets
+
+`rr.markets.getNextPageAsync()`
+
+Fetch the next 100 markets.
+
+**_No parameters._**
+
+**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+`rr.markets.getPageAsync(page, perPage)`
+
+Fetch a specific page of markets.
+
+**Parameters:**
+
+| Name             | Type               | Description                                                                  |
+| ---------------- | ------------------ | ---------------------------------------------------------------------------- |
+| `page`           | `number`           | The page to fetch.                                                           |
+| `perPage`        | `number`          | The number of results per page to query.                                      |
+
+**Returns:** `Promise<Map<string, Market>>` - The `Map` key is mapped to the market's ID.
+
+---
+
+### Market class methods
+
+A `Market` exposes all the following instance vars:
 
 ```javascript
-rr.markets.get('ZRX-WETH')
 {
   id: string;
+  displayName: string;
   baseTokenAddress: string;
   quoteTokenAddress: string;
-  baseTokenDecimals: BigNumber;
-  quoteTokenDecimals: BigNumber;
+  baseTokenDecimals: number;
+  quoteTokenDecimals: number;
   minOrderSize: BigNumber;
   maxOrderSize: BigNumber;
-  quoteIncrement: BigNumber;
-  displayName: string;
+  quoteIncrement: number;
+  score: number; // A measure of how active the market is.
 }
 ```
 
 ---
 
-### Market class methods
+A `Market` exposes all the following methods:
 
 `limitOrderAsync(type, quantity, price, expiration)`
 

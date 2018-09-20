@@ -1,26 +1,24 @@
-import { ZeroEx } from './ZeroEx';
+/// <reference types="node" />
+import { EventEmitter } from 'events';
 import { RadarToken } from '@radarrelay/types';
-import { WalletType, Config, AccountParams } from './types';
-import { TSMap } from 'typescript-map';
 import Web3 = require('web3');
-import { EventBus } from './EventEmitter';
-import { Market } from './Market';
+import { WalletType, Config, AccountParams } from './types';
+import { ZeroEx } from './ZeroEx';
 import { BaseAccount } from './accounts/BaseAccount';
+import { MarketsCache } from './pagination/MarketsCache';
 /**
  * RadarRelay main SDK singleton
  */
 export declare class RadarRelay<T extends BaseAccount> {
-    events: EventBus;
+    events: EventEmitter;
     account: T;
-    tokens: TSMap<string, RadarToken>;
-    markets: TSMap<string, Market<T>>;
+    tokens: Map<string, RadarToken>;
     zeroEx: ZeroEx;
     web3: Web3;
+    markets: MarketsCache<T>;
     private _trade;
     private _ethereum;
     private _networkId;
-    private _prevApiEndpoint;
-    private _markets;
     private _lifecycle;
     private _wallet;
     private _config;
@@ -36,13 +34,13 @@ export declare class RadarRelay<T extends BaseAccount> {
     /**
      * SDK instance
      *
-     * @param {RadarRelayConfig}  config  sdk config
+     * @param {RadarRelayConfig} config  sdk config
      */
     constructor(wallet: new (params: AccountParams) => T, walletType: WalletType, config: Config);
     /**
      * Initialize the SDK
      *
-     * @param {Config}  config  The wallet configuration
+     * @param {Config} config The wallet configuration
      */
     initializeAsync(): Promise<RadarRelay<T>>;
     private initAccountAsync;
