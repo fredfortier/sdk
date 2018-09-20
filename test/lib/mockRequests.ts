@@ -61,12 +61,16 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
-    .get('/markets?page=1&perPage=3')
+    .get('/markets?page=1&perPage=100')
     .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH'), mockMarket('REP-WETH')]);
 
   nock(RADAR_ENPOINT)
-    .get('/markets?page=2&perPage=3')
-    .reply(200, [mockMarket('ZRX-DAI'), mockMarket('WETH-DAI'), mockMarket('REP-DAI')]);
+    .get('/markets?page=2&perPage=100')
+    .reply(200, [mockMarket('WETH-ZRX'), mockMarket('WETH-DAI'), mockMarket('WETH-REP')]);
+
+  nock(RADAR_ENPOINT)
+    .get('/markets?page=3&perPage=100')
+    .reply(200, [mockMarket('ZRX-BAT'), mockMarket('DAI-ZRX'), mockMarket('DAI-REP')]);
 
   nock(RADAR_ENPOINT)
     .get('/markets?ids=ZRX-WETH,DAI-WETH')

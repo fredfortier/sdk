@@ -29,21 +29,32 @@ describe('RadarRelay.Market', () => {
 
   });
 
+  it('getAsync with string', async () => {
+    const market = await rrsdk.markets.getAsync('ZRX-WETH');
+    expect(market.id).to.be.eq('ZRX-WETH');
+  });
+
+  it('getAsync with string[]', async () => {
+    const markets = await rrsdk.markets.getAsync(['ZRX-WETH', 'DAI-WETH']);
+    expect(markets.size).to.be.eq(2);
+    expect(markets.get('ZRX-WETH').id).to.be.eq('ZRX-WETH');
+    expect(markets.get('DAI-WETH').id).to.be.eq('DAI-WETH');
+  });
+
   it('getPageAsync', async () => {
-    const markets = await rrsdk.marketsPagination.getPageAsync(1, 3);
+    const markets = await rrsdk.markets.getPageAsync(1, 100);
+    console.log(markets);
     expect(markets.size).to.be.eq(3);
   });
 
   it('getNextPageAsync', async () => {
-    rrsdk.marketsPagination.perPage = 3;
-
-    const firstPageMarkets = await rrsdk.marketsPagination.getNextPageAsync();
+    const firstPageMarkets = await rrsdk.markets.getNextPageAsync();
     expect(firstPageMarkets.size).to.be.eq(3);
 
-    const secondPageMarkets = await rrsdk.marketsPagination.getNextPageAsync();
+    const secondPageMarkets = await rrsdk.markets.getNextPageAsync();
     expect(secondPageMarkets.size).to.be.eq(3);
 
-    expect(rrsdk.marketsPagination.markets.size).to.be.eq(6);
+    expect(rrsdk.markets.size).to.be.eq(9);
   });
 
 });

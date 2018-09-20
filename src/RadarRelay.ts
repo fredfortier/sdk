@@ -161,6 +161,7 @@ export class RadarRelay<T extends BaseAccount> {
       100, // Results per page... TODO: make this configurable at the SDK-level
       this.config.radarRestEndpoint,
       this.config.radarWebsocketEndpoint,
+      `${this.config.radarRestEndpoint}/markets`,
       this._trade
     );
 

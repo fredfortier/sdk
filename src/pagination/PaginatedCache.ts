@@ -26,6 +26,7 @@ implements
     perPage: number,
     endpoint: string,
   ) {
+    this._cache = new Map();
     this._endpoint = endpoint;
     this.page = initialPage;
     this.perPage = perPage;
@@ -41,13 +42,10 @@ implements
 
   public async getPageAsync<T>(page: number, perPage: number) {
     const response = await axios.get<T[]>(this._endpoint, {
-      params: {
-        page,
-        perPage,
-      }
+      params: { page, perPage }
     });
 
-    return this._cacheResponseData<T>(response);
+    return this._cacheResponseData<T[]>(response);
   }
 
   public async getNextPageAsync() {
@@ -99,14 +97,24 @@ implements
 
   // --- Internal protected methods --- //
 
-  protected _cacheResponseData<T>(response: AxiosResponse<T[]>) {
-    const data = new Map();
+  protected _cacheResponseData<T>(response: AxiosResponse<T>): Map<string, ValueType> {
+    const data = new Map<string, ValueType>();
 
-    response.data.forEach(item => {
-      const transformedData = this._transformResponseData(item);
+    if (Array.isArray(response.data)) {
+
+      response.data.forEach(item => {
+        const transformedData = this._transformResponseData(item);
+        data.set(transformedData[0], transformedData[1]);
+        this._cache.set(transformedData[0], transformedData[1]);
+      });
+
+    } else {
+
+      const transformedData = this._transformResponseData(response.data);
       data.set(transformedData[0], transformedData[1]);
       this._cache.set(transformedData[0], transformedData[1]);
-    });
+
+    }
 
     return data;
   }
