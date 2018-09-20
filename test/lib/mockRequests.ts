@@ -61,6 +61,10 @@ export function mockRequests() {
     ]);
 
   nock(RADAR_ENPOINT)
+    .get('/markets?page=1&perPage=3')
+    .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH'), mockMarket('REP-WETH')]);
+
+  nock(RADAR_ENPOINT)
     .get('/markets?page=1&perPage=100')
     .reply(200, [mockMarket('ZRX-WETH'), mockMarket('DAI-WETH'), mockMarket('REP-WETH')]);
 
