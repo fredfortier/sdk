@@ -354,9 +354,9 @@ Fetch a single market by its ID or a group of markets by passing a list of IDs.
 
 **Parameters:**
 
-| Name             | Type                | Description                                                                                                      |
-| ---------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `marketId`       | `string | string[]` | A market ID or list of market IDs in the format of {base}-{quote}. `e.g. 'ZRX-WETH' or ['ZRX-WETH', 'DAI-WETH']` |
+| Name             | Type                 | Description                                                                                                      |
+| ---------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `marketId`       | `string \| string[]` | A market ID or list of market IDs in the format of {base}-{quote}. `e.g. 'ZRX-WETH' or ['ZRX-WETH', 'DAI-WETH']` |
 
 **Returns:** `Promise<Market | Map<string, Market>>` - The `Map` key is mapped to the market's ID.
 

@@ -10,7 +10,7 @@ export const RADAR_RELAY_ENDPOINTS = (network: NetwordId): EndpointConfig => {
     case NetwordId.Kovan:
       return {
         radarRestEndpoint: 'https://api.kovan.radarrelay.com/v2',
-        radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/ws',
+        radarWebsocketEndpoint: 'wss://ws.kovan.radarrelay.com/v2',
       };
     default:
       throw new Error(`Unsupported Network: ${NetwordId[network] || 'Unknown'}`);
