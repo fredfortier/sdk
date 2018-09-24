@@ -125,15 +125,8 @@ var ZeroEx = /** @class */ (function () {
      */
     ZeroEx.prototype.awaitTransactionMinedAsync = function (txHash, pollingInterval, timeoutMs) {
         return __awaiter(this, void 0, void 0, function () {
-            var receipt;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._web3WrapperInstance.awaitTransactionMinedAsync(txHash, pollingInterval, timeoutMs)];
-                    case 1:
-                        receipt = _a.sent();
-                        // if (!receipt || (receipt && receipt.blockNumber === null)) return null; // Currently breaking bot because we don't do polling.
-                        return [2 /*return*/, receipt];
-                }
+                return [2 /*return*/, this._web3WrapperInstance.awaitTransactionMinedAsync(txHash, pollingInterval, timeoutMs)];
             });
         });
     };
@@ -144,15 +137,8 @@ var ZeroEx = /** @class */ (function () {
      */
     ZeroEx.prototype.getTransactionReceiptAsync = function (txHash) {
         return __awaiter(this, void 0, void 0, function () {
-            var receipt;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this._web3WrapperInstance.getTransactionReceiptAsync(txHash)];
-                    case 1:
-                        receipt = _a.sent();
-                        // if (!receipt || (receipt && receipt.blockNumber === null)) return null; // Currently breaking bot because we don't do polling.
-                        return [2 /*return*/, receipt];
-                }
+                return [2 /*return*/, this._web3WrapperInstance.getTransactionReceiptAsync(txHash)];
             });
         });
     };
