@@ -156,7 +156,7 @@ export class ZeroEx {
   public async awaitTransactionMinedAsync(txHash: string, pollingInterval?: number, timeoutMs?: number) {
     // Additional logic here to workaround this issue: https://github.com/0xProject/0x-monorepo/issues/1076
     const receipt = await this._web3WrapperInstance.awaitTransactionMinedAsync(txHash, pollingInterval, timeoutMs);
-    if (!receipt || (receipt && receipt.blockNumber === null)) return null;
+    // if (!receipt || (receipt && receipt.blockNumber === null)) return null; // Currently breaking bot because we don't do polling.
     return receipt;
   }
 
@@ -168,7 +168,7 @@ export class ZeroEx {
   public async getTransactionReceiptAsync(txHash: string) {
     // Additional logic here to workaround this issue: https://github.com/0xProject/0x-monorepo/issues/1076
     const receipt = await this._web3WrapperInstance.getTransactionReceiptAsync(txHash);
-    if (!receipt || (receipt && receipt.blockNumber === null)) return null;
+    // if (!receipt || (receipt && receipt.blockNumber === null)) return null; // Currently breaking bot because we don't do polling.
     return receipt;
   }
 
