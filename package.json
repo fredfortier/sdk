@@ -46,12 +46,12 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x.js": "^1.0.3",
-    "@0xproject/contract-wrappers": "^1.0.3",
-    "@0xproject/order-utils": "^1.0.2",
-    "@0xproject/subproviders": "^2.0.2",
-    "@0xproject/types": "^1.0.1",
-    "@0xproject/web3-wrapper": "^2.0.1",
+    "0x.js": "^1.0.4",
+    "@0xproject/contract-wrappers": "^1.0.4",
+    "@0xproject/order-utils": "^1.0.3",
+    "@0xproject/subproviders": "^2.0.3",
+    "@0xproject/types": "^1.0.2",
+    "@0xproject/web3-wrapper": "^2.0.3",
     "@radarrelay/types": "^1.2.1",
     "@radarrelay/wallet-manager": "^0.3.3",
     "@radarrelay/web3-builder": "^0.2.0",
