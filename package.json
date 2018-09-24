@@ -1,14 +1,14 @@
 {
   "name": "@radarrelay/sdk",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A library for interacting with Radar Relay in the browser and Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "tsc -p tsconfig.test.json && mocha dist-test/**/*.test.js --timeout 30000 -R spec",
-    "build": "tsc --emitDeclarationOnly && parcel build src/index.ts --target node --out-file dist/index.js --global RadarRelaySDK",
+    "build": "tsc",
     "lint": "tslint -p tsconfig.json",
-    "watch": "parcel watch src/index.ts --target node --out-file dist/index.js --global RadarRelaySDK",
+    "watch": "tsc --watch",
     "docs": "typedoc --out ./docs ./src/"
   },
   "repository": {
@@ -39,7 +39,6 @@
     "dotenv": "^4.0.0",
     "mocha": "~5.2.0",
     "nock": "^9.3.2",
-    "parcel-bundler": "^1.9.7",
     "sinon": "^5.0.4",
     "tslint": "^5.11.0",
     "tslint-config-0xproject": "0.0.2",
@@ -47,12 +46,12 @@
     "typedoc-plugin-markdown": "^1.1.10"
   },
   "dependencies": {
-    "0x.js": "^1.0.3",
-    "@0xproject/contract-wrappers": "^1.0.3",
-    "@0xproject/order-utils": "^1.0.2",
-    "@0xproject/subproviders": "^2.0.2",
-    "@0xproject/types": "^1.0.1",
-    "@0xproject/web3-wrapper": "^2.0.1",
+    "0x.js": "^1.0.4",
+    "@0xproject/contract-wrappers": "^1.0.4",
+    "@0xproject/order-utils": "^1.0.3",
+    "@0xproject/subproviders": "^2.0.3",
+    "@0xproject/types": "^1.0.2",
+    "@0xproject/web3-wrapper": "^2.0.3",
     "@radarrelay/types": "^1.2.1",
     "@radarrelay/wallet-manager": "^0.3.3",
     "@radarrelay/web3-builder": "^0.2.0",
