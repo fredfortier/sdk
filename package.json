@@ -49,7 +49,7 @@
     "0x.js": "^1.0.4",
     "@0xproject/contract-wrappers": "^2.0.2",
     "@0xproject/order-utils": "^1.0.7",
-    "@0xproject/subproviders": "https://github.com/0xProject/0x-monorepo.git",
+    "@0xproject/subproviders": "^2.1.2",
     "@0xproject/types": "^1.1.4",
     "@0xproject/web3-wrapper": "^3.0.3",
     "@radarrelay/types": "^1.2.1",
